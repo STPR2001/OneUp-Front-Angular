@@ -1,0 +1,39 @@
+.Sidebar {
+  width: 250px;
+  background-color: #343434;
+  height: 100%;
+}
+
+.SidebarList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.SidebarList .row {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+  height: 40px;
+}
+
+.SidebarList .row:hover {
+  background-color: #555;
+}
+
+.icon {
+  margin-right: 10px;
+  color: white;
+  flex: 10px;
+  display: grid;
+  place-items: center;
+}
+
+.title {
+  color: white;
+  flex: 70px;
+}
