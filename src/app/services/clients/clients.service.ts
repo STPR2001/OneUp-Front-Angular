@@ -12,11 +12,31 @@ export class ClientsService {
 
   constructor(private http: HttpClient) {}
 
-  getClientes(): Observable<any> {
-    const headers = new HttpHeaders({
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
       Authorization: `Bearer ${this.authToken}`,
     });
+  }
 
+  getClientes(): Observable<any> {
+    const headers = this.getHeaders();
     return this.http.get<any>(this.apiUrl, { headers });
+  }
+
+  agregarCliente(nuevoCliente: any): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.post<any>(this.apiUrl, nuevoCliente, { headers });
+  }
+
+  modificarCliente(id: number, clienteModificado: any): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, clienteModificado, { headers });
+  }
+
+  eliminarCliente(id: number): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    const headers = this.getHeaders();
+    return this.http.delete<any>(url, { headers });
   }
 }

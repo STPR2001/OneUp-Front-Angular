@@ -1,25 +1,49 @@
 <div>
   <h2>Tabla de Clientes</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Email</th>
-        <th>Teléfono</th>
-        <th>Dirección</th>
-        <th>Cédula</th>
-        <th>Celular</th>
-        <th>Observaciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let cliente of clientes">
-        <td>{{ cliente.email }}</td>
-        <td>{{ cliente.telefono }}</td>
-        <td>{{ cliente.direccion }}</td>
-        <td>{{ cliente.cedula }}</td>
-        <td>{{ cliente.celular }}</td>
-        <td>{{ cliente.observacion }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="search-container">
+    <input
+      type="text"
+      placeholder="Buscar por nombre..."
+      [(ngModel)]="searchTerm"
+      class="search-input"
+    />
+  </div>
+  <div class="table-container">
+    <table class="rounded-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Dirección</th>
+          <th>Cédula</th>
+          <th>Celular</th>
+          <th>Observaciones</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cliente of filteredClientes" class="hover-row">
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>{{ cliente.telefono }}</td>
+          <td>{{ cliente.direccion }}</td>
+          <td>{{ cliente.cedula }}</td>
+          <td>{{ cliente.celular }}</td>
+          <td>{{ cliente.observacion }}</td>
+          <td>
+            <button class="action-button" (click)="modificarCliente(cliente)">
+              Modificar
+            </button>
+            <button class="action-button" (click)="eliminarCliente(cliente)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="action-buttons">
+    <button class="action-button" routerLink="/add-client">Agregar</button>
+  </div>
 </div>
