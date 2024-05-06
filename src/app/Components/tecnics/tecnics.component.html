@@ -1,0 +1,47 @@
+<div class="container">
+  <h2>Tabla de Técnicos</h2>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        [(ngModel)]="searchTerm"
+        class="form-control"
+      />
+    </div>
+    <div class="col-md-6 text-end">
+      <button class="btn btn-success" routerLink="/tecnicos/new">
+        Agregar Técnico
+      </button>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tecnico of filteredTecnicos" class="hover-row">
+          <td>{{ tecnico.nombre }}</td>
+          <td>
+            <button
+              class="btn btn-primary me-2"
+              (click)="navigateToUpdateTecnico(tecnico.id, tecnico.nombre)"
+            >
+              Modificar
+            </button>
+            <button
+              class="btn btn-danger"
+              (click)="eliminarTecnico(tecnico.id)"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
