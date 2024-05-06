@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class ClientsService {
   private apiUrl = 'http://localhost:3000/oneup-backend/api/cliente';
   private authToken =
-    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNDY1MTE3MCwiZXhwIjoxNzE0Njc5OTcwfQ.2PMXNDWUQfSeqNZfTwHTmrZYl0EDBiS34Gpf6L5OOvK-QApDuNfkiX6wTA4Ua6sSBf40_drxfX29kE3_1fNGXQ';
+    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNDk5MjA1OCwiZXhwIjoxNzE1MDIwODU4fQ.N9p4LnhdXHnbGI3CigjP0zP_mBIT9cZUpcn7iXR1naWOc3bj1_kM1Px5rC1yjjdkSZrnMBG-xS63dVw0GccQRQ';
 
   constructor(private http: HttpClient) {}
 
@@ -28,10 +28,16 @@ export class ClientsService {
     return this.http.post<any>(this.apiUrl, nuevoCliente, { headers });
   }
 
-  modificarCliente(id: number, clienteModificado: any): Observable<any> {
+  modificarCliente(cliente: any): Observable<any> {
+    const url = `${this.apiUrl}/${cliente.id}`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, cliente, { headers });
+  }
+
+  obtenerClientePorId(id: number): Observable<any> {
     const url = `${this.apiUrl}/${id}`;
     const headers = this.getHeaders();
-    return this.http.put<any>(url, clienteModificado, { headers });
+    return this.http.get<any>(url, { headers });
   }
 
   eliminarCliente(id: number): Observable<any> {

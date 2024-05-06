@@ -28,38 +28,6 @@ export class ClientsComponent implements OnInit {
     );
   }
 
-  seleccionarCliente(cliente: any): void {
-    this.clienteSeleccionado = { ...cliente };
-  }
-
-  modificarCliente(clienteSeleccionado: any): void {
-    const id = this.clienteSeleccionado.id;
-    this.clientsService
-      .modificarCliente(id, this.clienteSeleccionado)
-      .subscribe(
-        () => {
-          console.log('Cliente modificado exitosamente');
-          this.getClientes();
-          this.clienteSeleccionado = {};
-        },
-        (error) => {
-          console.error('Error al modificar cliente:', error);
-        }
-      );
-  }
-
-  eliminarCliente(id: number): void {
-    this.clientsService.eliminarCliente(id).subscribe(
-      () => {
-        console.log('Cliente eliminado exitosamente');
-        this.getClientes();
-      },
-      (error) => {
-        console.error('Error al eliminar cliente:', error);
-      }
-    );
-  }
-
   get filteredClientes() {
     return this.clientes.filter((cliente) =>
       cliente.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())

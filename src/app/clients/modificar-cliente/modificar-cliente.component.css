@@ -1,4 +1,4 @@
-.agregar-cliente-container {
+.modificar-cliente-container {
   max-width: 400px;
   margin: 0 auto;
   padding: 20px;
@@ -16,7 +16,8 @@ label {
 }
 
 input[type="text"],
-input[type="email"] {
+input[type="email"],
+textarea {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
