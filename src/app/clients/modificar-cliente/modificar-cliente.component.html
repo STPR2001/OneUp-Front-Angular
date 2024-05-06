@@ -1,0 +1,68 @@
+<div class="modificar-cliente-container">
+  <h2>Modificar Cliente</h2>
+  <form (ngSubmit)="modificarCliente()">
+    <div class="form-group">
+      <label for="nombre">Nombre:</label>
+      <input
+        type="text"
+        id="nombre"
+        name="nombre"
+        [(ngModel)]="cliente.nombre"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="cliente.email"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="telefono">Teléfono:</label>
+      <input
+        type="text"
+        id="telefono"
+        name="telefono"
+        [(ngModel)]="cliente.telefono"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="direccion">Dirección:</label>
+      <input
+        type="text"
+        id="direccion"
+        name="direccion"
+        [(ngModel)]="cliente.direccion"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="cedula">Cédula:</label>
+      <input
+        type="text"
+        id="cedula"
+        name="cedula"
+        [(ngModel)]="cliente.cedula"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="observaciones">Observaciones:</label>
+      <textarea
+        id="observaciones"
+        name="observaciones"
+        [(ngModel)]="cliente.observacion"
+        required
+      ></textarea>
+    </div>
+    <button type="submit">Modificar Cliente</button>
+  </form>
+  <div *ngIf="errorModificarCliente" class="error-message">
+    Error al modificar el cliente. Por favor, inténtalo de nuevo.
+  </div>
+</div>

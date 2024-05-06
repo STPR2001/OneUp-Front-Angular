@@ -1,5 +1,5 @@
 <div>
-  <h2>Tabla de Clientes</h2>
+  <h2>Clientes</h2>
   <div class="search-container">
     <input
       type="text"
@@ -32,10 +32,16 @@
           <td>{{ cliente.celular }}</td>
           <td>{{ cliente.observacion }}</td>
           <td>
-            <button class="action-button" (click)="modificarCliente(cliente)">
+            <button
+              class="action-button"
+              [routerLink]="['/update-client', cliente.id]"
+            >
               Modificar
             </button>
-            <button class="action-button" (click)="eliminarCliente(cliente)">
+            <button
+              class="action-button"
+              [routerLink]="['/delete-client', cliente.id]"
+            >
               Eliminar
             </button>
           </td>

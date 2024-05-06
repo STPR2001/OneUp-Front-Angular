@@ -8,9 +8,11 @@ import { AppComponent } from './app.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ClientsComponent } from './clients/clients.component';
 import { AgregarClienteComponent } from './clients/agregar-cliente/agregar-cliente.component';
+import { ModificarClienteComponent } from './clients/modificar-cliente/modificar-cliente.component';
+import { EliminarClienteComponent } from './eliminar-cliente/eliminar-cliente.component';
 
 @NgModule({
-  declarations: [AppComponent, SidebarComponent, ClientsComponent, AgregarClienteComponent],
+  declarations: [AppComponent, SidebarComponent, ClientsComponent, AgregarClienteComponent, ModificarClienteComponent, EliminarClienteComponent],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
   providers: [],
   bootstrap: [AppComponent],

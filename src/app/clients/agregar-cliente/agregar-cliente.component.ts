@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class AgregarClienteComponent {
   nuevoCliente: any = {};
-  errorAgregarCliente = false; // Bandera para controlar si ocurrió un error al agregar cliente
+  errorAgregarCliente = false;
 
   constructor(private clientsService: ClientsService, private router: Router) {}
 
@@ -22,10 +22,10 @@ export class AgregarClienteComponent {
       },
       (error) => {
         console.error('Error al agregar cliente:', error);
-        this.errorAgregarCliente = true; // Establecer la bandera de error a verdadero
+        this.errorAgregarCliente = true; 
         setTimeout(() => {
-          this.errorAgregarCliente = false; // Después de 5 segundos, ocultar el mensaje de error
-        }, 5000); // 5000 milisegundos = 5 segundos
+          this.errorAgregarCliente = false; 
+        }, 5000); 
       }
     );
   }
