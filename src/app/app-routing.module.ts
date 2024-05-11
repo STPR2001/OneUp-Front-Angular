@@ -9,7 +9,7 @@ import { EliminarClienteComponent } from './eliminar-cliente/eliminar-cliente.co
 const routes: Routes = [
   { path: 'clients', component: ClientsComponent },
   { path: 'add-client', component: AgregarClienteComponent }, 
-  { path: 'tecnicos', component: TecnicsComponent } 
+  { path: 'tecnicos', component: TecnicsComponent },
   { path: 'update-client/:id', component: ModificarClienteComponent },
   { path: 'delete-client/:id', component: EliminarClienteComponent }, 
 ];
