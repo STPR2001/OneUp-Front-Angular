@@ -28,10 +28,16 @@ export class ClientsService {
     return this.http.post<any>(this.apiUrl, nuevoCliente, { headers });
   }
 
-  modificarCliente(id: number, clienteModificado: any): Observable<any> {
+  modificarCliente(cliente: any): Observable<any> {
+    const url = `${this.apiUrl}/${cliente.id}`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, cliente, { headers });
+  }
+
+  obtenerClientePorId(id: number): Observable<any> {
     const url = `${this.apiUrl}/${id}`;
     const headers = this.getHeaders();
-    return this.http.put<any>(url, clienteModificado, { headers });
+    return this.http.get<any>(url, { headers });
   }
 
   eliminarCliente(id: number): Observable<any> {
