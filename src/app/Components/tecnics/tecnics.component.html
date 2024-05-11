@@ -10,9 +10,119 @@
       />
     </div>
     <div class="col-md-6 text-end">
-      <button class="btn btn-success" routerLink="/tecnicos/new">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#agregarTecnicoModal"
+      >
         Agregar Técnico
       </button>
+    </div>
+  </div>
+  <div
+    class="modal fade"
+    id="agregarTecnicoModal"
+    tabindex="-1"
+    aria-labelledby="agregarTecnicoModalLabel"
+    aria-hidden="true" 
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form (ngSubmit)="agregarTecnico()">
+          <div class="modal-header">
+            <h2 class="text-center fs-2">Agregar Tecnico</h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              #agregarTecnicoModal
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3 d-grid gap-2">
+              <label for="nombre" class="form-label fs-5">Nombre:</label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                class="fs-5"
+                required
+                [(ngModel)]="nuevoTecnico.nombre"
+              />
+            </div>
+            <div *ngIf="errorAgregarTecnico" class="text-danger">
+              Error al agregar el tecnico.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary btn-lg"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+            <button type="submit" class="btn btn-primary btn-lg">
+              Agregar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="ModificarTecnicoModal"
+    tabindex="-1"
+    aria-labelledby="ModificarTecnicoModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form (ngSubmit)="modificarTecnico()">
+          <div class="modal-header">
+            <h2 class="text-center fs-2">Modificar Tecnico</h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              #ModificarTecnicoModal
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3 d-grid gap-2">
+              <label for="nombre" class="form-label fs-5">Nombre:</label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                class="fs-5"
+                required
+                [(ngModel)]="tecnico.nombre"
+              />
+            </div>
+            <div *ngIf="errorModificarTecnico" class="text-danger">
+              Error al modificar el tecnico.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary btn-lg"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+            <button type="submit" class="btn btn-primary btn-lg">
+              Modificar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
   <div class="table-responsive">
@@ -28,11 +138,15 @@
           <td>{{ tecnico.nombre }}</td>
           <td>
             <button
-              class="btn btn-primary me-2"
-              (click)="navigateToUpdateTecnico(tecnico.id, tecnico.nombre)"
+              type="button"
+              class="btn btn-success me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#ModificarTecnicoModal"
+              (click)="abrirModalModificacion(tecnico.id, tecnico.nombre)"
             >
               Modificar
             </button>
+
             <button
               class="btn btn-danger"
               (click)="eliminarTecnico(tecnico.id)"

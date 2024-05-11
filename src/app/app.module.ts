@@ -8,13 +8,12 @@ import { AppComponent } from './app.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ClientsComponent } from './clients/clients.component';
 import { AgregarClienteComponent } from './clients/agregar-cliente/agregar-cliente.component';
-import { TecnicsComponent } from './Components/tecnics/tecnics.component';
-import { NewTecnicoComponent } from './Components/tecnics/new-tecnico/new-tecnico.component';
-import { UpdateTecnicoComponent } from './Components/tecnics/update-tecnico/update-tecnico.component';
+import { TecnicsComponent } from './components/tecnics/tecnics.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-  declarations: [AppComponent, SidebarComponent, ClientsComponent, AgregarClienteComponent, TecnicsComponent, NewTecnicoComponent, UpdateTecnicoComponent],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
+  declarations: [AppComponent, SidebarComponent, ClientsComponent, AgregarClienteComponent, TecnicsComponent],
+  imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule, NgbModule],
   providers: [],
   bootstrap: [AppComponent],
 })

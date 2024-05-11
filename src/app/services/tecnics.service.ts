@@ -9,7 +9,7 @@ import { catchError } from 'rxjs/operators';
 export class TecnicsService {
     private apiUrl = 'http://localhost:3000/oneup-backend/api/tecnico';
     private authToken =
-        'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbIlRlY25pY28iXSwiaWF0IjoxNzE0ODYwMDczLCJleHAiOjE3MTQ4ODg4NzN9.5cdf5oTm1UvwQq7-gCq6jj8MuvdlVVxDv_6eS3yQomJE63dBjanx37v9f2hOpoYpbcQZVly0SdPVaYal1Zv-ow';
+        'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbIlRlY25pY28iXSwiaWF0IjoxNzE1NDU2NzI2LCJleHAiOjE3MTU0ODU1MjZ9.O1DjLy4qCBr3Gzc-0hjoZsOfBHRci4HZmJWl0HajtamA0_n2HAFMy02LLvZSfbv_2L1Kez4mLd2HGVdrJW4nXw';
 
     constructor(private http: HttpClient) { }
 
@@ -34,8 +34,8 @@ export class TecnicsService {
         );
     }
 
-    modificarTecnico(id: number, tecniceModificado: any): Observable<any> {
-        const url = `${this.apiUrl}/${id}`;
+    modificarTecnico(tecniceModificado: any): Observable<any> {
+        const url = `${this.apiUrl}/${tecniceModificado.id}`;
         const headers = this.getHeaders();
         return this.http.put<any>(url, tecniceModificado, { headers }).pipe(
             catchError(this.handleError)
