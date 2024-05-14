@@ -1,55 +1,295 @@
-<div>
+<div class="container">
   <h2>Clientes</h2>
-  <div class="search-container">
-    <input
-      type="text"
-      placeholder="Buscar por nombre..."
-      [(ngModel)]="searchTerm"
-      class="search-input"
-    />
+  <div class="row">
+    <div class="col-md-6 search-container">
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        [(ngModel)]="searchTerm"
+        class="form-control search-input"
+      />
+    </div>
   </div>
-  <div class="table-container">
-    <table class="rounded-table">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>Teléfono</th>
-          <th>Dirección</th>
-          <th>Cédula</th>
-          <th>Celular</th>
-          <th>Observaciones</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let cliente of filteredClientes" class="hover-row">
-          <td>{{ cliente.nombre }}</td>
-          <td>{{ cliente.email }}</td>
-          <td>{{ cliente.telefono }}</td>
-          <td>{{ cliente.direccion }}</td>
-          <td>{{ cliente.cedula }}</td>
-          <td>{{ cliente.celular }}</td>
-          <td>{{ cliente.observacion }}</td>
-          <td>
-            <button
-              class="action-button"
-              [routerLink]="['/update-client', cliente.id]"
-            >
-              Modificar
-            </button>
-            <button
-              class="action-button"
-              [routerLink]="['/delete-client', cliente.id]"
-            >
-              Eliminar
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="row">
+    <div class="col-md-12 table-container">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Cédula</th>
+            <th>Celular</th>
+            <th>Observaciones</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of filteredClientes" class="hover-row">
+            <td>{{ cliente.nombre }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.telefono }}</td>
+            <td>{{ cliente.direccion }}</td>
+            <td>{{ cliente.cedula }}</td>
+            <td>{{ cliente.celular }}</td>
+            <td>{{ cliente.observacion }}</td>
+            <td>
+              <button
+                class="btn btn-success me-2"
+                data-bs-toggle="modal"
+                data-bs-target="#ModificarClienteModal"
+                (click)="
+                  abrirModalModificacion(
+                    cliente.id,
+                    cliente.nombre,
+                    cliente.email,
+                    cliente.telefono,
+                    cliente.cedula,
+                    cliente.direccion,
+                    cliente.observacion
+                  )
+                "
+              >
+                Modificar
+              </button>
+              <button
+                class="btn btn-danger"
+                (click)="eliminarCliente(cliente.id)"
+              >
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-  <div class="action-buttons">
-    <button class="action-button" routerLink="/add-client">Agregar</button>
+  <div class="row">
+    <div class="col-md-12 action-buttons">
+      <button
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#agregarClienteModal"
+      >
+        Agregar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Agregar Cliente -->
+<div
+  class="modal fade"
+  id="agregarClienteModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="agregarClienteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="agregarCliente()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Agregar Cliente</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #agregarClienteModal
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombre">Nombre:</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              [(ngModel)]="nuevoCliente.nombre"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="nuevoCliente.email"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="telefono">Teléfono:</label>
+            <input
+              type="text"
+              id="telefono"
+              name="telefono"
+              [(ngModel)]="nuevoCliente.telefono"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="direccion">Dirección:</label>
+            <input
+              type="text"
+              id="direccion"
+              name="direccion"
+              [(ngModel)]="nuevoCliente.direccion"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="cedula">Cédula:</label>
+            <input
+              type="text"
+              id="cedula"
+              name="cedula"
+              [(ngModel)]="nuevoCliente.cedula"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="observacion">Observaciones:</label>
+            <textarea
+              id="observacion"
+              name="observacion"
+              [(ngModel)]="nuevoCliente.observacion"
+              required
+              class="form-control fs-5"
+            ></textarea>
+          </div>
+          <div *ngIf="errorAgregarCliente" class="text-danger">
+            Error al agregar el cliente.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Modificar Cliente -->
+<div
+  class="modal fade"
+  id="ModificarClienteModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="modificarClienteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="modificarCliente()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Modificar Cliente</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #ModificarClienteModal
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombre">Nombre:</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              [(ngModel)]="cliente.nombre"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="cliente.email"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="telefono">Teléfono:</label>
+            <input
+              type="text"
+              id="telefono"
+              name="telefono"
+              [(ngModel)]="cliente.telefono"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="direccion">Dirección:</label>
+            <input
+              type="text"
+              id="direccion"
+              name="direccion"
+              [(ngModel)]="cliente.direccion"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="cedula">Cédula:</label>
+            <input
+              type="text"
+              id="cedula"
+              name="cedula"
+              [(ngModel)]="cliente.cedula"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="observaciones">Observaciones:</label>
+            <textarea
+              id="observaciones"
+              name="observaciones"
+              [(ngModel)]="cliente.observacion"
+              required
+              class="form-control fs-5"
+            ></textarea>
+          </div>
+          <div *ngIf="errorModificarCliente" class="text-danger">
+            Error al modificar el cliente.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">
+            Modificar Cliente
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

@@ -7,17 +7,26 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './Components/sidebar/sidebar.component';
 import { ClientsComponent } from './Components/clients/clients.component';
-import { AgregarClienteComponent } from './Components/clients/agregar-cliente/agregar-cliente.component'; 
 import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ModificarClienteComponent } from './Components/clients/modificar-cliente/modificar-cliente.component';
-import { EliminarClienteComponent } from './Components/clients/eliminar-cliente/eliminar-cliente.component';
-import { ProvidersComponent } from './Components/providers/providers.component';
+import { ProvidersComponent } from './Components/providers/providers.component'; 
 
 @NgModule({
-  declarations: [AppComponent, SidebarComponent, ClientsComponent, AgregarClienteComponent, TecnicsComponent, ModificarClienteComponent, EliminarClienteComponent, ProvidersComponent],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule, NgbModule], 
+  declarations: [
+    AppComponent,
+    SidebarComponent,
+    ClientsComponent,
+    TecnicsComponent,
+    ProvidersComponent,
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    NgbModule,
+  ], 
   providers: [],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
