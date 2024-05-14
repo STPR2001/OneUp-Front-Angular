@@ -12,9 +12,10 @@ import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModificarClienteComponent } from './Components/clients/modificar-cliente/modificar-cliente.component';
 import { EliminarClienteComponent } from './Components/clients/eliminar-cliente/eliminar-cliente.component';
+import { ProvidersComponent } from './Components/providers/providers.component';
 
 @NgModule({
-  declarations: [AppComponent, SidebarComponent, ClientsComponent, AgregarClienteComponent, TecnicsComponent, ModificarClienteComponent, EliminarClienteComponent],
+  declarations: [AppComponent, SidebarComponent, ClientsComponent, AgregarClienteComponent, TecnicsComponent, ModificarClienteComponent, EliminarClienteComponent, ProvidersComponent],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule, NgbModule], 
   providers: [],
   bootstrap: [AppComponent],
