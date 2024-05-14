@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ClientsComponent } from './clients/clients.component';
-import { AgregarClienteComponent } from './clients/agregar-cliente/agregar-cliente.component'; 
-import { TecnicsComponent } from './components/tecnics/tecnics.component'; 
-import { ModificarClienteComponent } from './clients/modificar-cliente/modificar-cliente.component';
-import { EliminarClienteComponent } from './eliminar-cliente/eliminar-cliente.component'; 
+import { ClientsComponent } from './Components/clients/clients.component';
+import { AgregarClienteComponent } from './Components/clients/agregar-cliente/agregar-cliente.component'; 
+import { TecnicsComponent } from './Components/tecnics/tecnics.component'; 
+import { ModificarClienteComponent } from './Components/clients/modificar-cliente/modificar-cliente.component';
+import { EliminarClienteComponent } from './Components/clients/eliminar-cliente/eliminar-cliente.component'; 
 
 const routes: Routes = [
   { path: 'clients', component: ClientsComponent },

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ClientsService } from 'src/app/services/clients/clients.service';
+import { ClientsService } from 'src/app/services/clients.service';
 
 @Component({
   selector: 'app-modificar-cliente',
