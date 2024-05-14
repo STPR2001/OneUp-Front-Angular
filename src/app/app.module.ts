@@ -5,13 +5,13 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { ClientsComponent } from './clients/clients.component';
-import { AgregarClienteComponent } from './clients/agregar-cliente/agregar-cliente.component'; 
-import { TecnicsComponent } from './components/tecnics/tecnics.component';
+import { SidebarComponent } from './Components/sidebar/sidebar.component';
+import { ClientsComponent } from './Components/clients/clients.component';
+import { AgregarClienteComponent } from './Components/clients/agregar-cliente/agregar-cliente.component'; 
+import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ModificarClienteComponent } from './clients/modificar-cliente/modificar-cliente.component';
-import { EliminarClienteComponent } from './eliminar-cliente/eliminar-cliente.component';
+import { ModificarClienteComponent } from './Components/clients/modificar-cliente/modificar-cliente.component';
+import { EliminarClienteComponent } from './Components/clients/eliminar-cliente/eliminar-cliente.component';
 
 @NgModule({
   declarations: [AppComponent, SidebarComponent, ClientsComponent, AgregarClienteComponent, TecnicsComponent, ModificarClienteComponent, EliminarClienteComponent],
