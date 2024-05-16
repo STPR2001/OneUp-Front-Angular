@@ -11,7 +11,14 @@ export class AuthService {
   }
 
   login(authToken: string): void {
-    localStorage.setItem(this.authSecretKey, authToken);
+    const now = new Date();
+    
+    const item = {
+      value: authToken,
+      expiry: now.getTime() + 28800000,
+    };
+
+    localStorage.setItem(this.authSecretKey, JSON.stringify(item));
     this.isAuthenticated = true;
   }
 
@@ -21,7 +28,18 @@ export class AuthService {
 
   getAuthenticatedToken(): string {
     const token = localStorage.getItem(this.authSecretKey);
-    return token ? token : '';
+    if (!token) {
+      return '';
+    }
+    const item = JSON.parse(token);
+    const now = new Date();
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(this.authSecretKey);
+      return '';
+    }
+
+    return item.value ? item.value : '';
   }
 
 

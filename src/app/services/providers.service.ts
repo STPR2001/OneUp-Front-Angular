@@ -2,20 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AuthService } from './auth/auth.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ProvidersService {
     private apiUrl = 'http://localhost:3000/oneup-backend/api/proveedor';
-    private authToken =
-        'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbXSwiaWF0IjoxNzE1NzI0ODYyLCJleHAiOjE3MTU3NTM2NjJ9.D_4vPqSoQev06WvA_Rhc3N0cCh0LlumfrIdPq46MJS-CNOwlAHhlfCxvfkLkoCxh7dUDgmcyafGvAs0pX1uhwA';
-
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private authService: AuthService) { }
 
     private getHeaders(): HttpHeaders {
         return new HttpHeaders({
-            Authorization: `Bearer ${this.authToken}`,
+            Authorization: `Bearer ${this.authService.getAuthenticatedToken()}`,
             'Content-Type': 'application/json',
         });
     }

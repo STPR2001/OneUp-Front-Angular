@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
 
@@ -9,10 +9,13 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 })
 export class SidebarComponent {
 
+  @ViewChild('cerrarSesion') modalCerrarSesion: any;
+
   constructor(private authService: AuthService, private router: Router) { }
 
   logout(): void {
     this.authService.logout();
+    this.modalCerrarSesion.nativeElement.click();
     this.router.navigate(['/login']);
   }
 }

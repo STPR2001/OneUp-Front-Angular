@@ -13,6 +13,7 @@ import { AuthGuard } from './services/auth/auth.guard';
 import { ProvidersComponent } from './Components/providers/providers.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './Components/login/login.component';
+import { HomeComponent } from './Components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { LoginComponent } from './Components/login/login.component';
     TecnicsComponent,
     ProvidersComponent,
     LoginComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,

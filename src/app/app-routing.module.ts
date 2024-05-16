@@ -5,12 +5,15 @@ import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { ProvidersComponent } from './Components/providers/providers.component'; 
 import { LoginComponent } from './Components/login/login.component';
 import { AuthGuard } from './services/auth/auth.guard';
+import { HomeComponent } from './Components/home/home.component';
 
 const routes: Routes = [
   { path: 'clients', component: ClientsComponent, canActivate: [AuthGuard]},
   { path: 'tecnicos', component: TecnicsComponent, canActivate: [AuthGuard] },
   { path: 'proveedores', component: ProvidersComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
+  { path: '', component: HomeComponent, canActivate: [AuthGuard]},
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({

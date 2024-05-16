@@ -18,7 +18,7 @@
       </div>
       <div class="title">Repuestos</div>
     </li>
-    <li class="row" onclick="window.location.pathname = '/proveedores';">
+    <li class="row" routerLink="/proveedores">
       <div class="icon"><span class="material-icons">person</span></div>
       <div class="title">Proveedores</div>
     </li>
@@ -38,41 +38,38 @@
       <div class="icon"><span class="material-icons">settings</span></div>
       <div class="title">Configuración</div>
     </li>
-    <li class="row"data-bs-toggle="modal"
-    data-bs-target="#agregarTecnicoModal">
+    <li class="row" data-bs-toggle="modal" data-bs-target="#cerrarSesion">
       <div class="icon"><span class="material-icons">logout</span></div>
       <div class="title">Cerrar sesión</div>
-    </li> 
+    </li>
   </ul>
-</div>
 
-<div
-  class="modal fade"
-  id="agregarTecnicoModal"
-  tabindex="-1"
-  aria-labelledby="agregarTecnicoModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="text-center fs-2">¿Seguro que quiere irse?</h2>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="row justify-content-evenly">
-        <button
-          type="button"
-          class="btn btn-primary col-4"
-          data-bs-dismiss="modal"
-        >
-          Cerrar
-        </button>
-        <button type="submit" class="btn btn-danger col-4">Cerrar sesión</button>
+  <div
+    class="modal fade"
+    id="cerrarSesion"
+    tabindex="-1"
+    aria-labelledby="cerrarSesionLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div>
+          <h2 class="text-center fs-2">¿Seguro que quiere irse?</h2>
+        </div>
+        <div class="modal-footer justify-content-evenly">
+          <button
+            type="button"
+            class="btn btn-primary col-4"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #cerrarSesion
+          >
+            Cerrar
+          </button>
+          <button type="submit" (click)="logout()" class="btn btn-danger col-4">
+            Cerrar sesión
+          </button>
+        </div>
       </div>
     </div>
   </div>
