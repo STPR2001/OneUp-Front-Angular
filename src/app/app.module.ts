@@ -9,7 +9,8 @@ import { SidebarComponent } from './Components/sidebar/sidebar.component';
 import { ClientsComponent } from './Components/clients/clients.component';
 import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ProvidersComponent } from './Components/providers/providers.component'; 
+import { ProvidersComponent } from './Components/providers/providers.component';
+import { RepairsComponent } from './repairs/repairs.component'; 
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { ProvidersComponent } from './Components/providers/providers.component';
     ClientsComponent,
     TecnicsComponent,
     ProvidersComponent,
+    RepairsComponent,
   ],
   imports: [
     BrowserModule,
