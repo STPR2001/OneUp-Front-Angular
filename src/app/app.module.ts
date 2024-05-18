@@ -9,7 +9,11 @@ import { SidebarComponent } from './Components/sidebar/sidebar.component';
 import { ClientsComponent } from './Components/clients/clients.component';
 import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ProvidersComponent } from './Components/providers/providers.component'; 
+import { AuthGuard } from './services/auth/auth.guard';
+import { ProvidersComponent } from './Components/providers/providers.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { LoginComponent } from './Components/login/login.component';
+import { HomeComponent } from './Components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +22,8 @@ import { ProvidersComponent } from './Components/providers/providers.component';
     ClientsComponent,
     TecnicsComponent,
     ProvidersComponent,
+    LoginComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -25,8 +31,9 @@ import { ProvidersComponent } from './Components/providers/providers.component';
     HttpClientModule,
     FormsModule,
     NgbModule,
-  ], 
-  providers: [],
+    ReactiveFormsModule,
+  ],
+  providers: [AuthGuard],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
