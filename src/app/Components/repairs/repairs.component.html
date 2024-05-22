@@ -1,1 +1,227 @@
-<p>repairs works!</p>
+<div class="container">
+  <h2>Listado de Reparaciones</h2>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input
+        type="text"
+        placeholder="Buscar por cliente..."
+        [(ngModel)]="searchTerm"
+        class="form-control"
+      />
+    </div>
+    <div class="col-md-2">
+      <select [(ngModel)]="estadoFiltro" class="form-select">
+        <option value="Todos">Todos</option>
+        <option *ngFor="let estado of estados" [value]="estado">
+          {{ estado }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-4 text-end">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#agregarReparacionModal"
+      >
+        Agregar Reparación
+      </button>
+    </div>
+  </div>
+  <div class="table-responsive table-container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Orden</th>
+          <th scope="col">fecha Ingreso</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Marca</th>
+          <th scope="col">Modelo</th>
+          <th scope="col">Código seguimiento</th>
+          <th scope="col">Falla</th>
+          <th scope="col">Técnico</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let reparacion of filteredReparacionesForStatus"
+          class="hover-row"
+        >
+          <td>{{ reparacion.id }}</td>
+          <!-- utilizamos el id como numero de orden ya que es autogenerado -->
+          <td>{{ reparacion.fechaIngreso | date }}</td>
+          <td>{{ reparacion.cliente.nombre }}</td>
+          <td>{{ reparacion.equipo.marca.nombre }}</td>
+          <td>{{ reparacion.equipo.modelo.nombre }}</td>
+          <td>{{ reparacion.codigoSeguimiento }}</td>
+          <td>{{ reparacion.falla }}</td>
+          <td>{{ reparacion.tecnico.nombre }}</td>
+          <td>{{ reparacion.estado }}</td>
+          <td>
+            <button class="btn btn-success me-2">Modificar</button>
+            <button
+              class="btn btn-danger"
+              (click)="eliminarReparacion(reparacion.id)"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modals -->
+<div
+  class="modal fade"
+  id="agregarReparacionModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="agregarReparacionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="agregarReparacion()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Agregar Reparación</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #agregarReparacionModal
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="fecha">Fecha:</label>
+            <input
+              type="date"
+              id="fecha"
+              name="fecha"
+              max="{{ nuevaReparacion.fechaIngreso }}"
+              [(ngModel)]="nuevaReparacion.fechaIngreso"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <label for="tecnico" class="flex-grow-1">Técnico:</label>
+            <select
+              id="tecnico"
+              name="tecnico"
+              [(ngModel)]="nuevaReparacion.tecnico.id"
+              required
+              class="form-select fs-5 flex-grow-1"
+            >
+              <option *ngFor="let tecnico of tecnicos" [value]="tecnico.id">
+                {{ tecnico.nombre }}
+              </option>
+            </select>
+            <button
+              type="button"
+              class="btn btn-success ms-2"
+              (click)="abrirModalAgregarTecnico()"
+            >
+              +
+            </button>
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <label for="cliente" class="flex-grow-1">Cliente:</label>
+            <select
+              id="cliente"
+              name="cliente"
+              [(ngModel)]="nuevaReparacion.cliente.id"
+              required
+              class="form-select fs-5 flex-grow-1"
+            >
+              <option *ngFor="let cliente of clientes" [value]="cliente.id">
+                {{ cliente.nombre }}
+              </option>
+            </select>
+            <button
+              type="button"
+              class="btn btn-success ms-2"
+              (click)="abrirModalAgregarCliente()"
+            >
+              +
+            </button>
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <label for="equipo" class="flex-grow-1">Equipo:</label>
+            <select
+              id="equipo"
+              name="equipo"
+              [(ngModel)]="nuevaReparacion.equipo.id"
+              required
+              class="form-select fs-5 flex-grow-1"
+            >
+              <option *ngFor="let equipo of equipos" [value]="equipo.id">
+                {{ equipo.numeroSerie }}
+              </option>
+            </select>
+            <button
+              type="button"
+              class="btn btn-success ms-2"
+              (click)="abrirModalAgregarEquipo()"
+            >
+              +
+            </button>
+          </div>
+          <div class="mb-3">
+            <label for="estado">Estado:</label>
+            <select
+              id="estado"
+              name="estado"
+              [(ngModel)]="nuevaReparacion.estado"
+              required
+              class="form-select fs-5"
+            >
+              <option *ngFor="let estado of estados" [value]="estado">
+                {{ estado }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="accesorios">Accesorios:</label>
+            <input
+              type="text"
+              id="accesorios"
+              name="accesorios"
+              [(ngModel)]="nuevaReparacion.accesorios"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="falla">Falla:</label>
+            <textarea
+              id="falla"
+              name="falla"
+              [(ngModel)]="nuevaReparacion.falla"
+              required
+              class="form-control fs-5"
+            ></textarea>
+          </div>
+          <div *ngIf="errorAgregarReparacion" class="text-danger">
+            Error al agregar reparación.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

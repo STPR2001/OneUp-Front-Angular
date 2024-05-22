@@ -13,7 +13,7 @@ import { catchError } from 'rxjs/operators';
 export class TecnicsService {
   private apiUrl = 'http://localhost:3000/oneup-backend/api/tecnico';
   private authToken =
-    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNTg5OTcwOSwiZXhwIjoxNzE1OTI4NTA5fQ.RYvFC0-3UFu_yOEWoHssAPHP8ieNp-FyYCcPrZeq2yo4hNFPt4gzym5Xukf16SevCQNrNvotOdG7hryw407euA';
+    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNjMyNjI1OSwiZXhwIjoxNzE2MzU1MDU5fQ.Iv5N_lkHFvLP0RxKpN9YGG2HPms-YwSIwHNx2TaTUmBqKG24s_gXNQU0KRtP2AhUtFkDAJAFu15hGRJwxfNkyg';
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {

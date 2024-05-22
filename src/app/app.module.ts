@@ -10,7 +10,8 @@ import { ClientsComponent } from './Components/clients/clients.component';
 import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProvidersComponent } from './Components/providers/providers.component';
-import { RepairsComponent } from './repairs/repairs.component'; 
+import { RepairsComponent } from './Components/repairs/repairs.component';
+import { ReactiveFormsModule } from '@angular/forms'; //Implementar en formularios!
 
 @NgModule({
   declarations: [
@@ -27,7 +28,7 @@ import { RepairsComponent } from './repairs/repairs.component';
     HttpClientModule,
     FormsModule,
     NgbModule,
-  ], 
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })
