@@ -19,10 +19,10 @@ export class RepairsComponent implements OnInit {
   tecnicos: any[] = [];
   equipos: any[] = [];
   clientes: any[] = [];
+  reparacionSeleccionada: any = {};
   searchTerm: string = '';
   estadoFiltro: string = 'Todos';
   estados: string[] = ['En taller', 'Finalizada', 'Entregada'];
-  reparacion: any = {};
   nuevaReparacion: any = {
     fechaIngreso: '',
     tecnico: { id: '' },
@@ -30,12 +30,27 @@ export class RepairsComponent implements OnInit {
     equipo: { id: '' },
     accesorios: '',
     falla: '',
-    codigoSeguimiento: 'dsadsadas',
+    codigoSeguimiento: 'asdasdasd',
     estado: '',
     manoDeObra: 0,
     entrega: 0,
     saldo: 0,
   };
+
+  reparacion: any = {
+    fechaIngreso: '',
+    tecnico: { id: '' },
+    cliente: { id: '' },
+    equipo: { id: '' },
+    accesorios: '',
+    falla: '',
+    codigoSeguimiento: '',
+    estado: '',
+    manoDeObra: 0,
+    entrega: 0,
+    saldo: 0,
+  };
+
   errorModificarReparacion = false;
   errorAgregarReparacion = false;
 
@@ -101,6 +116,30 @@ export class RepairsComponent implements OnInit {
       .subscribe();
   }
 
+  modificarReparacion(): void {
+    this.RepairsService.modificarReparacion(this.reparacion)
+      .pipe(
+        tap(() => {
+          console.log('Reparación modificada exitosamente');
+          //this.router.navigate(['/repairs']);
+          this.obtenerReparaciones();
+          this.modalCloseUpdate.nativeElement.click();
+        }),
+        catchError((error) => {
+          console.error('Error al modificar reparación:', error);
+          this.errorModificarReparacion = true;
+          setTimeout(() => {
+            this.errorModificarReparacion = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
+  }
+  abrirModalModificacion(reparacion: any) {
+    this.reparacion = { ...reparacion };
+  }
+
   eliminarReparacion(id: number): void {
     this.RepairsService.eliminarReparacion(id).subscribe(
       () => {
@@ -110,6 +149,10 @@ export class RepairsComponent implements OnInit {
         console.error('Error al eliminar reparacion', error);
       }
     );
+  }
+
+  seleccionaReparacion(reparacion: any): void {
+    this.reparacionSeleccionada = { ...reparacion };
   }
 
   obtenerClientes(): void {
