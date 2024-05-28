@@ -69,7 +69,7 @@ export class ProvidersComponent implements OnInit {
       tap(() => {
         this.router.navigate(['/proveedores']);
         this.nuevoProveedor = {};
-        this.getProveedores(); 
+        this.getProveedores();
         this.modalCloseAdd.nativeElement.click();
       }),
       catchError((error) => {
@@ -85,7 +85,7 @@ export class ProvidersComponent implements OnInit {
 
   modificarProveedor(): void {
     this.providersService.modificarProveedor(this.proveedor).pipe(
-      tap(() => { 
+      tap(() => {
         this.router.navigate(['/proveedores']);
         this.getProveedores();
         this.modalCloseUpdate.nativeElement.click();
@@ -104,7 +104,7 @@ export class ProvidersComponent implements OnInit {
     this.proveedor.id = proveedorId;
     this.proveedor.nombre = proveedorNombre;
     this.proveedor.direccion = proveedorDireccion;
-    this.proveedor.telefono = proveedorTelefono; 
+    this.proveedor.telefono = proveedorTelefono;
     this.proveedor.email = proveedorCorreo;
   }
 

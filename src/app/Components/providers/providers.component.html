@@ -2,20 +2,11 @@
     <h2>Tabla de Proveedores</h2>
     <div class="row mb-3">
         <div class="col-md-6">
-            <input
-                type="text"
-                placeholder="Buscar por nombre..."
-                [(ngModel)]="searchTerm"
-                class="form-control"
-                />
+            <input type="text" placeholder="Buscar por nombre..." [(ngModel)]="searchTerm" class="form-control" />
         </div>
         <div class="col-md-6 text-end">
-            <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#agregarProveedorModal"
-                >
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#agregarProveedorModal">
                 Agregar Proveedor
             </button>
         </div>
@@ -38,20 +29,13 @@
                     <td>{{ proveedor.telefono }}</td>
                     <td>{{ proveedor.email }}</td>
                     <td>
-                        <button
-                            type="button"
-                            class="btn btn-success me-2"
-                            data-bs-toggle="modal"
+                        <button type="button" class="btn btn-success me-2" data-bs-toggle="modal"
                             data-bs-target="#ModificarProveedorModal"
-                            (click)="abrirModalModificacion(proveedor.id, proveedor.nombre, proveedor.direccion, proveedor.telefono, proveedor.email)"
-                            >
+                            (click)="abrirModalModificacion(proveedor.id, proveedor.nombre, proveedor.direccion, proveedor.telefono, proveedor.email)">
                             Modificar
                         </button>
 
-                        <button
-                            class="btn btn-danger"
-                            (click)="eliminarProveedor(proveedor.id)"
-                            >
+                        <button class="btn btn-danger" (click)="eliminarProveedor(proveedor.id)">
                             Eliminar
                         </button>
                     </td>
@@ -60,81 +44,43 @@
         </table>
     </div>
 
-    <div
-        class="modal fade"
-        id="agregarProveedorModal"
-        tabindex="-1"
-        aria-labelledby="agregarProveedorModalLabel"
-        aria-hidden="true" 
-        >
+    <div class="modal fade" id="agregarProveedorModal" tabindex="-1" aria-labelledby="agregarProveedorModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form (ngSubmit)="agregarProveedor()">
                     <div class="modal-header">
                         <h2 class="text-center fs-2">Agregar Proveedor</h2>
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                            #agregarProveedorModal
-                            ></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            #agregarProveedorModal></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3 d-grid gap-2">
                             <label for="nombre" class="form-label fs-5">Nombre:</label>
-                            <input
-                                type="text"
-                                id="nombre"
-                                name="nombre"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="nuevoProveedor.nombre"
-                                />
+                            <input type="text" id="nombre" name="nombre" class="fs-5" required
+                                [(ngModel)]="nuevoProveedor.nombre" />
                         </div>
                         <div class="mb-3 d-grid gap-2">
                             <label for="direccion" class="form-label fs-5">Dirección:</label>
-                            <input
-                                type="text"
-                                id="direccion"
-                                name="direccion"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="nuevoProveedor.direccion"
-                                />
+                            <input type="text" id="direccion" name="direccion" class="fs-5" required
+                                [(ngModel)]="nuevoProveedor.direccion" />
                         </div>
                         <div class="mb-3 d-grid gap-2">
                             <label for="telefono" class="form-label fs-5">Teléfono: </label>
-                            <input
-                                type="text"
-                                id="telefono"
-                                name="telefono"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="nuevoProveedor.telefono"
-                                />
+                            <input type="text" id="telefono" name="telefono" class="fs-5" required
+                                [(ngModel)]="nuevoProveedor.telefono" />
                         </div>
                         <div class="mb-3 d-grid gap-2">
                             <label for="correo" class="form-label fs-5">Correo:</label>
-                            <input
-                                type="text"
-                                id="correo"
-                                name="correo"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="nuevoProveedor.email"
-                                />
+                            <input type="text" id="correo" name="correo" class="fs-5" required
+                                [(ngModel)]="nuevoProveedor.email" />
                         </div>
                         <div *ngIf="errorAgregarProveedor" class="text-danger">
                             Error al agregar el proveedor.
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button
-                            type="button"
-                            class="btn btn-secondary btn-lg"
-                            data-bs-dismiss="modal"
-                            >
+                        <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">
                             Cerrar
                         </button>
                         <button type="submit" class="btn btn-primary btn-lg">
@@ -146,81 +92,43 @@
         </div>
     </div>
 
-    <div
-        class="modal fade"
-        id="ModificarProveedorModal"
-        tabindex="-1"
-        aria-labelledby="ModificarProveedorModalLabel"
-        aria-hidden="true"
-        >
+    <div class="modal fade" id="ModificarProveedorModal" tabindex="-1" aria-labelledby="ModificarProveedorModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form (ngSubmit)="modificarProveedor()">
                     <div class="modal-header">
                         <h2 class="text-center fs-2">Modificar Proveedor</h2>
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                            #ModificarProveedorModal
-                            ></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            #ModificarProveedorModal></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3 d-grid gap-2">
                             <label for="nombre" class="form-label fs-5">Nombre:</label>
-                            <input
-                                type="text"
-                                id="nombre"
-                                name="nombre"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="proveedor.nombre"
-                                />
+                            <input type="text" id="nombre" name="nombre" class="fs-5" required
+                                [(ngModel)]="proveedor.nombre" />
                         </div>
                         <div class="mb-3 d-grid gap-2">
                             <label for="direccion" class="form-label fs-5">Dirección:</label>
-                            <input
-                                type="text"
-                                id="direccion"
-                                name="direccion"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="proveedor.direccion"
-                                />
+                            <input type="text" id="direccion" name="direccion" class="fs-5" required
+                                [(ngModel)]="proveedor.direccion" />
                         </div>
                         <div class="mb-3 d-grid gap-2">
                             <label for="telefono" class="form-label fs-5">Telefono: </label>
-                            <input
-                                type="text"
-                                id="telefono"
-                                name="telefono"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="proveedor.telefono"
-                                />
+                            <input type="text" id="telefono" name="telefono" class="fs-5" required
+                                [(ngModel)]="proveedor.telefono" />
                         </div>
                         <div class="mb-3 d-grid gap-2">
                             <label for="correo" class="form-label fs-5">Correo: </label>
-                            <input
-                                type="text"
-                                id="correo"
-                                name="correo"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="proveedor.email"
-                                />
+                            <input type="text" id="correo" name="correo" class="fs-5" required
+                                [(ngModel)]="proveedor.email" />
                         </div>
                         <div *ngIf="errorModificarProveedor" class="text-danger">
                             Error al modificar el proveedor.
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button
-                            type="button"
-                            class="btn btn-secondary btn-lg"
-                            data-bs-dismiss="modal"
-                            >
+                        <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">
                             Cerrar
                         </button>
                         <button type="submit" class="btn btn-primary btn-lg">

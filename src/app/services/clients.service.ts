@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class ClientsService {
   private apiUrl = 'http://localhost:3000/oneup-backend/api/cliente';
   private authToken =
-    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbIlRlY25pY28iXSwiaWF0IjoxNzE1MTE2MTY3LCJleHAiOjE3MTUxNDQ5Njd9.kPlsMyXjTZWImYdGHDuXdhkfKT_QmqsW8QygfNslWraRxD4IFeGuw7-ISqyxmAnOQAmNYD54ivUjgrsIFyVRlQ';
+    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbXSwiaWF0IjoxNzE2OTMwODYxLCJleHAiOjE3MTY5NTk2NjF9.1Ht9tOyQvyOF_COOyK6aZfq4FG11h1afV0Q9ao8sbDaPFOHbdlYC2DKbriZYz4lhvJzjzTQmVp9mKJFWUAFG0Q';
 
   constructor(private http: HttpClient) {}
 
