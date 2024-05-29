@@ -1,28 +1,21 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { RepairsService } from 'src/app/services/repairs.service';
-import { tap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { TecnicsService } from 'src/app/services/tecnics.service';
 import { ClientsService } from 'src/app/services/clients.service';
 import { EquipoService } from 'src/app/services/equipo.service';
+import { RepairsService } from 'src/app/services/repairs.service';
+import { tap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
-  selector: 'app-repairs',
-  templateUrl: './repairs.component.html',
-  styleUrls: ['./repairs.component.css'],
+  selector: 'app-add-repair',
+  templateUrl: './add-repair.component.html',
+  styleUrls: ['./add-repair.component.css'],
 })
-export class RepairsComponent implements OnInit {
-  @ViewChild('agregarReparacionModal') modalCloseAdd: any;
-  @ViewChild('ModificarReparacionModal') modalCloseUpdate: any;
-
-  reparaciones: any[] = [];
+export class AddRepairComponent implements OnInit {
   tecnicos: any[] = [];
-  equipos: any[] = [];
   clientes: any[] = [];
-  reparacionSeleccionada: any = {};
-  searchTerm: string = '';
-  estadoFiltro: string = 'Todos';
+  equipos: any[] = [];
   estados: string[] = ['En taller', 'Finalizada', 'Entregada'];
   nuevaReparacion: any = {
     fechaIngreso: '',
@@ -38,22 +31,7 @@ export class RepairsComponent implements OnInit {
     saldo: 0,
   };
 
-  reparacion: any = {
-    fechaIngreso: '',
-    tecnico: { id: '' },
-    cliente: { id: '' },
-    equipo: { id: '' },
-    accesorios: '',
-    falla: '',
-    codigoSeguimiento: '',
-    estado: '',
-    manoDeObra: 0,
-    entrega: 0,
-    saldo: 0,
-  };
-
-  errorModificarReparacion = false;
-  errorAgregarReparacion = false;
+  errorAgregarReparacion: boolean = false;
 
   constructor(
     private RepairsService: RepairsService,
@@ -65,26 +43,9 @@ export class RepairsComponent implements OnInit {
 
   ngOnInit(): void {
     this.setFechaActual();
-    this.obtenerReparaciones();
     this.obtenerTecnicos();
     this.obtenerClientes();
     this.obtenerEquipos();
-  }
-
-  logReparacionId(id: string): void {
-    console.log('Reparacion ID:', id);
-  }
-
-  obtenerReparaciones(): void {
-    this.RepairsService.getReparaciones().subscribe(
-      (data) => {
-        this.reparaciones = data;
-        console.log(this.reparaciones);
-      },
-      (error) => {
-        console.error('Error al obtener reparaciones:', error);
-      }
-    );
   }
 
   agregarReparacion(): void {
@@ -106,9 +67,8 @@ export class RepairsComponent implements OnInit {
             saldo: 0,
           };
           this.setFechaActual();
-          this.obtenerReparaciones();
+          this.router.navigate(['/reparaciones']);
           console.log(this.nuevaReparacion);
-          this.modalCloseAdd.nativeElement.click();
         }),
         catchError((error) => {
           console.error('Error al agregar reparación:', error);
@@ -120,45 +80,6 @@ export class RepairsComponent implements OnInit {
         })
       )
       .subscribe();
-  }
-
-  modificarReparacion(): void {
-    this.RepairsService.modificarReparacion(this.reparacion)
-      .pipe(
-        tap(() => {
-          console.log('Reparación modificada exitosamente');
-          //this.router.navigate(['/repairs']);
-          this.obtenerReparaciones();
-          this.modalCloseUpdate.nativeElement.click();
-        }),
-        catchError((error) => {
-          console.error('Error al modificar reparación:', error);
-          this.errorModificarReparacion = true;
-          setTimeout(() => {
-            this.errorModificarReparacion = false;
-          }, 5000);
-          return of(error);
-        })
-      )
-      .subscribe();
-  }
-  abrirModalModificacion(reparacion: any) {
-    this.reparacion = { ...reparacion };
-  }
-
-  eliminarReparacion(id: number): void {
-    this.RepairsService.eliminarReparacion(id).subscribe(
-      () => {
-        this.obtenerReparaciones();
-      },
-      (error) => {
-        console.error('Error al eliminar reparacion', error);
-      }
-    );
-  }
-
-  seleccionaReparacion(reparacion: any): void {
-    this.reparacionSeleccionada = { ...reparacion };
   }
 
   obtenerClientes(): void {
@@ -194,26 +115,6 @@ export class RepairsComponent implements OnInit {
         console.error('Error al obtener los equipos:', error);
       }
     );
-  }
-
-  get filteredReparaciones() {
-    return this.reparaciones.filter((reparacion) =>
-      reparacion.cliente.nombre
-        .toLowerCase()
-        .includes(this.searchTerm.toLowerCase())
-    );
-  }
-
-  get filteredReparacionesForStatus() {
-    return this.reparaciones.filter((reparacion) => {
-      const matchesCliente = reparacion.cliente.nombre
-        .toLowerCase()
-        .includes(this.searchTerm.toLowerCase());
-      const matchesEstado =
-        this.estadoFiltro === 'Todos' ||
-        reparacion.estado === this.estadoFiltro;
-      return matchesCliente && matchesEstado;
-    });
   }
 
   setFechaActual(): void {

@@ -1,0 +1,139 @@
+<div class="container mt-3">
+  <form (ngSubmit)="agregarReparacion()">
+    <div class="">
+      <h2 class="text-center fs-2">Agregar Reparación</h2>
+    </div>
+    <div>
+      <div class="mb-3">
+        <label for="fecha">Fecha:</label>
+        <input
+          type="date"
+          id="fecha"
+          name="fecha"
+          max="{{ nuevaReparacion.fechaIngreso }}"
+          [(ngModel)]="nuevaReparacion.fechaIngreso"
+          required
+          class="form-control fs-5"
+        />
+      </div>
+      <div class="mb-3 d-flex align-items-center">
+        <div class="flex-grow-1">
+          <label for="tecnico">Técnico:</label>
+          <select
+            id="tecnico"
+            name="tecnico"
+            [(ngModel)]="nuevaReparacion.tecnico.id"
+            required
+            class="form-select fs-5"
+          >
+            <option *ngFor="let tecnico of tecnicos" [value]="tecnico.id">
+              {{ tecnico.nombre }}
+            </option>
+          </select>
+        </div>
+        <button
+          type="button"
+          class="btn btn-success ms-2 mb-1 align-self-end"
+          (click)="abrirModalAgregarTecnico()"
+        >
+          +
+        </button>
+      </div>
+      <div class="mb-3 d-flex align-items-center">
+        <div class="flex-grow-1">
+          <label for="cliente">Cliente:</label>
+          <select
+            id="cliente"
+            name="cliente"
+            [(ngModel)]="nuevaReparacion.cliente.id"
+            required
+            class="form-select fs-5"
+          >
+            <option *ngFor="let cliente of clientes" [value]="cliente.id">
+              {{ cliente.nombre }}
+            </option>
+          </select>
+        </div>
+        <button
+          type="button"
+          class="btn btn-success ms-2 mb-1 align-self-end"
+          (click)="abrirModalAgregarCliente()"
+        >
+          +
+        </button>
+      </div>
+      <div class="mb-3 d-flex align-items-center">
+        <div class="flex-grow-1">
+          <label for="equipo">Equipo:</label>
+          <select
+            id="equipo"
+            name="equipo"
+            [(ngModel)]="nuevaReparacion.equipo.id"
+            required
+            class="form-select fs-5"
+          >
+            <option *ngFor="let equipo of equipos" [value]="equipo.id">
+              {{ equipo.numeroSerie }}
+            </option>
+          </select>
+        </div>
+        <button
+          type="button"
+          class="btn btn-success ms-2 mb-1 align-self-end"
+          (click)="abrirModalAgregarEquipo()"
+        >
+          +
+        </button>
+      </div>
+      <div class="mb-3">
+        <label for="estado">Estado:</label>
+        <select
+          id="estado"
+          name="estado"
+          [(ngModel)]="nuevaReparacion.estado"
+          required
+          class="form-select fs-5"
+        >
+          <option *ngFor="let estado of estados" [value]="estado">
+            {{ estado }}
+          </option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="accesorios">Accesorios:</label>
+        <input
+          type="text"
+          id="accesorios"
+          name="accesorios"
+          [(ngModel)]="nuevaReparacion.accesorios"
+          required
+          class="form-control fs-5"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="falla">Falla:</label>
+        <textarea
+          id="falla"
+          name="falla"
+          [(ngModel)]="nuevaReparacion.falla"
+          required
+          class="form-control fs-5"
+        ></textarea>
+      </div>
+      <div *ngIf="errorAgregarReparacion" class="text-danger">
+        Error al agregar reparación.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-secondary btn-lg"
+        data-bs-dismiss="modal"
+        routerLink="/reparaciones"
+      >
+        Cerrar
+      </button>
+      <button type="submit" class="btn btn-primary btn-lg ms-2">Agregar</button>
+    </div>
+  </form>
+</div>

@@ -11,7 +11,9 @@ import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProvidersComponent } from './Components/providers/providers.component';
 import { RepairsComponent } from './Components/repairs/repairs.component';
-import { ReactiveFormsModule } from '@angular/forms'; //Implementar en formularios!
+import { ReactiveFormsModule } from '@angular/forms';
+import { AddRepairComponent } from './Components/repairs/add-repair/add-repair.component';
+import { ModifyRepairComponent } from './Components/repairs/modify-repair/modify-repair.component'; //Implementar en formularios!
 
 @NgModule({
   declarations: [
@@ -21,6 +23,8 @@ import { ReactiveFormsModule } from '@angular/forms'; //Implementar en formulari
     TecnicsComponent,
     ProvidersComponent,
     RepairsComponent,
+    AddRepairComponent,
+    ModifyRepairComponent,
   ],
   imports: [
     BrowserModule,

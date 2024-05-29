@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class RepairsService {
   private apiUrl = 'http://localhost:3000/oneup-backend/api/reparacion';
   private authToken =
-    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNjkyOTMwNCwiZXhwIjoxNzE2OTU4MTA0fQ.zIG1oIyU7PCazCr_yVlQy-VtFap9pon5mOz0eWRCuq0ScqlHFG6EntRDSsofVcfyjJExdDyVaPhS2sgQtcGU-w';
+    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNzAwMzg2NSwiZXhwIjoxNzE3MDMyNjY1fQ.1cZ6b4MH89j21W4uoDOEcPJTVzyiisK075cSuE_jfOPZ_c9KV3_Y0-yU3-Arax32mSTaSJWOmLmTnvE0Ts3g2Q';
 
   constructor(private http: HttpClient) {}
 
