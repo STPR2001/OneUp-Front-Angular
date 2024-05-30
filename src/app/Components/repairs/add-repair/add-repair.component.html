@@ -34,7 +34,8 @@
         <button
           type="button"
           class="btn btn-success ms-2 mb-1 align-self-end"
-          (click)="abrirModalAgregarTecnico()"
+          data-bs-toggle="modal"
+          data-bs-target="#agregarTecnicoModal"
         >
           +
         </button>
@@ -57,7 +58,8 @@
         <button
           type="button"
           class="btn btn-success ms-2 mb-1 align-self-end"
-          (click)="abrirModalAgregarCliente()"
+          data-bs-toggle="modal"
+          data-bs-target="#agregarClienteModal"
         >
           +
         </button>
@@ -77,11 +79,7 @@
             </option>
           </select>
         </div>
-        <button
-          type="button"
-          class="btn btn-success ms-2 mb-1 align-self-end"
-          (click)="abrirModalAgregarEquipo()"
-        >
+        <button type="button" class="btn btn-success ms-2 mb-1 align-self-end">
           +
         </button>
       </div>
@@ -136,4 +134,166 @@
       <button type="submit" class="btn btn-primary btn-lg ms-2">Agregar</button>
     </div>
   </form>
+</div>
+
+<!-- MODALS -->
+
+<!-- tecnico-->
+<div
+  class="modal fade"
+  id="agregarTecnicoModal"
+  tabindex="-1"
+  aria-labelledby="agregarTecnicoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="agregarTecnico()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Agregar Tecnico</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #agregarTecnicoModal
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 d-grid gap-2">
+            <label for="nombre" class="form-label fs-5">Nombre:</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoTecnico.nombre"
+            />
+          </div>
+          <div *ngIf="errorAgregarTecnico" class="text-danger">
+            Error al agregar el tecnico.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--cliente-->
+
+<div
+  class="modal fade"
+  id="agregarClienteModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="agregarClienteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="agregarCliente()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Agregar Cliente</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #agregarClienteModal
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombre">Nombre:</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              [(ngModel)]="nuevoCliente.nombre"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="nuevoCliente.email"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="telefono">Teléfono:</label>
+            <input
+              type="text"
+              id="telefono"
+              name="telefono"
+              [(ngModel)]="nuevoCliente.telefono"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="direccion">Dirección:</label>
+            <input
+              type="text"
+              id="direccion"
+              name="direccion"
+              [(ngModel)]="nuevoCliente.direccion"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="cedula">Cédula:</label>
+            <input
+              type="text"
+              id="cedula"
+              name="cedula"
+              [(ngModel)]="nuevoCliente.cedula"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="observacion">Observaciones:</label>
+            <textarea
+              id="observacion"
+              name="observacion"
+              [(ngModel)]="nuevoCliente.observacion"
+              required
+              class="form-control fs-5"
+            ></textarea>
+          </div>
+          <div *ngIf="errorAgregarCliente" class="text-danger">
+            Error al agregar el cliente.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

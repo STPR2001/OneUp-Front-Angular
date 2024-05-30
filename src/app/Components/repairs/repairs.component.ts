@@ -1,7 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { RepairsService } from 'src/app/services/repairs.service';
-import { tap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { TecnicsService } from 'src/app/services/tecnics.service';
 import { ClientsService } from 'src/app/services/clients.service';
@@ -13,9 +11,6 @@ import { EquipoService } from 'src/app/services/equipo.service';
   styleUrls: ['./repairs.component.css'],
 })
 export class RepairsComponent implements OnInit {
-  @ViewChild('agregarReparacionModal') modalCloseAdd: any;
-  @ViewChild('ModificarReparacionModal') modalCloseUpdate: any;
-
   reparaciones: any[] = [];
   tecnicos: any[] = [];
   equipos: any[] = [];
@@ -37,7 +32,6 @@ export class RepairsComponent implements OnInit {
     entrega: 0,
     saldo: 0,
   };
-
   reparacion: any = {
     fechaIngreso: '',
     tecnico: { id: '' },
@@ -52,7 +46,6 @@ export class RepairsComponent implements OnInit {
     saldo: 0,
   };
 
-  errorModificarReparacion = false;
   errorAgregarReparacion = false;
 
   constructor(
@@ -71,10 +64,6 @@ export class RepairsComponent implements OnInit {
     this.obtenerEquipos();
   }
 
-  logReparacionId(id: string): void {
-    console.log('Reparacion ID:', id);
-  }
-
   obtenerReparaciones(): void {
     this.RepairsService.getReparaciones().subscribe(
       (data) => {
@@ -85,65 +74,6 @@ export class RepairsComponent implements OnInit {
         console.error('Error al obtener reparaciones:', error);
       }
     );
-  }
-
-  agregarReparacion(): void {
-    this.RepairsService.agregarReparacion(this.nuevaReparacion)
-      .pipe(
-        tap(() => {
-          console.log('Reparación agregada exitosamente');
-          this.nuevaReparacion = {
-            fechaIngreso: '',
-            tecnico: { id: '' },
-            cliente: { id: '' },
-            equipo: { id: '' },
-            accesorios: '',
-            falla: '',
-            codigoSeguimiento: '',
-            estado: '',
-            manoDeObra: 0,
-            entrega: 0,
-            saldo: 0,
-          };
-          this.setFechaActual();
-          this.obtenerReparaciones();
-          console.log(this.nuevaReparacion);
-          this.modalCloseAdd.nativeElement.click();
-        }),
-        catchError((error) => {
-          console.error('Error al agregar reparación:', error);
-          this.errorAgregarReparacion = true;
-          setTimeout(() => {
-            this.errorAgregarReparacion = false;
-          }, 5000);
-          return of(error);
-        })
-      )
-      .subscribe();
-  }
-
-  modificarReparacion(): void {
-    this.RepairsService.modificarReparacion(this.reparacion)
-      .pipe(
-        tap(() => {
-          console.log('Reparación modificada exitosamente');
-          //this.router.navigate(['/repairs']);
-          this.obtenerReparaciones();
-          this.modalCloseUpdate.nativeElement.click();
-        }),
-        catchError((error) => {
-          console.error('Error al modificar reparación:', error);
-          this.errorModificarReparacion = true;
-          setTimeout(() => {
-            this.errorModificarReparacion = false;
-          }, 5000);
-          return of(error);
-        })
-      )
-      .subscribe();
-  }
-  abrirModalModificacion(reparacion: any) {
-    this.reparacion = { ...reparacion };
   }
 
   eliminarReparacion(id: number): void {
@@ -223,11 +153,4 @@ export class RepairsComponent implements OnInit {
     const year = today.getFullYear();
     this.nuevaReparacion.fechaIngreso = `${year}-${month}-${day}`;
   }
-
-  //Aplicar logica para modales
-  abrirModalAgregarTecnico(): void {}
-
-  abrirModalAgregarCliente(): void {}
-
-  abrirModalAgregarEquipo(): void {}
 }

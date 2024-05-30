@@ -13,6 +13,9 @@ import { of } from 'rxjs';
   styleUrls: ['./add-repair.component.css'],
 })
 export class AddRepairComponent implements OnInit {
+  @ViewChild('agregarTecnicoModal') modalCloseAddTecnico: any;
+  @ViewChild('agregarClienteModal') modalCloseAddCliente: any;
+
   tecnicos: any[] = [];
   clientes: any[] = [];
   equipos: any[] = [];
@@ -30,8 +33,14 @@ export class AddRepairComponent implements OnInit {
     entrega: 0,
     saldo: 0,
   };
-
   errorAgregarReparacion: boolean = false;
+
+  //para modales
+  nuevoTecnico: any = {};
+  errorAgregarTecnico = false;
+
+  nuevoCliente: any = {};
+  errorAgregarCliente = false;
 
   constructor(
     private RepairsService: RepairsService,
@@ -125,10 +134,46 @@ export class AddRepairComponent implements OnInit {
     this.nuevaReparacion.fechaIngreso = `${year}-${month}-${day}`;
   }
 
-  //Aplicar logica para modales
-  abrirModalAgregarTecnico(): void {}
+  //Codigo de modales
 
-  abrirModalAgregarCliente(): void {}
+  agregarTecnico(): void {
+    this.TecnicsService.agregarTecnico(this.nuevoTecnico)
+      .pipe(
+        tap(() => {
+          this.nuevoTecnico = {};
+          this.obtenerTecnicos();
+          this.modalCloseAddTecnico.nativeElement.click();
+        }),
+        catchError((error) => {
+          console.error('Error al agregar tecnico:', error);
+          this.errorAgregarTecnico = true;
+          setTimeout(() => {
+            this.errorAgregarTecnico = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
+  }
 
-  abrirModalAgregarEquipo(): void {}
+  agregarCliente(): void {
+    this.ClientsService.agregarCliente(this.nuevoCliente)
+      .pipe(
+        tap(() => {
+          console.log('Cliente agregado exitosamente');
+          this.nuevoCliente = {};
+          this.obtenerClientes();
+          this.modalCloseAddCliente.nativeElement.click();
+        }),
+        catchError((error) => {
+          console.error('Error al agregar cliente:', error);
+          this.errorAgregarCliente = true;
+          setTimeout(() => {
+            this.errorAgregarCliente = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
+  }
 }
