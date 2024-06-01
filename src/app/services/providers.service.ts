@@ -32,7 +32,7 @@ export class ProvidersService {
   agregarProveedor(nuevoProveedor: any): Observable<any> {
     const headers = this.getHeaders();
     return this.http
-      .post<any>(this.apiUrl, nuevoProveedor, { headers })
+      .post(this.apiUrl, nuevoProveedor, { headers, responseType: 'text'  })
       .pipe(catchError(this.handleError));
   }
 

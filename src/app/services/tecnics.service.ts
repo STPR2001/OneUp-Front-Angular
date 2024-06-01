@@ -31,7 +31,7 @@ export class TecnicsService {
     agregarTecnico(nuevoTecnico: any): Observable<any> {
         const headers = this.getHeaders();
         return this.http
-            .post<any>(this.apiUrl, nuevoTecnico, { headers })
+            .post(this.apiUrl, nuevoTecnico, { headers, responseType: 'text'  })
             .pipe(catchError(this.handleError));
     }
 

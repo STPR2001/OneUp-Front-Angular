@@ -16,7 +16,6 @@ import { AddRepairComponent } from './Components/repairs/add-repair/add-repair.c
 import { ModifyRepairComponent } from './Components/repairs/modify-repair/modify-repair.component'; //Implementar en formularios!
 import { EquipmentsComponent } from './Components/equipments/equipments.component';
 import { AuthGuard } from './services/auth/auth.guard';
-import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './Components/login/login.component';
 import { HomeComponent } from './Components/home/home.component';
 

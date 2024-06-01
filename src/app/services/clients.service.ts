@@ -23,7 +23,7 @@ export class ClientsService {
 
   agregarCliente(nuevoCliente: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post<any>(this.apiUrl, nuevoCliente, { headers });
+    return this.http.post(this.apiUrl, nuevoCliente, { headers, responseType: 'text'  });
   }
 
   modificarCliente(cliente: any): Observable<any> {
