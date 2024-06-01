@@ -1,0 +1,77 @@
+<div class="container">
+  <h2>Listado de Reparaciones</h2>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input
+        type="text"
+        placeholder="Buscar por cliente..."
+        [(ngModel)]="searchTerm"
+        class="form-control"
+      />
+    </div>
+    <div class="col-md-2">
+      <select [(ngModel)]="estadoFiltro" class="form-select">
+        <option value="Todos">Todos</option>
+        <option *ngFor="let estado of estados" [value]="estado">
+          {{ estado }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-4 text-end">
+      <button
+        type="button"
+        class="btn btn-primary"
+        routerLink="/agregarReparacion"
+      >
+        Agregar Reparación
+      </button>
+    </div>
+  </div>
+  <div class="table-responsive table-container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Orden</th>
+          <th scope="col">Fecha Ingreso</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Marca</th>
+          <th scope="col">Modelo</th>
+          <th scope="col">Falla</th>
+          <th scope="col">Técnico</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let reparacion of filteredReparacionesForStatus"
+          class="hover-row"
+        >
+          <td>{{ reparacion.id }}</td>
+          <!-- utilizamos el id como numero de orden ya que es autogenerado -->
+          <td>{{ reparacion.fechaIngreso | date }}</td>
+          <td>{{ reparacion.cliente.nombre }}</td>
+          <td>{{ reparacion.equipo.marca.nombre }}</td>
+          <td>{{ reparacion.equipo.modelo.nombre }}</td>
+          <td>{{ reparacion.falla }}</td>
+          <td>{{ reparacion.tecnico.nombre }}</td>
+          <td>{{ reparacion.estado }}</td>
+          <td>
+            <button
+              class="btn btn-success me-2"
+              [routerLink]="['/modificarReparacion', reparacion.id]"
+            >
+              Modificar
+            </button>
+            <button
+              class="btn btn-danger"
+              (click)="eliminarReparacion(reparacion.id)"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
