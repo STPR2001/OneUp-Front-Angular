@@ -1,61 +1,35 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { tap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { TecnicsService } from 'src/app/services/tecnics.service';
-import { ClientsService } from 'src/app/services/clients.service';
+import { ActivatedRoute } from '@angular/router';
 import { EquipoService } from 'src/app/services/equipo.service';
-import { RepairsService } from 'src/app/services/repairs.service';
 import { BrandService } from 'src/app/services/brand.service';
 import { EquipmentTypeService } from 'src/app/services/equipment-type.service';
 import { ModelService } from 'src/app/services/model.service';
-import { tap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { AfterViewInit, Renderer2 } from '@angular/core';
+import { ElementRef } from '@angular/core';
 
 @Component({
-  selector: 'app-modify-repair',
-  templateUrl: './modify-repair.component.html',
-  styleUrls: ['./modify-repair.component.css'],
+  selector: 'app-equipments',
+  templateUrl: './equipments.component.html',
+  styleUrls: ['./equipments.component.css'],
 })
-export class ModifyRepairComponent implements OnInit {
-  @ViewChild('agregarTecnicoModal') modalCloseAddTecnico: any;
-  @ViewChild('agregarClienteModal') modalCloseAddCliente: any;
+export class EquipmentsComponent implements OnInit {
   @ViewChild('agregarEquipoModal') agregarEquipoModal: any;
   @ViewChild('ModificarEquipoModal') modalCloseUpdate: any;
   @ViewChild('agregarTipoEquipoModal') agregarTipoEquipoModal: any;
   @ViewChild('agregarMarcaModal') agregarMarcaModal: any;
   @ViewChild('agregarModeloModal') agregarModeloModal: any;
+  @ViewChild('modificarEquipoModal') modificarEquipoModal: any;
 
   agregarEquipoModalRef: NgbModalRef | undefined;
   agregarTipoEquipoModalRef: NgbModalRef | undefined;
   agregarMarcaModalRef: NgbModalRef | undefined;
   agregarModeloModalRef: NgbModalRef | undefined;
 
-  tecnicos: any[] = [];
-  clientes: any[] = [];
   equipos: any[] = [];
-  estados: string[] = ['En taller', 'Finalizada', 'Entregada'];
-  reparacion: any = {
-    fechaIngreso: '',
-    tecnico: { id: '' },
-    cliente: { id: '' },
-    equipo: { id: '' },
-    accesorios: '',
-    falla: '',
-    codigoSeguimiento: '',
-    estado: '',
-    manoDeObra: 0,
-    entrega: 0,
-    saldo: 0,
-  };
-  errorModificarReparacion = false;
-
-  nuevoTecnico: any = {};
-  errorAgregarTecnico = false;
-
-  nuevoCliente: any = {};
-  errorAgregarCliente = false;
-
   equipo: any = {};
   equipoSeleccionado: any = {};
   searchTerm: string = '';
@@ -83,10 +57,8 @@ export class ModifyRepairComponent implements OnInit {
     marca: { id: '' },
   };
   errorAgregarModelo = false;
+
   constructor(
-    private RepairsService: RepairsService,
-    private TecnicsService: TecnicsService,
-    private ClientsService: ClientsService,
     private route: ActivatedRoute,
     private router: Router,
     private EquipoService: EquipoService,
@@ -97,140 +69,12 @@ export class ModifyRepairComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.setFechaActual();
-    this.obtenerTecnicos();
-    this.obtenerClientes();
-    this.obtenerEquipos();
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.cargarReparacion(id);
-    }
     this.getEquipos();
     this.getMarcas();
     this.getModelos();
     this.getTiposEquipo();
   }
 
-  cargarReparacion(id: string): void {
-    const numericId = parseInt(id, 10);
-    if (!isNaN(numericId)) {
-      this.RepairsService.obtenerReparacionPorId(numericId).subscribe(
-        (data) => {
-          this.reparacion = data;
-        },
-        (error) => {
-          console.error('Error al cargar reparación:', error);
-        }
-      );
-    } else {
-      console.error('El id no es un número válido:', id);
-    }
-  }
-
-  modificarReparacion(): void {
-    this.RepairsService.modificarReparacion(this.reparacion)
-      .pipe(
-        tap(() => {
-          console.log('Reparación modificada exitosamente');
-          this.router.navigate(['/reparaciones']);
-        }),
-        catchError((error) => {
-          console.error('Error al modificar reparación:', error);
-          this.errorModificarReparacion = true;
-          setTimeout(() => {
-            this.errorModificarReparacion = false;
-          }, 5000);
-          return of(error);
-        })
-      )
-      .subscribe();
-  }
-
-  obtenerClientes(): void {
-    this.ClientsService.getClientes().subscribe(
-      (data) => {
-        this.clientes = data;
-      },
-      (error) => {
-        console.error('Error al obtener clientes:', error);
-      }
-    );
-  }
-
-  obtenerTecnicos(): void {
-    this.TecnicsService.getTecnicos().subscribe(
-      (data) => {
-        this.tecnicos = data;
-        console.log(this.tecnicos);
-      },
-      (error) => {
-        console.error('Error al obtener los tecnicos:', error);
-      }
-    );
-  }
-
-  obtenerEquipos(): void {
-    this.EquipoService.getEquipos().subscribe(
-      (data) => {
-        this.equipos = data;
-        console.log(this.equipos);
-      },
-      (error) => {
-        console.error('Error al obtener los equipos:', error);
-      }
-    );
-  }
-
-  setFechaActual(): void {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
-    this.reparacion.fechaIngreso = `${year}-${month}-${day}`;
-  }
-
-  //Codigo de modales
-
-  agregarTecnico(): void {
-    this.TecnicsService.agregarTecnico(this.nuevoTecnico)
-      .pipe(
-        tap(() => {
-          this.nuevoTecnico = {};
-          this.obtenerTecnicos();
-          this.modalCloseAddTecnico.nativeElement.click();
-        }),
-        catchError((error) => {
-          console.error('Error al agregar tecnico:', error);
-          this.errorAgregarTecnico = true;
-          setTimeout(() => {
-            this.errorAgregarTecnico = false;
-          }, 5000);
-          return of(error);
-        })
-      )
-      .subscribe();
-  }
-
-  agregarCliente(): void {
-    this.ClientsService.agregarCliente(this.nuevoCliente)
-      .pipe(
-        tap(() => {
-          console.log('Cliente agregado exitosamente');
-          this.nuevoCliente = {};
-          this.obtenerClientes();
-          this.modalCloseAddCliente.nativeElement.click();
-        }),
-        catchError((error) => {
-          console.error('Error al agregar cliente:', error);
-          this.errorAgregarCliente = true;
-          setTimeout(() => {
-            this.errorAgregarCliente = false;
-          }, 5000);
-          return of(error);
-        })
-      )
-      .subscribe();
-  }
   getEquipos(): void {
     this.EquipoService.getEquipos().subscribe(
       (data) => {
@@ -269,6 +113,43 @@ export class ModifyRepairComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  modificarEquipo(): void {
+    this.EquipoService.modificarEquipo(this.equipoSeleccionado)
+      .pipe(
+        tap(() => {
+          console.log('Equipo modificado exitosamente');
+          this.getEquipos();
+          this.modalService.dismissAll();
+        }),
+        catchError((error) => {
+          console.error('Error al modificar equipo:', error);
+          this.errorModificarEquipo = true;
+          setTimeout(() => {
+            this.errorModificarEquipo = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
+  }
+
+  eliminarEquipo(id: number): void {
+    this.EquipoService.eliminarEquipo(id).subscribe(
+      () => {
+        this.getEquipos();
+      },
+      (error) => {
+        console.error('Error al eliminar equipo', error);
+      }
+    );
+  }
+
+  get filteredEquipos() {
+    return this.equipos.filter((equipo) =>
+      equipo.marca.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
   }
 
   getMarcas(): void {
@@ -416,5 +297,12 @@ export class ModifyRepairComponent implements OnInit {
         windowClass: 'second-modal',
       }
     );
+  }
+
+  openModificarEquipoModal(equipo: any) {
+    this.equipoSeleccionado = { ...equipo };
+    this.modalService.open(this.modificarEquipoModal, {
+      ariaLabelledBy: 'modal-basic-title',
+    });
   }
 }

@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class RepairsService {
-  private apiUrl = 'http://localhost:3000/oneup-backend/api/reparacion';
+export class ModelService {
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/modelo';
   private authToken =
     'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNzE4NzAxMCwiZXhwIjoxNzE3MjE1ODEwfQ.irI8n6D47Ra7gsZeW-VoohMaM2_-gtmea-x-c2T27KF692g6wWYBbs5-Iqx7suWoYr29mPsDZyckA0We1FpeMw';
 
@@ -18,31 +18,31 @@ export class RepairsService {
     });
   }
 
-  getReparaciones(): Observable<any> {
+  getModelos(): Observable<any> {
     const headers = this.getHeaders();
     return this.http.get<any>(this.apiUrl, { headers });
   }
 
-  agregarReparacion(nuevaReparacion: any): Observable<any> {
+  agregarModelo(nuevoModelo: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post<any>(this.apiUrl, nuevaReparacion, { headers });
+    return this.http.post<any>(this.apiUrl, nuevoModelo, { headers });
   }
 
-  eliminarReparacion(id: number): Observable<any> {
-    const url = `${this.apiUrl}/${id}`;
+  modificarModelo(modelo: any): Observable<any> {
+    const url = `${this.apiUrl}/${modelo.id}`;
     const headers = this.getHeaders();
-    return this.http.delete<any>(url, { headers });
+    return this.http.put<any>(url, modelo, { headers });
   }
 
-  modificarReparacion(reparacion: any): Observable<any> {
-    const url = `${this.apiUrl}/${reparacion.id}`;
-    const headers = this.getHeaders();
-    return this.http.put<any>(url, reparacion, { headers });
-  }
-
-  obtenerReparacionPorId(id: number): Observable<any> {
+  obtenerModeloPorId(id: number): Observable<any> {
     const url = `${this.apiUrl}/${id}`;
     const headers = this.getHeaders();
     return this.http.get<any>(url, { headers });
+  }
+
+  eliminarModelo(id: number): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    const headers = this.getHeaders();
+    return this.http.delete<any>(url, { headers });
   }
 }

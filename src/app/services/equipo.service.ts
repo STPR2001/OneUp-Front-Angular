@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class EquipoService {
   private apiUrl = 'http://localhost:3000/oneup-backend/api/equipo';
   private authToken =
-    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNzAzMjc3OSwiZXhwIjoxNzE3MDYxNTc5fQ.FYSX9fAwEq0QTU7osUFfWVnQ4MgTMnYE60e4OqZv7K4FjoGQUolJQcyLwF65Z1d6cCZCW6ognVCME_GLz_b1ZA';
+    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNzE4NzAxMCwiZXhwIjoxNzE3MjE1ODEwfQ.irI8n6D47Ra7gsZeW-VoohMaM2_-gtmea-x-c2T27KF692g6wWYBbs5-Iqx7suWoYr29mPsDZyckA0We1FpeMw';
 
   constructor(private http: HttpClient) {}
 
@@ -21,5 +21,27 @@ export class EquipoService {
   getEquipos(): Observable<any> {
     const headers = this.getHeaders();
     return this.http.get<any>(this.apiUrl, { headers });
+  }
+
+  agregarEquipos(nuevoEquipo: any): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.post<any>(this.apiUrl, nuevoEquipo, { headers });
+  }
+
+  modificarEquipo(equipo: any): Observable<any> {
+    const url = `${this.apiUrl}/${equipo.id}`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, equipo, { headers });
+  }
+  obtenerEquipoPorId(id: number): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    const headers = this.getHeaders();
+    return this.http.get<any>(url, { headers });
+  }
+
+  eliminarEquipo(id: number): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    const headers = this.getHeaders();
+    return this.http.delete<any>(url, { headers });
   }
 }

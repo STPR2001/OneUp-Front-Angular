@@ -1,9 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TecnicsService } from 'src/app/services/tecnics.service';
 import { ClientsService } from 'src/app/services/clients.service';
 import { EquipoService } from 'src/app/services/equipo.service';
 import { RepairsService } from 'src/app/services/repairs.service';
+import { BrandService } from 'src/app/services/brand.service';
+import { EquipmentTypeService } from 'src/app/services/equipment-type.service';
+import { ModelService } from 'src/app/services/model.service';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -15,6 +19,16 @@ import { of } from 'rxjs';
 export class AddRepairComponent implements OnInit {
   @ViewChild('agregarTecnicoModal') modalCloseAddTecnico: any;
   @ViewChild('agregarClienteModal') modalCloseAddCliente: any;
+  @ViewChild('agregarEquipoModal') agregarEquipoModal: any;
+  @ViewChild('ModificarEquipoModal') modalCloseUpdate: any;
+  @ViewChild('agregarTipoEquipoModal') agregarTipoEquipoModal: any;
+  @ViewChild('agregarMarcaModal') agregarMarcaModal: any;
+  @ViewChild('agregarModeloModal') agregarModeloModal: any;
+
+  agregarEquipoModalRef: NgbModalRef | undefined;
+  agregarTipoEquipoModalRef: NgbModalRef | undefined;
+  agregarMarcaModalRef: NgbModalRef | undefined;
+  agregarModeloModalRef: NgbModalRef | undefined;
 
   tecnicos: any[] = [];
   clientes: any[] = [];
@@ -35,19 +49,50 @@ export class AddRepairComponent implements OnInit {
   };
   errorAgregarReparacion: boolean = false;
 
-  //para modales
   nuevoTecnico: any = {};
   errorAgregarTecnico = false;
 
   nuevoCliente: any = {};
   errorAgregarCliente = false;
 
+  equipo: any = {};
+  equipoSeleccionado: any = {};
+  searchTerm: string = '';
+  errorAgregarEquipo = false;
+  errorModificarEquipo = false;
+  nuevoEquipo: any = {
+    numeroSerie: '',
+    tipo_equipo: { id: '' },
+    marca: { id: '' },
+    modelo: { id: '' },
+  };
+
+  modelos: any[] = [];
+  tiposEquipo: any[] = [];
+  marcas: any[] = [];
+
+  nuevoTipoEquipo: any = {};
+  errorAgregarTipoEquipo = false;
+
+  nuevaMarca: any = {};
+  errorAgregarMarca = false;
+
+  nuevoModelo: any = {
+    nombre: '',
+    marca: { id: '' },
+  };
+  errorAgregarModelo = false;
+
   constructor(
     private RepairsService: RepairsService,
     private TecnicsService: TecnicsService,
     private ClientsService: ClientsService,
+    private router: Router,
     private EquipoService: EquipoService,
-    private router: Router
+    private modalService: NgbModal,
+    private BrandService: BrandService,
+    private EquipmentTypeService: EquipmentTypeService,
+    private ModelService: ModelService
   ) {}
 
   ngOnInit(): void {
@@ -55,6 +100,10 @@ export class AddRepairComponent implements OnInit {
     this.obtenerTecnicos();
     this.obtenerClientes();
     this.obtenerEquipos();
+    this.getEquipos();
+    this.getMarcas();
+    this.getModelos();
+    this.getTiposEquipo();
   }
 
   agregarReparacion(): void {
@@ -175,5 +224,191 @@ export class AddRepairComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  getEquipos(): void {
+    this.EquipoService.getEquipos().subscribe(
+      (data) => {
+        this.equipos = data;
+        console.log(data);
+      },
+      (error) => {
+        console.error('Error al obtener la lista de equipos:', error);
+      }
+    );
+  }
+  agregarEquipo(): void {
+    this.EquipoService.agregarEquipos(this.nuevoEquipo)
+      .pipe(
+        tap(() => {
+          console.log('Equipo agregado exitosamente');
+          this.nuevoEquipo = {
+            numeroSerie: '',
+            tipo_equipo: { id: '' },
+            marca: { id: '' },
+            modelo: { id: '' },
+          };
+          this.getEquipos();
+          if (this.agregarEquipoModalRef) {
+            this.agregarEquipoModalRef.close();
+          }
+        }),
+        catchError((error) => {
+          console.error('Error al agregar equipo:', error);
+          this.errorAgregarEquipo = true;
+          setTimeout(() => {
+            this.errorAgregarEquipo = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
+  }
+
+  getMarcas(): void {
+    this.BrandService.getMarcas().subscribe(
+      (data) => {
+        this.marcas = data;
+      },
+      (error) => {
+        console.error('Error al obtener la lista de marcas:', error);
+      }
+    );
+  }
+
+  getModelos(): void {
+    this.ModelService.getModelos().subscribe(
+      (data) => {
+        this.modelos = data;
+      },
+      (error) => {
+        console.error('Error al obtener la lista de modelo:', error);
+      }
+    );
+  }
+
+  getTiposEquipo(): void {
+    this.EquipmentTypeService.getTipoEquipos().subscribe(
+      (data) => {
+        this.tiposEquipo = data;
+        console.log(data);
+      },
+      (error) => {
+        console.error('Error al obtener la lista de tipos de equipos:', error);
+      }
+    );
+  }
+
+  //modals selects
+
+  agregarTipoEquipo(): void {
+    this.EquipmentTypeService.agregarTipoEquipo(this.nuevoTipoEquipo)
+      .pipe(
+        tap(() => {
+          console.log('Tipo de equipo agregado exitosamente');
+          this.nuevoTipoEquipo = {};
+          this.getTiposEquipo();
+          if (this.agregarTipoEquipoModalRef) {
+            this.agregarTipoEquipoModalRef.close();
+          }
+        }),
+        catchError((error) => {
+          console.error('Error al agregar tipo de equipo:', error);
+          this.errorAgregarTipoEquipo = true;
+          setTimeout(() => {
+            this.errorAgregarTipoEquipo = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
+  }
+
+  agregarMarca(): void {
+    this.BrandService.agregarMarca(this.nuevaMarca)
+      .pipe(
+        tap(() => {
+          console.log('Marca agregada exitosamente');
+          this.nuevaMarca = {};
+          this.getMarcas();
+          if (this.agregarMarcaModalRef) {
+            this.agregarMarcaModalRef.close();
+          }
+        }),
+        catchError((error) => {
+          console.error('Error al agregar marca:', error);
+          this.errorAgregarMarca = true;
+          setTimeout(() => {
+            this.errorAgregarMarca = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
+  }
+
+  agregarModelo(): void {
+    this.ModelService.agregarModelo(this.nuevoModelo)
+      .pipe(
+        tap(() => {
+          console.log('Modelo agregado exitosamente');
+          this.nuevoModelo = {
+            nombre: '',
+            marca: { id: '' },
+          };
+          this.getModelos();
+          if (this.agregarModeloModalRef) {
+            this.agregarModeloModalRef.close();
+          }
+        }),
+        catchError((error) => {
+          console.error('Error al agregar modelo:', error);
+          this.errorAgregarModelo = true;
+          setTimeout(() => {
+            this.errorAgregarModelo = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
+  }
+
+  openAgregarEquipoModal() {
+    this.agregarEquipoModalRef = this.modalService.open(
+      this.agregarEquipoModal,
+      {
+        ariaLabelledBy: 'modal-basic-title',
+      }
+    );
+  }
+
+  openAgregarTipoEquipoModal() {
+    this.agregarTipoEquipoModalRef = this.modalService.open(
+      this.agregarTipoEquipoModal,
+      {
+        backdrop: 'static',
+        ariaLabelledBy: 'modal-basic-title',
+        windowClass: 'second-modal',
+      }
+    );
+  }
+
+  openAgregarMarcaModal() {
+    this.agregarMarcaModalRef = this.modalService.open(this.agregarMarcaModal, {
+      backdrop: 'static',
+      ariaLabelledBy: 'modal-basic-title',
+      windowClass: 'second-modal',
+    });
+  }
+
+  openAgregarModeloModal() {
+    this.agregarModeloModalRef = this.modalService.open(
+      this.agregarModeloModal,
+      {
+        backdrop: 'static',
+        ariaLabelledBy: 'modal-basic-title',
+        windowClass: 'second-modal',
+      }
+    );
   }
 }

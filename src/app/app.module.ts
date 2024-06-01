@@ -14,6 +14,7 @@ import { RepairsComponent } from './Components/repairs/repairs.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddRepairComponent } from './Components/repairs/add-repair/add-repair.component';
 import { ModifyRepairComponent } from './Components/repairs/modify-repair/modify-repair.component'; //Implementar en formularios!
+import { EquipmentsComponent } from './Components/equipments/equipments.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { ModifyRepairComponent } from './Components/repairs/modify-repair/modify
     RepairsComponent,
     AddRepairComponent,
     ModifyRepairComponent,
+    EquipmentsComponent,
   ],
   imports: [
     BrowserModule,
