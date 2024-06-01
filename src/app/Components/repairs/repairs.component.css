@@ -1,0 +1,103 @@
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.rounded-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.hover-row:hover {
+  background-color: #f5f5f5;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.action-buttons {
+  margin-top: 20px;
+}
+
+.action-button {
+  padding: 8px 16px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 4px;
+  background-color: #28a745;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.action-button:hover {
+  background-color: #218838;
+}
+
+.table-container {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.modal-body .mb-3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modal-body label {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.modal-body .form-select,
+.modal-body .form-control {
+  flex: 2;
+}
+
+.modal-body .btn-success {
+  flex-shrink: 0;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.modal-header,
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+}
+
+.modal-footer button {
+  width: 100px;
+}

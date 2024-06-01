@@ -1,0 +1,437 @@
+<div class="container mt-2">
+  <h2>Equipos</h2>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input
+        type="text"
+        placeholder="Buscar por marca..."
+        [(ngModel)]="searchTerm"
+        class="form-control"
+      />
+    </div>
+    <div class="col-md-6 text-end">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="openAgregarEquipoModal()"
+      >
+        Agregar Equipo
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 table-container">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Tipo equipo</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Numero de serie</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let equipo of filteredEquipos" class="hover-row">
+            <td>{{ equipo.tipo_equipo.nombre }}</td>
+            <td>{{ equipo.marca.nombre }}</td>
+            <td>{{ equipo.modelo.nombre }}</td>
+            <td>{{ equipo.numeroSerie }}</td>
+            <td>
+              <button
+                class="btn btn-success me-2"
+                (click)="openModificarEquipoModal(equipo)"
+              >
+                Modificar
+              </button>
+              <button
+                class="btn btn-danger"
+                (click)="eliminarEquipo(equipo.id)"
+              >
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- modal agregar equipo -->
+<ng-template #agregarEquipoModal let-modal>
+  <div class="modal-content">
+    <form (ngSubmit)="agregarEquipo()">
+      <div class="modal-header">
+        <h2 class="text-center fs-2">Agregar Equipo</h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3 d-flex align-items-center">
+          <div class="flex-grow-1">
+            <label for="tipoEquipo">Tipo Equipo:</label>
+            <select
+              id="tipoEquipo"
+              name="tipoEquipo"
+              [(ngModel)]="nuevoEquipo.tipo_equipo.id"
+              required
+              class="form-select fs-5"
+            >
+              <option
+                *ngFor="let tipoEquipo of tiposEquipo"
+                [value]="tipoEquipo.id"
+              >
+                {{ tipoEquipo.nombre }}
+              </option>
+            </select>
+          </div>
+          <button
+            type="button"
+            class="btn btn-success ms-2 mb-1 align-self-end"
+            (click)="openAgregarTipoEquipoModal()"
+          >
+            +
+          </button>
+        </div>
+        <div class="mb-3 d-flex align-items-center">
+          <div class="flex-grow-1">
+            <label for="marca">Marca:</label>
+            <select
+              id="marca"
+              name="marca"
+              [(ngModel)]="nuevoEquipo.marca.id"
+              required
+              class="form-select fs-5"
+            >
+              <option *ngFor="let marca of marcas" [value]="marca.id">
+                {{ marca.nombre }}
+              </option>
+            </select>
+          </div>
+          <button
+            type="button"
+            class="btn btn-success ms-2 mb-1 align-self-end"
+            (click)="openAgregarMarcaModal()"
+          >
+            +
+          </button>
+        </div>
+        <div class="mb-3 d-flex align-items-center">
+          <div class="flex-grow-1">
+            <label for="modelo">Modelo:</label>
+            <select
+              id="modelo"
+              name="modelo"
+              [(ngModel)]="nuevoEquipo.modelo.id"
+              required
+              class="form-select fs-5"
+            >
+              <option *ngFor="let modelo of modelos" [value]="modelo.id">
+                {{ modelo.nombre }}
+              </option>
+            </select>
+          </div>
+          <button
+            type="button"
+            class="btn btn-success ms-2 mb-1 align-self-end"
+            (click)="openAgregarModeloModal()"
+          >
+            +
+          </button>
+        </div>
+        <div class="mb-3">
+          <label for="numeroSerie">Numero de serie:</label>
+          <input
+            type="text"
+            id="numeroSerie"
+            name="numeroSerie"
+            [(ngModel)]="nuevoEquipo.numeroSerie"
+            required
+            class="form-control fs-5"
+          />
+        </div>
+        <div *ngIf="errorAgregarEquipo" class="text-danger">
+          Error al agregar el equipo.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg"
+          (click)="modal.dismiss('Close click')"
+        >
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- modal modificar equipo -->
+<ng-template #modificarEquipoModal let-modal>
+  <div class="modal-content">
+    <form (ngSubmit)="modificarEquipo()">
+      <div class="modal-header">
+        <h2 class="text-center fs-2">Modificar Equipo</h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3 d-flex align-items-center">
+          <div class="flex-grow-1">
+            <label for="tipoEquipo">Tipo Equipo:</label>
+            <select
+              id="tipoEquipo"
+              name="tipoEquipo"
+              [(ngModel)]="equipoSeleccionado.tipo_equipo.id"
+              required
+              class="form-select fs-5"
+            >
+              <option
+                *ngFor="let tipoEquipo of tiposEquipo"
+                [value]="tipoEquipo.id"
+              >
+                {{ tipoEquipo.nombre }}
+              </option>
+            </select>
+          </div>
+          <button
+            type="button"
+            class="btn btn-success ms-2 mb-1 align-self-end"
+            (click)="openAgregarTipoEquipoModal()"
+          >
+            +
+          </button>
+        </div>
+        <div class="mb-3 d-flex align-items-center">
+          <div class="flex-grow-1">
+            <label for="marca">Marca:</label>
+            <select
+              id="marca"
+              name="marca"
+              [(ngModel)]="equipoSeleccionado.marca.id"
+              required
+              class="form-select fs-5"
+            >
+              <option *ngFor="let marca of marcas" [value]="marca.id">
+                {{ marca.nombre }}
+              </option>
+            </select>
+          </div>
+          <button
+            type="button"
+            class="btn btn-success ms-2 mb-1 align-self-end"
+            (click)="openAgregarMarcaModal()"
+          >
+            +
+          </button>
+        </div>
+        <div class="mb-3 d-flex align-items-center">
+          <div class="flex-grow-1">
+            <label for="modelo">Modelo:</label>
+            <select
+              id="modelo"
+              name="modelo"
+              [(ngModel)]="equipoSeleccionado.modelo.id"
+              required
+              class="form-select fs-5"
+            >
+              <option *ngFor="let modelo of modelos" [value]="modelo.id">
+                {{ modelo.nombre }}
+              </option>
+            </select>
+          </div>
+          <button
+            type="button"
+            class="btn btn-success ms-2 mb-1 align-self-end"
+            (click)="openAgregarModeloModal()"
+          >
+            +
+          </button>
+        </div>
+        <div class="mb-3">
+          <label for="numeroSerie">Numero de serie:</label>
+          <input
+            type="text"
+            id="numeroSerie"
+            name="numeroSerie"
+            [(ngModel)]="equipoSeleccionado.numeroSerie"
+            required
+            class="form-control fs-5"
+          />
+        </div>
+        <div *ngIf="errorModificarEquipo" class="text-danger">
+          Error al modificar el equipo.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg"
+          (click)="modal.dismiss('Close click')"
+        >
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary btn-lg">Modificar</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- modal agregar tipo equipo -->
+<ng-template #agregarTipoEquipoModal let-modal>
+  <div class="modal-content">
+    <form (ngSubmit)="agregarTipoEquipo()">
+      <div class="modal-header">
+        <h2 class="text-center fs-2">Agregar tipo de equipo</h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="tipoEquipo">Tipo de equipo:</label>
+          <input
+            type="text"
+            id="tipoEquipo"
+            name="tipoEquipo"
+            [(ngModel)]="nuevoTipoEquipo.nombre"
+            autofocus
+            required
+            class="form-control fs-5"
+          />
+        </div>
+        <div *ngIf="errorAgregarTipoEquipo" class="text-danger">
+          Error al agregar el tipo de equipo.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg"
+          (click)="modal.dismiss('Close click')"
+        >
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- modal agregar marca -->
+<ng-template #agregarMarcaModal let-modal>
+  <div class="modal-content">
+    <form (ngSubmit)="agregarMarca()">
+      <div class="modal-header">
+        <h2 class="text-center fs-2">Agregar marca</h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="marca">Marca:</label>
+          <input
+            type="text"
+            id="marca"
+            name="marca"
+            [(ngModel)]="nuevaMarca.nombre"
+            autofocus
+            required
+            class="form-control fs-5"
+          />
+        </div>
+        <div *ngIf="errorAgregarMarca" class="text-danger">
+          Error al agregar marca.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg"
+          (click)="modal.dismiss('Close click')"
+        >
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- modal agregar modelo -->
+<ng-template #agregarModeloModal let-modal>
+  <div class="modal-content">
+    <form (ngSubmit)="agregarModelo()">
+      <div class="modal-header">
+        <h2 class="text-center fs-2">Agregar modelo</h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3 d-flex align-items-center">
+          <div class="flex-grow-1">
+            <label for="marca">Marca:</label>
+            <select
+              id="marca"
+              name="marca"
+              [(ngModel)]="nuevoModelo.marca.id"
+              required
+              class="form-select fs-5"
+            >
+              <option *ngFor="let marca of marcas" [value]="marca.id">
+                {{ marca.nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="modelo">Modelo:</label>
+          <input
+            type="text"
+            id="modelo"
+            name="modelo"
+            [(ngModel)]="nuevoModelo.nombre"
+            autofocus
+            required
+            class="form-control fs-5"
+          />
+        </div>
+        <div *ngIf="errorAgregarModelo" class="text-danger">
+          Error al agregar modelo.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg"
+          (click)="modal.dismiss('Close click')"
+        >
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+      </div>
+    </form>
+  </div>
+</ng-template>

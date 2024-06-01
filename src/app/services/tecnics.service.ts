@@ -12,7 +12,6 @@ import { AuthService } from './auth/auth.service';
     providedIn: 'root',
 })
 export class TecnicsService {
-
     private apiUrl = 'http://localhost:3000/oneup-backend/api/tecnico';
     constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -32,7 +31,7 @@ export class TecnicsService {
     agregarTecnico(nuevoTecnico: any): Observable<any> {
         const headers = this.getHeaders();
         return this.http
-            .post<any>(this.apiUrl, nuevoTecnico, { headers })
+            .post(this.apiUrl, nuevoTecnico, { headers, responseType: 'text'  })
             .pipe(catchError(this.handleError));
     }
 
