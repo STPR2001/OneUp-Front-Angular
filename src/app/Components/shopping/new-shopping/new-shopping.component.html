@@ -1,0 +1,285 @@
+<div class="d-flex justify-content-center">
+  <div class="row">
+    <h2 class="text-center">Nueva Compra</h2>
+    <form [formGroup]="compraForm" (ngSubmit)="crearCompra()">
+      <div class="mb-3">
+        <label for="fecha" class="form-label">Fecha</label>
+        <input
+          type="datetime-local"
+          id="fecha"
+          formControlName="fecha"
+          class="form-control"
+          [max]="maxFecha"
+          required
+        />
+        <div
+          *ngIf="
+            compraForm.get('fecha')?.invalid && compraForm.get('fecha')?.touched
+          "
+          class="text-danger"
+        >
+          <div *ngIf="compraForm.get('fecha')?.errors?.['required']">
+            La fecha es requerida.
+          </div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="id_proveedor" class="form-label">Proveedor</label>
+        <div class="d-flex justify-content-between">
+          <select
+            id="id_proveedor"
+            formControlName="id_proveedor"
+            class="form-select"
+            required
+          >
+            <option
+              *ngFor="let proveedor of proveedores"
+              [value]="proveedor.id"
+            >
+              {{ proveedor.nombre }}
+            </option>
+          </select>
+          <button
+            type="button"
+            class="btn btn-primary ms-2"
+            data-bs-toggle="modal"
+            data-bs-target="#agregarProveedorModal"
+          >
+            Agregar
+          </button>
+        </div>
+        <div
+          *ngIf="
+            compraForm.get('id_proveedor')?.invalid &&
+            compraForm.get('id_proveedor')?.touched
+          "
+          class="text-danger"
+        >
+          <div *ngIf="compraForm.get('id_proveedor')?.errors?.['required']">
+            El proveedor es requerido.
+          </div>
+          <div *ngIf="compraForm.get('id_proveedor')?.errors?.['min']">
+            Tiene que seleccionar un proveedor.
+          </div>
+        </div>
+      </div>
+      <div
+        formArrayName="repuestos"
+        *ngFor="let repuesto of repuestos.controls; let i = index"
+      >
+        <div [formGroupName]="i" class="mb-3">
+          <label for="idRepuesto{{ i }}" class="form-label">Repuesto</label>
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <select
+                id="idRepuesto{{ i }}"
+                formControlName="id"
+                class="form-select"
+                (change)="onRepuestoChange($event, i)"
+                required
+              >
+                <option
+                  *ngFor="let repuesto of repuestosDisponibles"
+                  [value]="repuesto.id"
+                >
+                  {{ repuesto.numeroDeParte }}
+                </option>
+              </select>
+              <button
+                type="button"
+                class="btn btn-danger ms-2"
+                (click)="eliminarRepuesto(i)"
+              >
+                Eliminar
+              </button>
+            </div>
+            <div
+              *ngIf="repuesto.get('id')?.invalid && repuesto.get('id')?.touched"
+              class="text-danger"
+            >
+              <div *ngIf="repuesto.get('id')?.errors?.['required']">
+                El repuesto es requerido.
+              </div>
+              <div *ngIf="repuesto.get('id')?.errors?.['min']">
+                Tiene que seleccionar un repuesto.
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="precio{{ i }}" class="form-label">
+              Precio del Repuesto
+            </label>
+            <input
+              type="number"
+              id="precio{{ i }}"
+              formControlName="precio"
+              class="form-control"
+              required
+            />
+            <div
+              *ngIf="
+                repuesto.get('precio')?.invalid &&
+                repuesto.get('precio')?.touched
+              "
+              class="text-danger"
+            >
+              <div *ngIf="repuesto.get('precio')?.errors?.['required']">
+                El precio es requerido.
+              </div>
+              <div *ngIf="repuesto.get('precio')?.errors?.['min']">
+                El precio mínimo es 0.01.
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="cant{{ i }}" class="form-label">
+              Cantidad del Repuesto
+            </label>
+            <input
+              type="number"
+              id="cant{{ i }}"
+              formControlName="cant"
+              class="form-control"
+              required
+            />
+            <div
+              *ngIf="
+                repuesto.get('cant')?.invalid && repuesto.get('cant')?.touched
+              "
+              class="text-danger"
+            >
+              <div *ngIf="repuesto.get('cant')?.errors?.['required']">
+                La cantidad es requerida.
+              </div>
+              <div *ngIf="repuesto.get('cant')?.errors?.['min']">
+                La cantidad mínima es 1.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="agregarRepuesto()"
+          >
+            Agregar Repuesto
+          </button>
+          <button type="button" class="btn btn-success">Crear repuesto</button>
+        </div>
+        <div
+          *ngIf="compraForm.get('repuestos')?.errors?.['minArrayLength'] && compraForm.get('repuestos')?.touched"
+          class="text-danger"
+        >
+          Debe agregar al menos un repuesto.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="total" class="form-label">Total</label>
+        <input
+          type="number"
+          id="total"
+          formControlName="total"
+          class="form-control"
+          required
+        />
+        <div
+          *ngIf="
+            compraForm.get('total')?.invalid && compraForm.get('total')?.touched
+          "
+          class="text-danger"
+        >
+          <div *ngIf="compraForm.get('total')?.errors?.['required']">
+            El total es requerido.
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Crear Compra</button>
+    </form>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="agregarProveedorModal"
+  tabindex="-1"
+  aria-labelledby="agregarProveedorModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="agregarProveedor()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Agregar Proveedor</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #agregarProveedorModal
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 d-grid gap-2">
+            <label for="nombre" class="form-label fs-5">Nombre:</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoProveedor.nombre"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="direccion" class="form-label fs-5">Dirección:</label>
+            <input
+              type="text"
+              id="direccion"
+              name="direccion"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoProveedor.direccion"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="telefono" class="form-label fs-5">Teléfono: </label>
+            <input
+              type="text"
+              id="telefono"
+              name="telefono"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoProveedor.telefono"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="correo" class="form-label fs-5">Correo:</label>
+            <input
+              type="text"
+              id="correo"
+              name="correo"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoProveedor.email"
+            />
+          </div>
+          <div *ngIf="errorAgregarProveedor" class="text-danger">
+            Error al agregar el proveedor.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

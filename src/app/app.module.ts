@@ -14,6 +14,8 @@ import { ProvidersComponent } from './Components/providers/providers.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './Components/login/login.component';
 import { HomeComponent } from './Components/home/home.component';
+import { ShoppingComponent } from './Components/shopping/shopping.component';
+import { NewShoppingComponent } from './Components/shopping/new-shopping/new-shopping.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +26,8 @@ import { HomeComponent } from './Components/home/home.component';
     ProvidersComponent,
     LoginComponent,
     HomeComponent,
+    ShoppingComponent,
+    NewShoppingComponent,
   ],
   imports: [
     BrowserModule,

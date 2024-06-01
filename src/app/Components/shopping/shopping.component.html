@@ -1,0 +1,60 @@
+<div class="container">
+  <h2>Tabla de Compras</h2>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <input
+            type="date"
+            [(ngModel)]="startDate"
+            class="form-control"
+            placeholder="Fecha de inicio"
+            [max]="today"
+          />
+        </div>
+        <div class="col-md-6">
+          <input
+            type="date"
+            [(ngModel)]="endDate"
+            class="form-control"
+            placeholder="Fecha de fin"
+            [max]="today"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 text-end">
+      <button type="button" routerLink="/compras/new" class="btn btn-primary">Hacer nueva compra</button>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Repuestos</th>
+          <th>Cantidad de repuestos</th>
+          <th>Monto</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let compra of filteredCompras" class="hover-row">
+          <td>{{ formatDate(compra.fecha) }}</td>
+          <td>
+            <p *ngFor="let repuesto of compra.compraRepuesto">
+              {{ repuesto.repuesto.numeroDeParte }} - {{ repuesto.cant }} unidades
+            </p>
+          </td>
+          <td>{{ getTotalCantidad(compra) }}</td>
+          <td>{{ compra.total }}</td>
+          <td>
+            <button class="btn btn-danger" (click)="eliminarCompra(compra.id)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
