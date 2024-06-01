@@ -6,20 +6,26 @@ import { ProvidersComponent } from './Components/providers/providers.component';
 import { RepairsComponent } from './Components/repairs/repairs.component';
 import { AddRepairComponent } from './Components/repairs/add-repair/add-repair.component';
 import { ModifyRepairComponent } from './Components/repairs/modify-repair/modify-repair.component';
-import { EquipmentsComponent } from './Components/equipments/equipments.component';
+import { EquipmentsComponent } from './Components/equipments/equipments.component'; 
+import { LoginComponent } from './Components/login/login.component';
+import { AuthGuard } from './services/auth/auth.guard';
+import { HomeComponent } from './Components/home/home.component';
 
 const routes: Routes = [
-  { path: 'clients', component: ClientsComponent },
-  { path: 'tecnicos', component: TecnicsComponent },
-  { path: 'proveedores', component: ProvidersComponent },
-  { path: 'reparaciones', component: RepairsComponent },
-  { path: 'agregarReparacion', component: AddRepairComponent },
-  { path: 'modificarReparacion/:id', component: ModifyRepairComponent },
-  { path: 'equipos', component: EquipmentsComponent },
+  { path: 'clients', component: ClientsComponent, canActivate: [AuthGuard] },
+  { path: 'tecnicos', component: TecnicsComponent, canActivate: [AuthGuard] },
+  { path: 'proveedores', component: ProvidersComponent, canActivate: [AuthGuard] },
+  { path: 'reparaciones', component: RepairsComponent, canActivate: [AuthGuard] },
+  { path: 'agregarReparacion', component: AddRepairComponent, canActivate: [AuthGuard] },
+  { path: 'modificarReparacion/:id', component: ModifyRepairComponent, canActivate: [AuthGuard] },
+  { path: 'equipos', component: EquipmentsComponent, canActivate: [AuthGuard] },
+  { path: 'login', component: LoginComponent },
+  { path: '', component: HomeComponent, canActivate: [AuthGuard]},
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

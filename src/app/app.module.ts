@@ -15,6 +15,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AddRepairComponent } from './Components/repairs/add-repair/add-repair.component';
 import { ModifyRepairComponent } from './Components/repairs/modify-repair/modify-repair.component'; //Implementar en formularios!
 import { EquipmentsComponent } from './Components/equipments/equipments.component';
+import { AuthGuard } from './services/auth/auth.guard';
+import { ReactiveFormsModule } from '@angular/forms';
+import { LoginComponent } from './Components/login/login.component';
+import { HomeComponent } from './Components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +31,8 @@ import { EquipmentsComponent } from './Components/equipments/equipments.componen
     AddRepairComponent,
     ModifyRepairComponent,
     EquipmentsComponent,
+    LoginComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,8 +40,9 @@ import { EquipmentsComponent } from './Components/equipments/equipments.componen
     HttpClientModule,
     FormsModule,
     NgbModule,
+    ReactiveFormsModule,
   ],
-  providers: [],
+  providers: [AuthGuard],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

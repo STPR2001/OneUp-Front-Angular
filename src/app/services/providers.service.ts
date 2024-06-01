@@ -6,23 +6,21 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AuthService } from './auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProvidersService {
-  private apiUrl = 'http://localhost:3000/oneup-backend/api/proveedor';
-  private authToken =
-    'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbImFkbWluIl0sImlhdCI6MTcxNzE4NzAxMCwiZXhwIjoxNzE3MjE1ODEwfQ.irI8n6D47Ra7gsZeW-VoohMaM2_-gtmea-x-c2T27KF692g6wWYBbs5-Iqx7suWoYr29mPsDZyckA0We1FpeMw';
+    private apiUrl = 'http://localhost:3000/oneup-backend/api/proveedor';
+    constructor(private http: HttpClient, private authService: AuthService) { }
 
-  constructor(private http: HttpClient) {}
-
-  private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      Authorization: `Bearer ${this.authToken}`,
-      'Content-Type': 'application/json',
-    });
-  }
+    private getHeaders(): HttpHeaders {
+        return new HttpHeaders({
+            Authorization: `Bearer ${this.authService.getAuthenticatedToken()}`,
+            'Content-Type': 'application/json',
+        });
+    }
 
   getProveedores(): Observable<any> {
     const headers = this.getHeaders();

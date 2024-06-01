@@ -20,6 +20,40 @@
       </button>
     </div>
   </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tecnico of filteredTecnicos" class="hover-row">
+          <td>{{ tecnico.nombre }}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-success me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#ModificarTecnicoModal"
+              (click)="abrirModalModificacion(tecnico.id, tecnico.nombre)"
+            >
+              Modificar
+            </button>
+
+            <button
+              class="btn btn-danger"
+              (click)="eliminarTecnico(tecnico.id)"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <div
     class="modal fade"
     id="agregarTecnicoModal"
@@ -124,38 +158,5 @@
         </form>
       </div>
     </div>
-  </div>
-  <div class="table-responsive">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let tecnico of filteredTecnicos" class="hover-row">
-          <td>{{ tecnico.nombre }}</td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-success me-2"
-              data-bs-toggle="modal"
-              data-bs-target="#ModificarTecnicoModal"
-              (click)="abrirModalModificacion(tecnico.id, tecnico.nombre)"
-            >
-              Modificar
-            </button>
-
-            <button
-              class="btn btn-danger"
-              (click)="eliminarTecnico(tecnico.id)"
-            >
-              Eliminar
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </div>
