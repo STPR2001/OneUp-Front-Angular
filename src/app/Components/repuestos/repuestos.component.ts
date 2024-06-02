@@ -60,7 +60,7 @@ export class RepuestosComponent implements OnInit {
 
   get filteredRepuestos() {
     return this.repuestos.filter((repuesto) =>
-      repuesto
+      repuesto.numeroDeParte.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
 
