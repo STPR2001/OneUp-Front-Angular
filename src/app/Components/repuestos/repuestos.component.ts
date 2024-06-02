@@ -11,7 +11,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./repuestos.component.css']
 })
 export class RepuestosComponent implements OnInit {
-@ViewChild('agregarRepuestoModal') modalCloseAdd: any;
+  @ViewChild('agregarRepuestoModal') modalCloseAdd: any;
   @ViewChild('ModificarRepuestoModal') modalCloseUpdate: any;
 
   repuesto: any = {};
@@ -60,20 +60,20 @@ export class RepuestosComponent implements OnInit {
 
   get filteredRepuestos() {
     return this.repuestos.filter((repuesto) =>
-      repuesto.numeroDeParte.toLowerCase().includes(this.searchTerm.toLowerCase())
+      repuesto
     );
   }
 
   agregarRepuesto(): void {
     this.repuestosService.agregarRepuesto(this.nuevoRepuesto).subscribe({
-     next:(response) => {
+      next: (response) => {
         console.log(response);
         this.router.navigate(['/repuestos']);
         this.nuevoRepuesto = {};
-        this.getRepuestos(); 
+        this.getRepuestos();
         this.modalCloseAdd.nativeElement.click();
       },
-     error:(error) => {
+      error: (error) => {
         console.log('Error al agregar repuesto:', error);
         this.errorAgregarRepuesto = true;
         setTimeout(() => {
@@ -82,12 +82,12 @@ export class RepuestosComponent implements OnInit {
         return of(error);
       }
     }
-);
+    );
   }
 
   modificarRepuesto(): void {
     this.repuestosService.modificarRepuesto(this.repuesto).pipe(
-      tap(() => { 
+      tap(() => {
         this.router.navigate(['/repuestos']);
         this.getRepuestos();
         this.modalCloseUpdate.nativeElement.click();
@@ -106,8 +106,8 @@ export class RepuestosComponent implements OnInit {
     this.repuesto.id = repuestoId;
     this.repuesto.numeroDeParte = repuestoNumeroDeParte;
     this.repuesto.descripcion = repuestoDescripcion;
-    this.repuesto.precioCosto = repuestoPrecioCosto; 
-    this.repuesto.precioVenta = repuestoPrecioVenta; 
+    this.repuesto.precioCosto = repuestoPrecioCosto;
+    this.repuesto.precioVenta = repuestoPrecioVenta;
     this.repuesto.stock = repuestoStock;
   }
 }

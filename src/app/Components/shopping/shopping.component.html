@@ -3,28 +3,34 @@
   <div class="row mb-3">
     <div class="col-md-6">
       <div class="row mb-3">
-        <div class="col-md-6">
-          <input
-            type="date"
-            [(ngModel)]="startDate"
-            class="form-control"
-            placeholder="Fecha de inicio"
-            [max]="today"
-          />
+        <div class="col-md-3">
+          <label>
+            Desde
+            <input
+              type="date"
+              [(ngModel)]="startDate"
+              class="form-control"
+              placeholder="Fecha de inicio"
+              [max]="today"
+          /></label>
         </div>
-        <div class="col-md-6">
-          <input
-            type="date"
-            [(ngModel)]="endDate"
-            class="form-control"
-            placeholder="Fecha de fin"
-            [max]="today"
-          />
+        <div class="col-md-3">
+          <label>
+            Hasta
+            <input
+              type="date"
+              [(ngModel)]="endDate"
+              class="form-control"
+              placeholder="Fecha de fin"
+              [max]="today"
+          /></label>
         </div>
       </div>
     </div>
     <div class="col-md-6 text-end">
-      <button type="button" routerLink="/compras/new" class="btn btn-primary">Hacer nueva compra</button>
+      <button type="button" routerLink="/compras/new" class="btn btn-primary">
+        Hacer nueva compra
+      </button>
     </div>
   </div>
   <div class="table-responsive">
@@ -43,7 +49,8 @@
           <td>{{ formatDate(compra.fecha) }}</td>
           <td>
             <p *ngFor="let repuesto of compra.compraRepuesto">
-              {{ repuesto.repuesto.numeroDeParte }} - {{ repuesto.cant }} unidades
+              {{ repuesto.repuesto.numeroDeParte }} -
+              {{ repuesto.cant }} unidades
             </p>
           </td>
           <td>{{ getTotalCantidad(compra) }}</td>

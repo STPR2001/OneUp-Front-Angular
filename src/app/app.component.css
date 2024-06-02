@@ -1,9 +1,88 @@
 .dashboard-container {
   display: flex;
   height: 100vh;
+  overflow: hidden;
 }
 
 .content {
   flex: 1;
   padding: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin-left: 250px;
+  transition: margin-left 0.8s;
+}
+
+.content.expanded {
+  margin-left: 0px;
+}
+
+.toggle-sidebar {
+  top: 10px;
+  position: fixed;
+  z-index: 1000;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.menu {
+  color: black;
+  left: 10px;
+  transition: left 0.5s;
+}
+
+.close {
+  color: white;
+  left: 200px;
+  transition: left 1s;
+}
+
+.sidebar {
+  position: fixed;
+  padding-top: 40px;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #343434;
+  transition: transform 0.7s ease;
+  overflow: hidden;
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.SidebarList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.SidebarList .row {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+.SidebarList .row:hover {
+  background-color: #555;
+}
+
+.icon {
+  margin-right: 10px;
+  color: white;
+  flex: 10px;
+  display: grid;
+  place-items: center;
+}
+
+.title {
+  color: white;
+  flex: 70px;
 }

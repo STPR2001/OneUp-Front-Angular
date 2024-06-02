@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ProvidersService } from 'src/app/services/providers.service';
 import { ShoppingService } from 'src/app/services/shopping.service';
 import { catchError, of, tap } from 'rxjs';
+import { RepuestosService } from 'src/app/services/repuestos.service';
 
 function minArrayLength(min: number) {
   return (control: AbstractControl) => {
@@ -21,8 +22,11 @@ function minArrayLength(min: number) {
   styleUrls: ['./new-shopping.component.css']
 })
 export class NewShoppingComponent implements OnInit {
+  @ViewChild('agregarRepuestoModal') modalCloseAddRepuesto: any;
   @ViewChild('agregarProveedorModal') modalCloseAdd: any;
 
+  nuevoRepuesto: any = {};
+  errorAgregarRepuesto = false;
   nuevoProveedor: any = {};
   errorAgregarProveedor = false;
   proveedores: any[] = [];
@@ -34,7 +38,8 @@ export class NewShoppingComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private providersService: ProvidersService,
-    private shoppingService: ShoppingService
+    private shoppingService: ShoppingService,
+    private repuestosService: RepuestosService
   ) {
     this.compraForm = this.fb.group({
       total: [0, [Validators.required, Validators.min(0)]],
@@ -93,6 +98,24 @@ export class NewShoppingComponent implements OnInit {
     this.suscribirseACambiosEnRepuestos(repuestoGroup);
   }
 
+  agregarNuevoRepuesto(): void {
+    this.repuestosService.agregarRepuesto(this.nuevoRepuesto).subscribe({
+      next: () => { 
+        this.nuevoRepuesto = {};
+        this.cargarRepuestos();
+        this.modalCloseAddRepuesto.nativeElement.click();
+      },
+      error: (error) => {
+        console.log('Error al agregar repuesto:', error);
+        this.errorAgregarRepuesto = true;
+        setTimeout(() => {
+          this.errorAgregarRepuesto = false;
+        }, 5000);
+        return of(error);
+      }
+    }
+    );
+  }
 
   suscribirseACambiosEnRepuestos(repuestoGroup: FormGroup): void {
     repuestoGroup.get('id')?.valueChanges.subscribe(() => this.calcularTotal());

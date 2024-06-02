@@ -5,13 +5,13 @@ import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { ProvidersComponent } from './Components/providers/providers.component';
 import { RepairsComponent } from './Components/repairs/repairs.component';
 import { AddRepairComponent } from './Components/repairs/add-repair/add-repair.component';
-import { RepuestosComponent } from './Components/repuestos/repuestos.component'; 
+import { RepuestosComponent } from './Components/repuestos/repuestos.component';
 import { ModifyRepairComponent } from './Components/repairs/modify-repair/modify-repair.component';
-import { EquipmentsComponent } from './Components/equipments/equipments.component'; 
+import { EquipmentsComponent } from './Components/equipments/equipments.component';
 import { LoginComponent } from './Components/login/login.component';
 import { AuthGuard } from './services/auth/auth.guard';
 import { HomeComponent } from './Components/home/home.component';
-import { ShoppingComponent } from './Components/shopping/shopping.component'; 
+import { ShoppingComponent } from './Components/shopping/shopping.component';
 import { NewShoppingComponent } from './Components/shopping/new-shopping/new-shopping.component';
 
 const routes: Routes = [
@@ -19,16 +19,15 @@ const routes: Routes = [
   { path: 'tecnicos', component: TecnicsComponent, canActivate: [AuthGuard] },
   { path: 'proveedores', component: ProvidersComponent, canActivate: [AuthGuard] },
   { path: 'compras', component: ShoppingComponent, canActivate: [AuthGuard] },
-  { path: 'compras/new', component:  NewShoppingComponent, canActivate: [AuthGuard] },
+  { path: 'compras/new', component: NewShoppingComponent, canActivate: [AuthGuard] },
   { path: 'reparaciones', component: RepairsComponent, canActivate: [AuthGuard] },
   { path: 'agregarReparacion', component: AddRepairComponent, canActivate: [AuthGuard] },
   { path: 'modificarReparacion/:id', component: ModifyRepairComponent, canActivate: [AuthGuard] },
   { path: 'equipos', component: EquipmentsComponent, canActivate: [AuthGuard] },
+  { path: 'repuestos', component: RepuestosComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
-  { path: '', component: HomeComponent, canActivate: [AuthGuard]},
+  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '' },
-  { path: 'repuestos', component: RepuestosComponent },
-
 ];
 
 @NgModule({

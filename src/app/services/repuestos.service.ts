@@ -2,21 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AuthService } from './auth/auth.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class RepuestosService {
     private apiUrl = 'http://localhost:3000/oneup-backend/api/repuesto';
-    private authToken =
-        'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJAYWNjaHNqd3QiLCJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbXSwiaWF0IjoxNzE2OTMwODYxLCJleHAiOjE3MTY5NTk2NjF9.1Ht9tOyQvyOF_COOyK6aZfq4FG11h1afV0Q9ao8sbDaPFOHbdlYC2DKbriZYz4lhvJzjzTQmVp9mKJFWUAFG0Q';
-
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private authService: AuthService) { }
 
     private getHeaders(): HttpHeaders {
         return new HttpHeaders({
-            Authorization: `Bearer ${this.authToken}`,
-            'Content-Type': 'application/json', responseType:'text',
+            Authorization: `Bearer ${this.authService.getAuthenticatedToken()}`,
+            'Content-Type': 'application/json', responseType: 'text',
         });
     }
 
@@ -29,7 +27,7 @@ export class RepuestosService {
 
     agregarRepuesto(nuevoRepuesto: any): Observable<any> {
         const headers = this.getHeaders();
-        return this.http.post(this.apiUrl, nuevoRepuesto, { headers, responseType: 'text'});
+        return this.http.post(this.apiUrl, nuevoRepuesto, { headers, responseType: 'text' });
     }
 
     modificarRepuesto(repuestoModificado: any): Observable<any> {

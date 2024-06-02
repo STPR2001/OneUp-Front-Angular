@@ -167,7 +167,14 @@
           >
             Agregar Repuesto
           </button>
-          <button type="button" class="btn btn-success">Crear repuesto</button>
+          <button
+            type="button"
+            class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#agregarRepuestoModal"
+          >
+            Crear repuesto
+          </button>
         </div>
         <div
           *ngIf="compraForm.get('repuestos')?.errors?.['minArrayLength'] && compraForm.get('repuestos')?.touched"
@@ -267,6 +274,109 @@
           </div>
           <div *ngIf="errorAgregarProveedor" class="text-danger">
             Error al agregar el proveedor.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="agregarRepuestoModal"
+  tabindex="-1"
+  aria-labelledby="agregarRepuestoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="agregarNuevoRepuesto()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Agregar Repuesto</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #agregarRepuestoModal
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 d-grid gap-2">
+            <label for="numero_de_parte" class="form-label fs-5"
+              >Numero de parte:
+            </label>
+            <input
+              type="text"
+              id="numero_de_parte"
+              name="numero_de_parte"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.numeroDeParte"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="descripcion" class="form-label fs-5"
+              >Descripcion:
+            </label>
+            <input
+              type="text"
+              id="descripcion"
+              name="descripcion"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.descripcion"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="precio_costo" class="form-label fs-5"
+              >Precio de costo:
+            </label>
+            <input
+              type="text"
+              id="precio_costo"
+              name="precio_costo"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.precioCosto"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="precio_venta" class="form-label fs-5"
+              >Precio de Venta:
+            </label>
+            <input
+              type="text"
+              id="precio_venta"
+              name="precio_venta"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.precioVenta"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="stock" class="form-label fs-5">Stock: </label>
+            <input
+              type="text"
+              id="stock"
+              name="stock"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.stock"
+            />
+          </div>
+          <div *ngIf="errorAgregarRepuesto" class="text-danger">
+            Error al agregar el repuesto.
           </div>
         </div>
         <div class="modal-footer">
