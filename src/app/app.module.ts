@@ -18,6 +18,7 @@ import { EquipmentsComponent } from './Components/equipments/equipments.componen
 import { AuthGuard } from './services/auth/auth.guard';
 import { LoginComponent } from './Components/login/login.component';
 import { HomeComponent } from './Components/home/home.component';
+import { RepuestosComponent } from './Components/repuestos/repuestos.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { HomeComponent } from './Components/home/home.component';
     EquipmentsComponent,
     LoginComponent,
     HomeComponent,
+    RepuestosComponent,
   ],
   imports: [
     BrowserModule,
@@ -42,6 +44,7 @@ import { HomeComponent } from './Components/home/home.component';
     ReactiveFormsModule,
   ],
   providers: [AuthGuard],
+
   bootstrap: [AppComponent],
 })
 export class AppModule { }
