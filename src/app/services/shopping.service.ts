@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import {
+    HttpClient,
+    HttpErrorResponse,
+    HttpHeaders,
+} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from './auth/auth.service';
@@ -7,43 +11,45 @@ import { AuthService } from './auth/auth.service';
 @Injectable({
     providedIn: 'root',
 })
-export class RepuestosService {
-    private apiUrl = 'http://localhost:3000/oneup-backend/api/repuesto';
+export class ShoppingService {
+
+    private apiUrl = 'http://localhost:3000/oneup-backend/api/compra';
     constructor(private http: HttpClient, private authService: AuthService) { }
 
     private getHeaders(): HttpHeaders {
         return new HttpHeaders({
             Authorization: `Bearer ${this.authService.getAuthenticatedToken()}`,
-            'Content-Type': 'application/json', responseType: 'text',
+            'Content-Type': 'application/json',
         });
     }
-
-    getRepuestos(): Observable<any> {
+    getCompras(): Observable<any> {
         const headers = this.getHeaders();
-        return this.http.get<any>(this.apiUrl, { headers }).pipe(
-            catchError(this.handleError)
-        );
+        return this.http
+            .get<any>(this.apiUrl, { headers })
+            .pipe(catchError(this.handleError));
     }
 
-    agregarRepuesto(nuevoRepuesto: any): Observable<any> {
+    agregarCompra(nuevoCompra: any): Observable<any> {
         const headers = this.getHeaders();
-        return this.http.post(this.apiUrl, nuevoRepuesto, { headers, responseType: 'text' });
+        return this.http
+            .post<any>(this.apiUrl, nuevoCompra, { headers })
+            .pipe(catchError(this.handleError));
     }
 
-    modificarRepuesto(repuestoModificado: any): Observable<any> {
-        const url = `${this.apiUrl}/${repuestoModificado.id}`;
+    modificarCompra(tecniceModificado: any): Observable<any> {
+        const url = `${this.apiUrl}/${tecniceModificado.id}`;
         const headers = this.getHeaders();
-        return this.http.put<any>(url, repuestoModificado, { headers }).pipe(
-            catchError(this.handleError)
-        );
+        return this.http
+            .put<any>(url, tecniceModificado, { headers })
+            .pipe(catchError(this.handleError));
     }
 
-    eliminarRepuesto(id: number): Observable<any> {
+    eliminarCompra(id: number): Observable<any> {
         const url = `${this.apiUrl}/${id}`;
         const headers = this.getHeaders();
-        return this.http.delete<any>(url, { headers }).pipe(
-            catchError(this.handleError)
-        );
+        return this.http
+            .delete<any>(url, { headers })
+            .pipe(catchError(this.handleError));
     }
     private handleError(error: HttpErrorResponse): Observable<never> {
         let errorMessage = 'Error desconocido';

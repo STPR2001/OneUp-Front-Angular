@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SidebarComponent } from './Components/sidebar/sidebar.component';
 import { ClientsComponent } from './Components/clients/clients.component';
 import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -18,12 +17,13 @@ import { EquipmentsComponent } from './Components/equipments/equipments.componen
 import { AuthGuard } from './services/auth/auth.guard';
 import { LoginComponent } from './Components/login/login.component';
 import { HomeComponent } from './Components/home/home.component';
+import { ShoppingComponent } from './Components/shopping/shopping.component';
+import { NewShoppingComponent } from './Components/shopping/new-shopping/new-shopping.component';
 import { RepuestosComponent } from './Components/repuestos/repuestos.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SidebarComponent,
     ClientsComponent,
     TecnicsComponent,
     ProvidersComponent,
@@ -33,6 +33,8 @@ import { RepuestosComponent } from './Components/repuestos/repuestos.component';
     EquipmentsComponent,
     LoginComponent,
     HomeComponent,
+    ShoppingComponent,
+    NewShoppingComponent,
     RepuestosComponent,
   ],
   imports: [

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AuthService } from './services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -7,11 +8,24 @@ import { AuthService } from './services/auth/auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'oneUp';
+  title = 'oneUp'; 
+  sidebarOpen = true;
 
-  constructor(private authService: AuthService) { }
+  @ViewChild('cerrarSesion') modalCerrarSesion: any;
+
+  constructor(private authService: AuthService, private router: Router) { }
 
   isLogued(): boolean {
-    return this.authService.isAuthenticatedUser(); 
+    return this.authService.getAuthenticatedToken() !== ''; 
+  }
+  
+  logout(): void {
+    this.authService.logout();
+    this.modalCerrarSesion.nativeElement.click();
+    this.router.navigate(['/login']);
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 }
