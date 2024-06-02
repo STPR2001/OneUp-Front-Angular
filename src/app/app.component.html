@@ -55,42 +55,42 @@
         <div class="title">Cerrar sesión</div>
       </li>
     </ul>
+  </div>
+  <div
+    class="content"
+    [ngClass]="{ expanded: !sidebarOpen }"
+    [ngClass]="{ expanded: !isLogued() }"
+  >
+    <router-outlet></router-outlet>
+  </div>
+</div>
 
-    <div
-      class="modal fade"
-      id="cerrarSesion"
-      tabindex="-1"
-      aria-labelledby="cerrarSesionLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div>
-            <h2 class="text-center fs-2">¿Seguro que quiere irse?</h2>
-          </div>
-          <div class="modal-footer justify-content-evenly">
-            <button
-              type="button"
-              class="btn btn-primary col-4"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-              #cerrarSesion
-            >
-              Cerrar
-            </button>
-            <button
-              type="submit"
-              (click)="logout()"
-              class="btn btn-danger col-4"
-            >
-              Cerrar sesión
-            </button>
-          </div>
-        </div>
+<div
+  class="modal fade"
+  id="cerrarSesion"
+  tabindex="-1"
+  aria-labelledby="cerrarSesionLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div>
+        <h2 class="text-center fs-2">¿Seguro que quiere irse?</h2>
+      </div>
+      <div class="modal-footer justify-content-evenly">
+        <button
+          type="button"
+          class="btn btn-primary col-4"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          #cerrarSesion
+        >
+          Cerrar
+        </button>
+        <button type="submit" (click)="logout()" class="btn btn-danger col-4">
+          Cerrar sesión
+        </button>
       </div>
     </div>
-  </div>
-  <div class="content" [ngClass]="{ 'expanded': !sidebarOpen }">
-    <router-outlet></router-outlet>
   </div>
 </div>
