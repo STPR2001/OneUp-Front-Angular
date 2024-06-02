@@ -20,6 +20,7 @@ import { LoginComponent } from './Components/login/login.component';
 import { HomeComponent } from './Components/home/home.component';
 import { ShoppingComponent } from './Components/shopping/shopping.component';
 import { NewShoppingComponent } from './Components/shopping/new-shopping/new-shopping.component';
+import { RepuestosComponent } from './Components/repuestos/repuestos.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { NewShoppingComponent } from './Components/shopping/new-shopping/new-sho
     HomeComponent,
     ShoppingComponent,
     NewShoppingComponent,
+    RepuestosComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,6 +48,7 @@ import { NewShoppingComponent } from './Components/shopping/new-shopping/new-sho
     ReactiveFormsModule,
   ],
   providers: [AuthGuard],
+
   bootstrap: [AppComponent],
 })
 export class AppModule { }
