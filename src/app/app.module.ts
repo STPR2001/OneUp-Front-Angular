@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SidebarComponent } from './Components/sidebar/sidebar.component';
 import { ClientsComponent } from './Components/clients/clients.component';
 import { TecnicsComponent } from './Components/tecnics/tecnics.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -25,7 +24,6 @@ import { RepuestosComponent } from './Components/repuestos/repuestos.component';
 @NgModule({
   declarations: [
     AppComponent,
-    SidebarComponent,
     ClientsComponent,
     TecnicsComponent,
     ProvidersComponent,
