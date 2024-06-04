@@ -2,6 +2,7 @@
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background: #f0f2f5;
 }
 
 .content {
@@ -11,6 +12,7 @@
   overflow-y: auto;
   margin-left: 250px;
   transition: margin-left 0.8s;
+  background: #f0f2f5;
 }
 
 .content.expanded {
@@ -20,40 +22,43 @@
 .toggle-sidebar {
   top: 10px;
   position: fixed;
-  z-index: 1000; 
+  z-index: 1000;
   border: none;
   background-color: transparent;
   cursor: pointer;
   transition: color 0.7s ease, left 0.7s;
+  color: #000;
 }
 
 .toggle-sidebar.menu {
-  color: black; 
   left: 10px;
 }
 
 .toggle-sidebar.close {
-  color: white;
   left: 200px;
-}
-
-.sidebar {
-  position: fixed;
-  padding-top: 40px;
-  top: 0;
-  left: 0;
-  width: 250px;
-  height: 100%;
-  background-color: #343434;
-  transition: transform 0.7s ease;
-  overflow: hidden;
+  color: #fff;
 }
 
 .sidebar.closed {
   transform: translateX(-100%);
 }
 
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.logo {
+  max-width: 70%;
+  height: auto;
+}
+
 .SidebarList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -62,26 +67,51 @@
 .SidebarList .row {
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 15px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  font-family: "Roboto", sans-serif;
+  border-radius: 5px;
+  margin: 5px 10px;
+  width: 100%;
 }
 
 .SidebarList .row:hover {
-  background-color: #555;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
 }
 
 .icon {
-  margin-right: 10px;
-  color: white;
-  flex: 10px;
-  display: grid;
-  place-items: center;
+  margin-right: 15px;
+  color: #fff;
+  flex: 0 0 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+}
+
+.row:hover .icon {
+  color: #fe9b01;
 }
 
 .title {
-  color: white;
-  flex: 70px;
+  color: #fff;
+  font-size: 1.1em;
+  flex: 1;
+}
+
+.sidebar {
+  position: fixed;
+  padding-top: 20px;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #242529;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.7s ease;
+  overflow: hidden;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
 }
