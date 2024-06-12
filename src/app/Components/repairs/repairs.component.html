@@ -48,7 +48,6 @@
           class="hover-row"
         >
           <td>{{ reparacion.id }}</td>
-          <!-- utilizamos el id como numero de orden ya que es autogenerado -->
           <td>{{ reparacion.fechaIngreso | date }}</td>
           <td>{{ reparacion.cliente.nombre }}</td>
           <td>{{ reparacion.equipo.marca.nombre }}</td>
@@ -59,9 +58,22 @@
           <td>
             <button
               class="btn btn-success me-2"
+              (click)="verDetallesReparacion(reparacion)"
+            >
+              Ver más
+            </button>
+            <button
+              class="btn btn-success me-2"
               [routerLink]="['/modificarReparacion', reparacion.id]"
             >
               Modificar
+            </button>
+            <button
+              class="btn btn-success me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#agregarNotaModal"
+            >
+              Agregar nota
             </button>
             <button
               class="btn btn-danger"
@@ -73,5 +85,153 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Modal Ver Detalles -->
+<div
+  class="modal fade"
+  id="verDetallesModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="verDetallesModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="text-center fs-2">Detalles de la Reparación</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="cerrarModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Orden:</strong> {{ reparacionSeleccionada.id }}</p>
+        <p>
+          <strong>Fecha Ingreso:</strong>
+          {{ reparacionSeleccionada.fechaIngreso | date }}
+        </p>
+        <p>
+          <strong>Cliente:</strong> {{ reparacionSeleccionada.cliente.nombre }}
+        </p>
+        <p>
+          <strong>Técnico:</strong> {{ reparacionSeleccionada.tecnico.nombre }}
+        </p>
+        <p>
+          <strong>Equipo:</strong>
+          {{ reparacionSeleccionada.equipo.tipo_equipo.nombre }}
+        </p>
+        <p>
+          <strong>Marca:</strong>
+          {{ reparacionSeleccionada.equipo.marca.nombre }}
+        </p>
+        <p>
+          <strong>Modelo:</strong>
+          {{ reparacionSeleccionada.equipo.modelo.nombre }}
+        </p>
+        <p>
+          <strong>Número de serie:</strong>
+          {{ reparacionSeleccionada.equipo.numeroSerie }}
+        </p>
+        <p>
+          <strong>Código de seguimiento:</strong>
+          {{ reparacionSeleccionada.codigoSeguimiento }}
+        </p>
+        <p><strong>Falla:</strong> {{ reparacionSeleccionada.falla }}</p>
+        <p>
+          <strong>Accesorios:</strong>
+          {{ reparacionSeleccionada.accesorios }}
+        </p>
+
+        <p><strong>Estado:</strong> {{ reparacionSeleccionada.estado }}</p>
+        <div *ngIf="reparacionSeleccionada.notasreparacion.length > 0">
+          <p><strong>Notas de reparación:</strong></p>
+          <ul>
+            <li *ngFor="let nota of reparacionSeleccionada.notasreparacion">
+              <p><strong>Fecha:</strong> {{ nota.fecha | date }}</p>
+              <p><strong>Nota:</strong> {{ nota.informe }}</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="cerrarModal()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Agregar nota -->
+<div
+  class="modal fade"
+  id="agregarNotaModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="agregarNotaModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="agregarNotaReparacion()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Agregar nota de reparación</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #agregarNotaModal
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="fecha">Fecha:</label>
+            <input
+              type="date"
+              id="fecha"
+              name="fecha"
+              max="{{ reparacion.fechaIngreso }}"
+              [(ngModel)]="reparacion.notasreparacion.fecha"
+              required
+              class="form-control fs-5"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="nota">Nota:</label>
+            <textarea
+              id="nota"
+              name="nota"
+              [(ngModel)]="reparacion.notasreparacion.informe"
+              required
+              class="form-control fs-5"
+            ></textarea>
+          </div>
+          <div *ngIf="errorAgregarNotaReparacion" class="text-danger">
+            Error al agregar nota.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
