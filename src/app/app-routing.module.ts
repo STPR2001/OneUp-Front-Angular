@@ -13,6 +13,7 @@ import { AuthGuard } from './services/auth/auth.guard';
 import { HomeComponent } from './Components/home/home.component';
 import { ShoppingComponent } from './Components/shopping/shopping.component';
 import { NewShoppingComponent } from './Components/shopping/new-shopping/new-shopping.component';
+import { ConfigComponent } from './Components/config/config.component';
 
 const routes: Routes = [
   { path: 'clients', component: ClientsComponent, canActivate: [AuthGuard] },
@@ -25,6 +26,7 @@ const routes: Routes = [
   { path: 'modificarReparacion/:id', component: ModifyRepairComponent, canActivate: [AuthGuard] },
   { path: 'equipos', component: EquipmentsComponent, canActivate: [AuthGuard] },
   { path: 'repuestos', component: RepuestosComponent, canActivate: [AuthGuard] },
+  { path: 'configuracion', component: ConfigComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '' },

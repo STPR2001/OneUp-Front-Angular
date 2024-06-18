@@ -20,6 +20,7 @@ import { HomeComponent } from './Components/home/home.component';
 import { ShoppingComponent } from './Components/shopping/shopping.component';
 import { NewShoppingComponent } from './Components/shopping/new-shopping/new-shopping.component';
 import { RepuestosComponent } from './Components/repuestos/repuestos.component';
+import { ConfigComponent } from './Components/config/config.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { RepuestosComponent } from './Components/repuestos/repuestos.component';
     ShoppingComponent,
     NewShoppingComponent,
     RepuestosComponent,
+    ConfigComponent,
   ],
   imports: [
     BrowserModule,
