@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { RepairsService } from 'src/app/services/repairs.service';
 import { Router } from '@angular/router';
 import { TecnicsService } from 'src/app/services/tecnics.service';
 import { ClientsService } from 'src/app/services/clients.service';
 import { EquipoService } from 'src/app/services/equipo.service';
+import { RepuestosService } from 'src/app/services/repuestos.service';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import * as bootstrap from 'bootstrap';
@@ -14,9 +15,11 @@ import * as bootstrap from 'bootstrap';
   styleUrls: ['./repairs.component.css'],
 })
 export class RepairsComponent implements OnInit {
-  @ViewChild('AgregarNotaModal') modalCloseUpdate: any;
+  @ViewChild('modalCloseUpdate', { static: false })
+  modalCloseUpdate!: ElementRef;
   reparaciones: any[] = [];
   tecnicos: any[] = [];
+  repuestos: any[] = [];
   equipos: any[] = [];
   clientes: any[] = [];
   reparacionSeleccionada: any = {
@@ -54,6 +57,7 @@ export class RepairsComponent implements OnInit {
     tecnico: { id: '' },
     cliente: { id: '' },
     equipo: { id: '' },
+    repuesto: { id: '' },
     accesorios: '',
     falla: '',
     codigoSeguimiento: '',
@@ -62,10 +66,16 @@ export class RepairsComponent implements OnInit {
     entrega: 0,
     saldo: 0,
     notasreparacion: {
-      reparacion: '709',
+      reparacion: '',
       fecha: '',
       informe: '',
     },
+  };
+
+  nuevaNota: any = {
+    reparacionId: '',
+    fecha: '',
+    informe: '',
   };
 
   errorAgregarReparacion = false;
@@ -76,6 +86,7 @@ export class RepairsComponent implements OnInit {
     private TecnicsService: TecnicsService,
     private ClientsService: ClientsService,
     private EquipoService: EquipoService,
+    private RepuestosService: RepuestosService,
     private router: Router
   ) {}
 
@@ -85,6 +96,7 @@ export class RepairsComponent implements OnInit {
     this.obtenerTecnicos();
     this.obtenerClientes();
     this.obtenerEquipos();
+    this.obtenerRepuestos();
   }
 
   obtenerReparaciones(): void {
@@ -133,6 +145,18 @@ export class RepairsComponent implements OnInit {
       },
       (error) => {
         console.error('Error al obtener los tecnicos:', error);
+      }
+    );
+  }
+
+  obtenerRepuestos(): void {
+    this.RepuestosService.getRepuestos().subscribe(
+      (data) => {
+        this.repuestos = data;
+        console.log(this.repuestos);
+      },
+      (error) => {
+        console.error('Error al obtener los repuestos:', error);
       }
     );
   }
@@ -187,15 +211,27 @@ export class RepairsComponent implements OnInit {
   }
 
   agregarNotaReparacion(): void {
-    const reparacionId = this.reparacionSeleccionada.id;
-    this.RepairsService.modificarReparacion(reparacionId).subscribe(
+    const nuevaNota = {
+      fecha: this.reparacion.fechaIngreso,
+      informe: this.reparacion.notasreparacion.informe,
+    };
+
+    const nuevoRepuesto =
+      this.reparacionSeleccionada.notasreparacion.push(nuevaNota);
+
+    this.RepairsService.modificarReparacion(
+      this.reparacionSeleccionada
+    ).subscribe(
       () => {
+        console.log('Nota agregada correctamente');
         this.obtenerReparaciones();
-        this.modalCloseUpdate.nativeElement.click();
+        if (this.modalCloseUpdate) {
+          this.modalCloseUpdate.nativeElement.click();
+        }
       },
       (error) => {
         this.errorAgregarNotaReparacion = true;
-        console.error('Error al agregar nota de reparacion', error);
+        console.error('Error al agregar nota de reparación', error);
       }
     );
   }
@@ -204,5 +240,17 @@ export class RepairsComponent implements OnInit {
     const fechaActual = new Date().toISOString().split('T')[0];
     this.nuevaReparacion.fechaIngreso = fechaActual;
     this.reparacion.fechaIngreso = fechaActual;
+  }
+
+  abrirModalAgregarNota(reparacion: any): void {
+    this.reparacionSeleccionada = { ...reparacion };
+    this.reparacion.fechaIngreso = new Date().toISOString().split('T')[0];
+    this.reparacion.notasreparacion.informe = '';
+
+    const modalElement = document.getElementById('agregarNotaModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
   }
 }

@@ -70,8 +70,7 @@
             </button>
             <button
               class="btn btn-success me-2"
-              data-bs-toggle="modal"
-              data-bs-target="#agregarNotaModal"
+              (click)="abrirModalAgregarNota(reparacion)"
             >
               Agregar nota
             </button>
@@ -191,7 +190,7 @@
             class="btn-close"
             data-bs-dismiss="modal"
             aria-label="Close"
-            #agregarNotaModal
+            #modalCloseUpdate
           ></button>
         </div>
         <div class="modal-body">
@@ -201,11 +200,29 @@
               type="date"
               id="fecha"
               name="fecha"
-              max="{{ reparacion.fechaIngreso }}"
-              [(ngModel)]="reparacion.notasreparacion.fecha"
+              [(ngModel)]="reparacion.fechaIngreso"
               required
               class="form-control fs-5"
             />
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <div class="flex-grow-1">
+              <label for="cliente">Repuesto:</label>
+              <select
+                id="repuesto"
+                name="repuesto"
+                [(ngModel)]="reparacion.repuesto.descripcion"
+                required
+                class="form-select fs-5"
+              >
+                <option
+                  *ngFor="let repuesto of repuestos"
+                  [value]="repuesto.id"
+                >
+                  {{ repuesto.descripcion }}
+                </option>
+              </select>
+            </div>
           </div>
           <div class="mb-3">
             <label for="nota">Nota:</label>
@@ -217,6 +234,7 @@
               class="form-control fs-5"
             ></textarea>
           </div>
+          <input type="hidden" [(ngModel)]="reparacion.id" />
           <div *ngIf="errorAgregarNotaReparacion" class="text-danger">
             Error al agregar nota.
           </div>
