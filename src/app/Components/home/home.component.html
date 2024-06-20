@@ -1,62 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Página de Inicio</title>
-        <link rel="stylesheet" href="home.component.css">
-    </head>
-    <body>
-        <header>
-            <h1>Bienvenido al Inicio</h1>
-            <hr>
-            <h2>Reparaciones pendientes</h2>
-        </header>
-        <main>
-            <div class="search-container">
-                <div class="search">
-                    <input
-                        type="text"
-                        placeholder="Buscar reparación..."
-                        [(ngModel)]="searchTerm"
-                        class="form-control"
-                        />
-                </div>
-                <!-- <div class="col-md-2">
-                    <select [(ngModel)]="estadoFiltro" class="form-select">
-                        <option value="Todos">Todos</option>
-                        <option *ngFor="let estado of estados" [value]="estado">
-                            {{ estado }}
-                        </option>
-                    </select>
-                </div> -->
-            </div>
 
-            <div class="card-container">
-                <div
-                    *ngFor="let reparacion of filteredReparacionesForStatus"
-                    class="card"
-                    >
-                    <div class="card-header">
-                        <h2>Orden: {{ reparacion.id }}</h2>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Fecha Ingreso:</strong> {{ reparacion.fechaIngreso | date }}</p>
-                        <p><strong>Cliente:</strong> {{ reparacion.cliente.nombre }}</p>
-                        <p><strong>Marca:</strong> {{ reparacion.equipo.marca.nombre }}</p>
-                        <p><strong>Modelo:</strong> {{ reparacion.equipo.modelo.nombre }}</p>
-                        <p><strong>Falla:</strong> {{ reparacion.falla }}</p>
-                    </div>
-                    <div class="card-footer">
-                        <button
-                            class="btn btn-success me-2"
-                            [routerLink]="['/modificarReparacion', reparacion.id]"
-                            >
-                            Modificar
-                        </button>
-                    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Inicio</title>
+    <link rel="stylesheet" href="home.component.css">
+</head>
+
+<body>
+    <header>
+        <h1>Bienvenido al Inicio</h1>
+        <hr>
+        <h2>Reparaciones pendientes</h2>
+    </header>
+    <main>
+        <div class="search-container">
+            <div class="search">
+                <input type="text" placeholder="Buscar reparación..." [(ngModel)]="searchTerm" class="form-control" />
+            </div>
+        </div>
+
+        <div class="card-container">
+            <div *ngFor="let reparacion of filteredReparacionesForStatus" class="card">
+                <div class="card-header">
+                    <h2>Orden: {{ reparacion.id }}</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>Fecha Ingreso:</strong> {{ reparacion.fechaIngreso | date }}</p>
+                    <p><strong>Cliente:</strong> {{ reparacion.cliente.nombre }}</p>
+                    <p><strong>Marca:</strong> {{ reparacion.equipo.marca.nombre }}</p>
+                    <p><strong>Modelo:</strong> {{ reparacion.equipo.modelo.nombre }}</p>
+                    <p><strong>Falla:</strong> {{ reparacion.falla }}</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-success me-2" [routerLink]="['/modificarReparacion', reparacion.id]">
+                        Modificar
+                    </button>
                 </div>
             </div>
-        </main>
-    </body>
+        </div>
+    </main>
+</body>
+
 </html>

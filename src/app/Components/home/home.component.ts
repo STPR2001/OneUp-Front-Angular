@@ -140,8 +140,8 @@ export class HomeComponent implements OnInit {
         .toLowerCase()
         .includes(this.searchTerm.toLowerCase());
       const matchesEstado =
-        this.estadoFiltro === 'Todos' ||
-        reparacion.estado === this.estadoFiltro;
+        this.estadoFiltro === '' ||
+        reparacion.estado === 'En taller';
       return matchesCliente && matchesEstado;
     });
   }
