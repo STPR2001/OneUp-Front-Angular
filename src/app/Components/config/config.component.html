@@ -1,0 +1,25 @@
+<div class="container">
+  <h2>Configuración</h2>
+  <hr />
+  <div class="form-group">
+    <p>
+      Cargar marcas y modelos desde una api (Esto puede tardar unos segundos).
+    </p>
+    <div class="d-flex justify-content-center">
+      <button
+        class="btn btn-primary align-content-center"
+        (click)="cargarMarcasModelos()"
+        [disabled]="isLoading"
+      >
+        Cargar Marcas y Modelos
+      </button>
+    </div>
+    <div *ngIf="isLoading" class="loading-indicator p-2">
+      Cargando datos, por favor espere...
+    </div>
+    <div *ngIf="successMessage" class="alert alert-success mt-3">
+      {{ successMessage }}
+    </div>
+  </div>
+  <hr />
+</div>

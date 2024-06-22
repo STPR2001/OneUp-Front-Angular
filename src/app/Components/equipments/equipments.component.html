@@ -107,6 +107,7 @@
               [(ngModel)]="nuevoEquipo.marca.id"
               required
               class="form-select fs-5"
+              (change)="onMarcaChange($event)"
             >
               <option *ngFor="let marca of marcas" [value]="marca.id">
                 {{ marca.nombre }}

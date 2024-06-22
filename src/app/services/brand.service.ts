@@ -44,4 +44,11 @@ export class BrandService {
     const headers = this.getHeaders();
     return this.http.delete<any>(url, { headers });
   }
+
+  cargarMarcasModelos(): Observable<string> {
+    const url = `${this.apiUrl}/TraerMarcas`;
+    const headers = this.getHeaders();
+    return this.http.get(url, { headers, responseType: 'text'  });
+  }
+
 }

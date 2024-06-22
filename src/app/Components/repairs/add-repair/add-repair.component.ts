@@ -102,7 +102,6 @@ export class AddRepairComponent implements OnInit {
     this.obtenerEquipos();
     this.getEquipos();
     this.getMarcas();
-    this.getModelos();
     this.getTiposEquipo();
   }
 
@@ -276,15 +275,24 @@ export class AddRepairComponent implements OnInit {
     );
   }
 
-  getModelos(): void {
-    this.ModelService.getModelos().subscribe(
-      (data) => {
-        this.modelos = data;
-      },
-      (error) => {
-        console.error('Error al obtener la lista de modelo:', error);
-      }
-    );
+  onMarcaChange(event: any): void {
+    const marcaId = event.target.value;
+    this.getModelosPorMarca(marcaId);
+  }
+
+  getModelosPorMarca(marcaId: number): void {
+    if (marcaId) {
+      this.ModelService.getModelosPorMarca(marcaId).subscribe(
+        (data) => {
+          this.modelos = data;
+        },
+        (error) => {
+          console.error('Error al obtener la lista de modelos:', error);
+        }
+      );
+    } else {
+      this.modelos = [];
+    }
   }
 
   getTiposEquipo(): void {
@@ -356,7 +364,7 @@ export class AddRepairComponent implements OnInit {
             nombre: '',
             marca: { id: '' },
           };
-          this.getModelos();
+          this.getModelosPorMarca(this.nuevoEquipo.marca.id);
           if (this.agregarModeloModalRef) {
             this.agregarModeloModalRef.close();
           }

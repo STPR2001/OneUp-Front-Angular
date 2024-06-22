@@ -44,4 +44,9 @@ export class ModelService {
     const headers = this.getHeaders();
     return this.http.delete<any>(url, { headers });
   }
+
+  getModelosPorMarca(marcaId: number): Observable<any[]> {
+    const headers = this.getHeaders();
+    return this.http.get<any[]>(`${this.apiUrl}/modelos/${marcaId}`, { headers });
+  }
 }

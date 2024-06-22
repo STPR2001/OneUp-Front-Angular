@@ -66,12 +66,11 @@ export class EquipmentsComponent implements OnInit {
     private BrandService: BrandService,
     private EquipmentTypeService: EquipmentTypeService,
     private ModelService: ModelService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getEquipos();
     this.getMarcas();
-    this.getModelos();
     this.getTiposEquipo();
   }
 
@@ -163,17 +162,6 @@ export class EquipmentsComponent implements OnInit {
     );
   }
 
-  getModelos(): void {
-    this.ModelService.getModelos().subscribe(
-      (data) => {
-        this.modelos = data;
-      },
-      (error) => {
-        console.error('Error al obtener la lista de modelo:', error);
-      }
-    );
-  }
-
   getTiposEquipo(): void {
     this.EquipmentTypeService.getTipoEquipos().subscribe(
       (data) => {
@@ -210,7 +198,25 @@ export class EquipmentsComponent implements OnInit {
       )
       .subscribe();
   }
+  onMarcaChange(event: any): void {
+    const marcaId = event.target.value;
+    this.getModelosPorMarca(marcaId);
+  }
 
+  getModelosPorMarca(marcaId: number): void {
+    if (marcaId) {
+      this.ModelService.getModelosPorMarca(marcaId).subscribe(
+        (data) => {
+          this.modelos = data;
+        },
+        (error) => {
+          console.error('Error al obtener la lista de modelos:', error);
+        }
+      );
+    } else {
+      this.modelos = [];
+    }
+  }
   agregarMarca(): void {
     this.BrandService.agregarMarca(this.nuevaMarca)
       .pipe(
@@ -239,11 +245,11 @@ export class EquipmentsComponent implements OnInit {
       .pipe(
         tap(() => {
           console.log('Modelo agregado exitosamente');
+          this.getModelosPorMarca(this.nuevoEquipo.marca.id);
           this.nuevoModelo = {
             nombre: '',
             marca: { id: '' },
           };
-          this.getModelos();
           if (this.agregarModeloModalRef) {
             this.agregarModeloModalRef.close();
           }
