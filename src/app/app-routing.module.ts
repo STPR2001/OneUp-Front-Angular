@@ -14,12 +14,14 @@ import { HomeComponent } from './Components/home/home.component';
 import { ShoppingComponent } from './Components/shopping/shopping.component';
 import { NewShoppingComponent } from './Components/shopping/new-shopping/new-shopping.component';
 import { ConfigComponent } from './Components/config/config.component';
+import { StatisticComponent } from './Components/statistic/statistic.component';
 
 const routes: Routes = [
   { path: 'clients', component: ClientsComponent, canActivate: [AuthGuard] },
   { path: 'tecnicos', component: TecnicsComponent, canActivate: [AuthGuard] },
   { path: 'proveedores', component: ProvidersComponent, canActivate: [AuthGuard] },
   { path: 'compras', component: ShoppingComponent, canActivate: [AuthGuard] },
+  { path: 'estadisticas', component: StatisticComponent, canActivate: [AuthGuard] },
   { path: 'compras/new', component: NewShoppingComponent, canActivate: [AuthGuard] },
   { path: 'reparaciones', component: RepairsComponent, canActivate: [AuthGuard] },
   { path: 'agregarReparacion', component: AddRepairComponent, canActivate: [AuthGuard] },

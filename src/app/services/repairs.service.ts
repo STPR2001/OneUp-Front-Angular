@@ -24,7 +24,7 @@ export class RepairsService {
 
   agregarReparacion(nuevaReparacion: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(this.apiUrl, nuevaReparacion, { headers, responseType: 'text'  });
+    return this.http.post(this.apiUrl, nuevaReparacion, { headers, responseType: 'text' });
   }
 
   eliminarReparacion(id: number): Observable<any> {
@@ -43,5 +43,17 @@ export class RepairsService {
     const url = `${this.apiUrl}/${id}`;
     const headers = this.getHeaders();
     return this.http.get<any>(url, { headers });
+  }
+
+  getReparacionesPorMes(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/reparaciones-por-mes`, { headers });
+  }
+
+  getReparacionesPorTecnico(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/reparaciones-por-tecnico`, { headers });
   }
 }
