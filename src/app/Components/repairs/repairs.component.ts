@@ -35,6 +35,7 @@ export class RepairsComponent implements OnInit {
     tecnico: { nombre: '' },
     estado: '',
     notasreparacion: [],
+    repuesto: [],
   };
   searchTerm: string = '';
   estadoFiltro: string = 'Todos';
@@ -216,8 +217,37 @@ export class RepairsComponent implements OnInit {
       informe: this.reparacion.notasreparacion.informe,
     };
 
-    const nuevoRepuesto =
-      this.reparacionSeleccionada.notasreparacion.push(nuevaNota);
+    for (let i = 0; i < this.repuestos.length; i++) {
+      if (this.repuestos[i].id == this.reparacion.repuesto.id) {
+        const repuestoModificado = {
+          id: this.repuestos[i].id,
+          numeroDeParte: this.repuestos[i].numeroDeParte,
+          descripcion: this.repuestos[i].descripcion,
+          precioCosto: this.repuestos[i].precioCosto,
+          precioVenta: this.repuestos[i].precioVenta,
+          stock: this.repuestos[i].stock - 1,
+        };
+        console.log(repuestoModificado);
+        this.modificarRepuesto(repuestoModificado);
+
+        //SI EL REPUESTO YA ESTA AGREGADO EN LA REPARACION NO DEBE AGREGARSE DE NUEVO!
+        let yaExiste = false;
+        for (let k = 0; k < this.reparacionSeleccionada.repuesto.length; k++) {
+          if (
+            this.reparacionSeleccionada.repuesto[k].id ==
+            this.reparacion.repuesto.id
+          ) {
+            console.log('EL REPUESTO YA EXISTE EN LA REPARACION');
+            yaExiste = true;
+          }
+        }
+        if (!yaExiste) {
+          this.reparacionSeleccionada.repuesto.push(repuestoModificado);
+        }
+      }
+    }
+
+    this.reparacionSeleccionada.notasreparacion.push(nuevaNota);
 
     this.RepairsService.modificarReparacion(
       this.reparacionSeleccionada
@@ -234,6 +264,21 @@ export class RepairsComponent implements OnInit {
         console.error('Error al agregar nota de reparación', error);
       }
     );
+  }
+
+  modificarRepuesto(repuestoModificado: any): void {
+    this.RepuestosService.modificarRepuesto(repuestoModificado)
+      .pipe(
+        tap(() => {
+          this.obtenerRepuestos();
+          console.log('Repuesto modificado exitosamente');
+        }),
+        catchError((error) => {
+          console.error('Error al modificar repuesto:', error);
+          return of(error);
+        })
+      )
+      .subscribe();
   }
 
   setFechaActual(): void {

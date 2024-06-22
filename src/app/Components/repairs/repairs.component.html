@@ -147,12 +147,25 @@
         </p>
 
         <p><strong>Estado:</strong> {{ reparacionSeleccionada.estado }}</p>
+
         <div *ngIf="reparacionSeleccionada.notasreparacion.length > 0">
           <p><strong>Notas de reparación:</strong></p>
           <ul>
             <li *ngFor="let nota of reparacionSeleccionada.notasreparacion">
               <p><strong>Fecha:</strong> {{ nota.fecha | date }}</p>
               <p><strong>Nota:</strong> {{ nota.informe }}</p>
+            </li>
+          </ul>
+        </div>
+
+        <div *ngIf="reparacionSeleccionada.repuesto.length > 0">
+          <p><strong>Repuestos utilizados:</strong></p>
+          <ul>
+            <li *ngFor="let repuesto of reparacionSeleccionada.repuesto">
+              <p><strong>Repuesto:</strong> {{ repuesto.descripcion }}</p>
+              <p>
+                <strong>Número de parte :</strong> {{ repuesto.numeroDeParte }}
+              </p>
             </li>
           </ul>
         </div>
@@ -205,24 +218,19 @@
               class="form-control fs-5"
             />
           </div>
-          <div class="mb-3 d-flex align-items-center">
-            <div class="flex-grow-1">
-              <label for="cliente">Repuesto:</label>
-              <select
-                id="repuesto"
-                name="repuesto"
-                [(ngModel)]="reparacion.repuesto.descripcion"
-                required
-                class="form-select fs-5"
-              >
-                <option
-                  *ngFor="let repuesto of repuestos"
-                  [value]="repuesto.id"
-                >
-                  {{ repuesto.descripcion }}
-                </option>
-              </select>
-            </div>
+          <div class="mb-3">
+            <label for="repuesto">Repuesto:</label>
+            <select
+              id="repuesto"
+              name="repuesto"
+              [(ngModel)]="reparacion.repuesto.id"
+              required
+              class="form-select fs-5"
+            >
+              <option *ngFor="let repuesto of repuestos" [value]="repuesto.id">
+                {{ repuesto.descripcion }}
+              </option>
+            </select>
           </div>
           <div class="mb-3">
             <label for="nota">Nota:</label>
