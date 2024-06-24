@@ -3,6 +3,7 @@ import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
+  HttpParams,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -13,7 +14,7 @@ import { AuthService } from './auth/auth.service';
 })
 export class RepuestosService {
   private apiUrl = 'http://localhost:3000/oneup-backend/api/repuesto';
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -23,10 +24,21 @@ export class RepuestosService {
     });
   }
 
-  getRepuestos(): Observable<any> {
+  getRepuestos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('numero_de_parte', nombre);
+    }
+    return this.http
+      .get<any>(this.apiUrl, { headers, params })
+      .pipe(catchError(this.handleError));
+  }
+
+  getAllRepuestos(): Observable<any> {
     const headers = this.getHeaders();
     return this.http
-      .get<any>(this.apiUrl, { headers })
+      .get<any>(`${this.apiUrl}/all`, { headers })
       .pipe(catchError(this.handleError));
   }
 

@@ -59,7 +59,7 @@ export class NewShoppingComponent implements OnInit {
     return this.compraForm.get('repuestos') as FormArray;
   }
   cargarProveedores(): void {
-    this.providersService.getProveedores().subscribe({
+    this.providersService.getAllProveedores().subscribe({
       next: (data) => {
         this.proveedores = data;
       },

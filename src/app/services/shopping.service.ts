@@ -3,6 +3,7 @@ import {
     HttpClient,
     HttpErrorResponse,
     HttpHeaders,
+    HttpParams,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -22,10 +23,17 @@ export class ShoppingService {
             'Content-Type': 'application/json',
         });
     }
-    getCompras(): Observable<any> {
+    getCompras(page: number, size: number, startDate?: string, endDate?: string): Observable<any> {
         const headers = this.getHeaders();
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        if (startDate) {
+            params = params.set('startDate', startDate);
+        }
+        if (endDate) {
+            params = params.set('endDate', endDate);
+        }
         return this.http
-            .get<any>(this.apiUrl, { headers })
+            .get<any>(this.apiUrl, { headers, params })
             .pipe(catchError(this.handleError));
     }
 

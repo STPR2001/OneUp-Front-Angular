@@ -22,6 +22,11 @@ export class RepairsComponent implements OnInit {
   repuestos: any[] = [];
   equipos: any[] = [];
   clientes: any[] = [];
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  nombreCliente?: string;
+
   reparacionSeleccionada: any = {
     id: '',
     fechaIngreso: '',
@@ -83,13 +88,13 @@ export class RepairsComponent implements OnInit {
   errorAgregarNotaReparacion = false;
 
   constructor(
-    private RepairsService: RepairsService,
-    private TecnicsService: TecnicsService,
-    private ClientsService: ClientsService,
-    private EquipoService: EquipoService,
-    private RepuestosService: RepuestosService,
+    private repairsService: RepairsService,
+    private tecnicsService: TecnicsService,
+    private clientsService: ClientsService,
+    private equipoService: EquipoService,
+    private repuestosService: RepuestosService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.setFechaActual();
@@ -101,10 +106,11 @@ export class RepairsComponent implements OnInit {
   }
 
   obtenerReparaciones(): void {
-    this.RepairsService.getReparaciones().subscribe(
+    let estadoParam = this.estadoFiltro !== 'Todos' ? this.estadoFiltro : null;
+    this.repairsService.getReparaciones(this.currentPage, this.pageSize, this.nombreCliente, estadoParam ?? '').subscribe(
       (data) => {
-        this.reparaciones = data;
-        console.log(this.reparaciones);
+        this.reparaciones = data.content;
+        this.totalPages = data.totalPages;
       },
       (error) => {
         console.error('Error al obtener reparaciones:', error);
@@ -112,8 +118,18 @@ export class RepairsComponent implements OnInit {
     );
   }
 
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.obtenerReparaciones();
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 0;
+    this.obtenerReparaciones();
+  }
+
   eliminarReparacion(id: number): void {
-    this.RepairsService.eliminarReparacion(id).subscribe(
+    this.repairsService.eliminarReparacion(id).subscribe(
       () => {
         this.obtenerReparaciones();
       },
@@ -128,7 +144,7 @@ export class RepairsComponent implements OnInit {
   }
 
   obtenerClientes(): void {
-    this.ClientsService.getClientes().subscribe(
+    this.clientsService.getAllClientes().subscribe(
       (data) => {
         this.clientes = data;
       },
@@ -139,7 +155,7 @@ export class RepairsComponent implements OnInit {
   }
 
   obtenerTecnicos(): void {
-    this.TecnicsService.getTecnicos().subscribe(
+    this.tecnicsService.getAllTecnicos().subscribe(
       (data) => {
         this.tecnicos = data;
         console.log(this.tecnicos);
@@ -151,10 +167,9 @@ export class RepairsComponent implements OnInit {
   }
 
   obtenerRepuestos(): void {
-    this.RepuestosService.getRepuestos().subscribe(
+    this.repuestosService.getAllRepuestos().subscribe(
       (data) => {
         this.repuestos = data;
-        console.log(this.repuestos);
       },
       (error) => {
         console.error('Error al obtener los repuestos:', error);
@@ -163,7 +178,7 @@ export class RepairsComponent implements OnInit {
   }
 
   obtenerEquipos(): void {
-    this.EquipoService.getEquipos().subscribe(
+    this.equipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
         console.log(this.equipos);
@@ -172,26 +187,6 @@ export class RepairsComponent implements OnInit {
         console.error('Error al obtener los equipos:', error);
       }
     );
-  }
-
-  get filteredReparaciones() {
-    return this.reparaciones.filter((reparacion) =>
-      reparacion.cliente.nombre
-        .toLowerCase()
-        .includes(this.searchTerm.toLowerCase())
-    );
-  }
-
-  get filteredReparacionesForStatus() {
-    return this.reparaciones.filter((reparacion) => {
-      const matchesCliente = reparacion.cliente.nombre
-        .toLowerCase()
-        .includes(this.searchTerm.toLowerCase());
-      const matchesEstado =
-        this.estadoFiltro === 'Todos' ||
-        reparacion.estado === this.estadoFiltro;
-      return matchesCliente && matchesEstado;
-    });
   }
 
   verDetallesReparacion(reparacion: any): void {
@@ -230,13 +225,9 @@ export class RepairsComponent implements OnInit {
         console.log(repuestoModificado);
         this.modificarRepuesto(repuestoModificado);
 
-        //SI EL REPUESTO YA ESTA AGREGADO EN LA REPARACION NO DEBE AGREGARSE DE NUEVO!
         let yaExiste = false;
         for (let k = 0; k < this.reparacionSeleccionada.repuesto.length; k++) {
-          if (
-            this.reparacionSeleccionada.repuesto[k].id ==
-            this.reparacion.repuesto.id
-          ) {
+          if (this.reparacionSeleccionada.repuesto[k].id == this.reparacion.repuesto.id) {
             console.log('EL REPUESTO YA EXISTE EN LA REPARACION');
             yaExiste = true;
           }
@@ -249,9 +240,7 @@ export class RepairsComponent implements OnInit {
 
     this.reparacionSeleccionada.notasreparacion.push(nuevaNota);
 
-    this.RepairsService.modificarReparacion(
-      this.reparacionSeleccionada
-    ).subscribe(
+    this.repairsService.modificarReparacion(this.reparacionSeleccionada).subscribe(
       () => {
         console.log('Nota agregada correctamente');
         this.obtenerReparaciones();
@@ -261,30 +250,26 @@ export class RepairsComponent implements OnInit {
       },
       (error) => {
         this.errorAgregarNotaReparacion = true;
-        console.error('Error al agregar nota de reparación', error);
+        console.error('Error al agregar nota a la reparación', error);
       }
     );
   }
 
   modificarRepuesto(repuestoModificado: any): void {
-    this.RepuestosService.modificarRepuesto(repuestoModificado)
-      .pipe(
-        tap(() => {
-          this.obtenerRepuestos();
-          console.log('Repuesto modificado exitosamente');
-        }),
-        catchError((error) => {
-          console.error('Error al modificar repuesto:', error);
-          return of(error);
-        })
-      )
-      .subscribe();
+    this.repuestosService.modificarRepuesto(repuestoModificado).subscribe(
+      () => {
+        console.log('Repuesto modificado correctamente');
+      },
+      (error) => {
+        console.error('Error al modificar repuesto', error);
+      }
+    );
   }
 
   setFechaActual(): void {
-    const fechaActual = new Date().toISOString().split('T')[0];
-    this.nuevaReparacion.fechaIngreso = fechaActual;
-    this.reparacion.fechaIngreso = fechaActual;
+    const currentDate = new Date().toISOString().split('T')[0];
+    this.nuevaReparacion.fechaIngreso = currentDate;
+    this.reparacion.fechaIngreso = currentDate;
   }
 
   abrirModalAgregarNota(reparacion: any): void {

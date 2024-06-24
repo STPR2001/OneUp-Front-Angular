@@ -11,7 +11,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./tecnics.component.css']
 })
 
-export class TecnicsComponent implements OnInit { 
+export class TecnicsComponent implements OnInit {
   @ViewChild('agregarTecnicoModal') modalCloseAdd: any;
   @ViewChild('ModificarTecnicoModal') modalCloseUpdate: any;
 
@@ -20,8 +20,11 @@ export class TecnicsComponent implements OnInit {
   nuevoTecnico: any = {};
   tecnicos: any[] = [];
   tecnicoSeleccionado: any = {};
-  searchTerm: string = '';
   errorAgregarTecnico = false;
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  nombre: string = '';
 
   constructor(private tecnicsService: TecnicsService, private router: Router, private modalService: NgbModal) { }
 
@@ -30,14 +33,24 @@ export class TecnicsComponent implements OnInit {
   }
 
   getTecnicos(): void {
-    this.tecnicsService.getTecnicos().subscribe(
+    this.tecnicsService.getTecnicos(this.currentPage, this.pageSize, this.nombre).subscribe(
       (data) => {
-        this.tecnicos = data;
+        this.tecnicos = data.content;
+        this.totalPages = data.totalPages;
       },
       (error) => {
         console.error('Error al obtener la lista de tecnicos:', error);
       }
     );
+  }
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.getTecnicos();
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 0;
+    this.getTecnicos();
   }
 
   seleccionarTecnico(tecnico: any): void {
@@ -59,18 +72,12 @@ export class TecnicsComponent implements OnInit {
     );
   }
 
-  get filteredTecnicos() {
-    return this.tecnicos.filter((tecnico) =>
-      tecnico.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-  }
-
   agregarTecnico(): void {
     this.tecnicsService.agregarTecnico(this.nuevoTecnico).pipe(
       tap(() => {
         this.router.navigate(['/tecnicos']);
         this.nuevoTecnico = {};
-        this.getTecnicos(); 
+        this.getTecnicos();
         this.modalCloseAdd.nativeElement.click();
       }),
       catchError((error) => {
@@ -86,7 +93,7 @@ export class TecnicsComponent implements OnInit {
 
   modificarTecnico(): void {
     this.tecnicsService.modificarTecnico(this.tecnico).pipe(
-      tap(() => { 
+      tap(() => {
         this.router.navigate(['/tecnicos']);
         this.getTecnicos();
         this.modalCloseUpdate.nativeElement.click();

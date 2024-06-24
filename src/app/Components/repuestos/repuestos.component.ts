@@ -21,6 +21,10 @@ export class RepuestosComponent implements OnInit {
   repuestoSeleccionado: any = {};
   searchTerm: string = '';
   errorAgregarRepuesto = false;
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  nombre: string = '';
 
   constructor(private repuestosService: RepuestosService, private router: Router, private modalService: NgbModal) { }
 
@@ -29,14 +33,25 @@ export class RepuestosComponent implements OnInit {
   }
 
   getRepuestos(): void {
-    this.repuestosService.getRepuestos().subscribe(
+    this.repuestosService.getRepuestos(this.currentPage, this.pageSize, this.nombre).subscribe(
       (data) => {
-        this.repuestos = data;
+        this.repuestos = data.content;
+        this.totalPages = data.totalPages;
       },
       (error) => {
         console.error('Error al obtener la lista de repuestos:', error);
       }
     );
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.getRepuestos();
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 0;
+    this.getRepuestos();
   }
 
   seleccionarRepuesto(repuesto: any): void {
@@ -55,12 +70,6 @@ export class RepuestosComponent implements OnInit {
       (error) => {
         console.error('Error al eliminar repuesto:', error);
       }
-    );
-  }
-
-  get filteredRepuestos() {
-    return this.repuestos.filter((repuesto) =>
-      repuesto.numeroDeParte.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
 

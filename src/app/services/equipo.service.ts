@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 
@@ -17,14 +17,25 @@ export class EquipoService {
     });
   }
 
-  getEquipos(): Observable<any> {
+  getEquipos(page: number, size: number, nombre?: string): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.get<any>(this.apiUrl, { headers });
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombreMarca', nombre);
+    }
+    return this.http
+      .get<any>(this.apiUrl, { headers, params });
+  }
+
+  getAllEquipos(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/all`, { headers });
   }
 
   agregarEquipos(nuevoEquipo: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(this.apiUrl, nuevoEquipo, { headers, responseType: 'text'  });
+    return this.http.post(this.apiUrl, nuevoEquipo, { headers, responseType: 'text' });
   }
 
   modificarEquipo(equipo: any): Observable<any> {

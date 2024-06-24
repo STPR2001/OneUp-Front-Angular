@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 
@@ -8,7 +8,7 @@ import { AuthService } from './auth/auth.service';
 })
 export class ClientsService {
   private apiUrl = 'http://localhost:3000/oneup-backend/api/cliente';
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -16,14 +16,25 @@ export class ClientsService {
     });
   }
 
-  getClientes(): Observable<any> {
+  getClientes(page: number, size: number, nombre?: string): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.get<any>(this.apiUrl, { headers });
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombre', nombre);
+    }
+    return this.http
+      .get<any>(this.apiUrl, { headers, params });
+  }
+
+  getAllClientes(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/all`, { headers });
   }
 
   agregarCliente(nuevoCliente: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(this.apiUrl, nuevoCliente, { headers, responseType: 'text'  });
+    return this.http.post(this.apiUrl, nuevoCliente, { headers, responseType: 'text' });
   }
 
   modificarCliente(cliente: any): Observable<any> {
