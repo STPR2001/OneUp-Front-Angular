@@ -21,6 +21,8 @@ import { ShoppingComponent } from './Components/shopping/shopping.component';
 import { NewShoppingComponent } from './Components/shopping/new-shopping/new-shopping.component';
 import { RepuestosComponent } from './Components/repuestos/repuestos.component';
 import { ConfigComponent } from './Components/config/config.component';
+import { StatisticComponent } from './Components/statistic/statistic.component';
+import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
 
 @NgModule({
   declarations: [
@@ -38,6 +40,7 @@ import { ConfigComponent } from './Components/config/config.component';
     NewShoppingComponent,
     RepuestosComponent,
     ConfigComponent,
+    StatisticComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,6 +49,7 @@ import { ConfigComponent } from './Components/config/config.component';
     FormsModule,
     NgbModule,
     ReactiveFormsModule,
+    CanvasJSAngularChartsModule,
   ],
   providers: [AuthGuard],
 

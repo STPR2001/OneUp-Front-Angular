@@ -29,6 +29,20 @@ export class ShoppingService {
             .pipe(catchError(this.handleError));
     }
 
+    getComprasPorMes(): Observable<any> {
+        const headers = this.getHeaders();
+        return this.http
+            .get<any>(`${this.apiUrl}/compras-por-mes`, { headers })
+            .pipe(catchError(this.handleError));
+    }
+
+    getComprasPorProveedor(): Observable<any> {
+        const headers = this.getHeaders();
+        return this.http
+            .get<any>(`${this.apiUrl}/compras-por-proveedor`, { headers })
+            .pipe(catchError(this.handleError));
+    }
+
     agregarCompra(nuevoCompra: any): Observable<any> {
         const headers = this.getHeaders();
         return this.http
