@@ -128,6 +128,7 @@ export class ModifyRepairComponent implements OnInit {
   }
 
   modificarReparacion(): void {
+    console.log(this.reparacion);
     this.RepairsService.modificarReparacion(this.reparacion)
       .pipe(
         tap(() => {
