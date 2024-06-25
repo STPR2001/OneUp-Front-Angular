@@ -49,4 +49,4 @@ import { RepuestosComponent } from './Components/repuestos/repuestos.component';
 
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

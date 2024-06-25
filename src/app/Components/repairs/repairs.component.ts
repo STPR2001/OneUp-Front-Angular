@@ -8,6 +8,8 @@ import { RepuestosService } from 'src/app/services/repuestos.service';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import * as bootstrap from 'bootstrap';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-repairs',
@@ -230,7 +232,7 @@ export class RepairsComponent implements OnInit {
         console.log(repuestoModificado);
         this.modificarRepuesto(repuestoModificado);
 
-        //SI EL REPUESTO YA ESTA AGREGADO EN LA REPARACION NO DEBE AGREGARSE DE NUEVO!
+        //SI EL REPUESTO YA ESTA AGREGADO EN LA REPARACION NO SE AGREGARSE DE NUEVO!
         let yaExiste = false;
         for (let k = 0; k < this.reparacionSeleccionada.repuesto.length; k++) {
           if (
@@ -297,5 +299,38 @@ export class RepairsComponent implements OnInit {
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
     }
+  }
+
+  //Imprimir / descargar pdf
+  generarPDF(reparacion: any): void {
+    const pdfContent = `
+    <div style="margin-left: 20px; font-size: 16px;">
+      <h1>Detalles de Reparación</h1>
+      <p><strong>Cliente:</strong> ${reparacion.cliente.nombre}</p>
+      <p><strong>Equipo:</strong> ${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre}</p>
+      <p><strong>Falla:</strong> ${reparacion.falla}</p>
+      <p><strong>Técnico:</strong> ${reparacion.tecnico.nombre}</p>
+      <p><strong>Código de seguimiento:</strong> ${reparacion.codigoSeguimiento}</p>
+    </div>
+  `;
+
+    const pdfElement = document.createElement('div');
+    pdfElement.innerHTML = pdfContent;
+    document.body.appendChild(pdfElement);
+
+    html2canvas(pdfElement).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(
+        `${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre} ${reparacion.cliente.nombre}.pdf`
+      );
+
+      document.body.removeChild(pdfElement);
+    });
   }
 }
