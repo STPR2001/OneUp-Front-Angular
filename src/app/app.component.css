@@ -115,3 +115,7 @@
   overflow: hidden;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
 }
+
+.row.active .icon {
+  color: #fe9b01;
+}

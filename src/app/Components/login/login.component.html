@@ -1,52 +1,70 @@
 <div class="container">
   <div class="row justify-content-center mt-5">
     <div class="col-md-6">
-      <h2 class="text-center">Login</h2>
-      <form [formGroup]="loginForm">
-        <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label">Usuario</label>
-          <input
-            formControlName="usuario"
-            type="name"
-            class="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="nameHelp"
-          />
-          <div
-            *ngIf="usuario.invalid && (usuario.dirty || usuario.touched)"
-            class="text-danger"
-          >
-            <div *ngIf="usuario.errors?.['required']">
-              El nombre de usuario es requerido.
-            </div>
+      <div class="card shadow-lg">
+        <div class="card-body p-5">
+          <div class="text-center mb-4">
+            <img
+              src="../assets/logoLogin.jpeg"
+              alt="Logo de la empresa"
+              class="rounded-circle"
+              style="width: 120px; height: 120px; object-fit: cover"
+            />
           </div>
-        </div>
-        <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label"
-            >Contraseña</label
-          >
-          <input
-            formControlName="password"
-            type="password"
-            class="form-control"
-            id="exampleInputPassword1"
-          />
-          <div
-            *ngIf="password.invalid && (password.dirty || password.touched)"
-            class="text-danger"
-          >
-            <div *ngIf="password.errors?.['required']">
-              El password es requerido.
+          <h2 class="card-title text-center mb-4">Iniciar Sesión</h2>
+          <form [formGroup]="loginForm">
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Usuario</label>
+              <input
+                formControlName="usuario"
+                type="text"
+                class="form-control"
+                id="exampleInputEmail1"
+                aria-describedby="nameHelp"
+              />
+              <div
+                *ngIf="usuario.invalid && (usuario.dirty || usuario.touched)"
+                class="text-danger"
+              >
+                <div *ngIf="usuario.errors?.['required']">
+                  El nombre de usuario es requerido.
+                </div>
+              </div>
             </div>
-          </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label"
+                >Contraseña</label
+              >
+              <input
+                formControlName="password"
+                type="password"
+                class="form-control"
+                id="exampleInputPassword1"
+              />
+              <div
+                *ngIf="password.invalid && (password.dirty || password.touched)"
+                class="text-danger"
+              >
+                <div *ngIf="password.errors?.['required']">
+                  El password es requerido.
+                </div>
+              </div>
+            </div>
+            <p class="text-danger text-center mb-4">
+              {{ loginError ? "Credenciales inválidas" : "" }}
+            </p>
+            <div class="text-center">
+              <button
+                type="submit"
+                (click)="login()"
+                class="btn btn-primary btn-lg px-5"
+              >
+                Iniciar Sesión
+              </button>
+            </div>
+          </form>
         </div>
-        <p class="text-danger">
-          {{ loginError ? "Credenciales invalidas" : "" }}
-        </p>
-        <button type="submit" (click)="login()" class="btn btn-primary">
-          Iniciar Sesión
-        </button>
-      </form>
+      </div>
     </div>
   </div>
 </div>

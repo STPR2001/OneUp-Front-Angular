@@ -50,7 +50,7 @@
       <tbody>
         <tr *ngFor="let repair of reparaciones" class="hover-row">
           <td>{{ repair.id }}</td>
-          <td>{{ repair.fechaIngreso | date }}</td>
+          <td>{{ repair.fechaIngreso | date : "shortDate" : "UTC" }}</td>
           <td>{{ repair.cliente.nombre }}</td>
           <td>{{ repair.equipo.marca.nombre }}</td>
           <td>{{ repair.equipo.modelo.nombre }}</td>
@@ -59,21 +59,21 @@
           <td>{{ repair.estado }}</td>
           <td>
             <button
-              class="btn btn-success me-2"
+              class="btn btn-primary me-2"
               (click)="verDetallesReparacion(repair)"
               title="Ver más"
             >
               <span class="material-icons icon-small">visibility</span>
             </button>
             <button
-              class="btn btn-success me-2"
+              class="btn btn-primary me-2"
               [routerLink]="['/modificarReparacion', repair.id]"
               title="Modificar"
             >
               <span class="material-icons icon-small">edit</span>
             </button>
             <button
-              class="btn btn-success me-2"
+              class="btn btn-primary me-2"
               (click)="abrirModalAgregarNota(repair)"
               title="Agregar nota"
             >
@@ -81,7 +81,7 @@
             </button>
             <button
               class="btn btn-primary me-2"
-              (click)="generarPDF(reparacion)"
+              (click)="generarPDF(repair)"
               title="Imprimir"
             >
               <span class="material-icons icon-small">print</span>

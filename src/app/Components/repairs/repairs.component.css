@@ -1,6 +1,10 @@
-table {
-  border-collapse: collapse;
+.table-container {
+  max-height: unset; /* Elimina la restricción de altura */
+}
+
+.table {
   width: 100%;
+  border-collapse: collapse;
 }
 
 th,
@@ -59,10 +63,6 @@ th {
   background-color: #218838;
 }
 
-.table-container {
-  max-height: 70vh;
-  overflow-y: auto;
-}
 .modal-body .mb-3 {
   display: flex;
   align-items: center;
