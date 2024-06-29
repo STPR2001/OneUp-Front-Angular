@@ -55,4 +55,4 @@ import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
 
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

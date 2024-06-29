@@ -39,16 +39,18 @@
             <td>{{ equipo.numeroSerie }}</td>
             <td>
               <button
-                class="btn btn-success me-2"
+                class="btn btn-primary me-2"
+                title="Modificar"
                 (click)="openModificarEquipoModal(equipo)"
               >
-                Modificar
+                <span class="material-icons icon-small">edit</span>
               </button>
               <button
                 class="btn btn-danger"
+                title="Eliminar"
                 (click)="eliminarEquipo(equipo.id)"
               >
-                Eliminar
+                <span class="material-icons icon-small">delete</span>
               </button>
             </td>
           </tr>

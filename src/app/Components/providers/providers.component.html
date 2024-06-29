@@ -40,9 +40,10 @@
           <td>
             <button
               type="button"
-              class="btn btn-success me-2"
+              class="btn btn-primary me-2"
               data-bs-toggle="modal"
               data-bs-target="#ModificarProveedorModal"
+              title="Modificar"
               (click)="
                 abrirModalModificacion(
                   proveedor.id,
@@ -53,14 +54,15 @@
                 )
               "
             >
-              Modificar
+              <span class="material-icons icon-small">edit</span>
             </button>
 
             <button
               class="btn btn-danger"
               (click)="eliminarProveedor(proveedor.id)"
+              title="Eliminar"
             >
-              Eliminar
+              <span class="material-icons icon-small">delete</span>
             </button>
           </td>
         </tr>
