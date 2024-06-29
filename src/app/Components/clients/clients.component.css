@@ -63,3 +63,7 @@ th {
   max-height: 70vh;
   overflow-y: auto;
 }
+
+.icon-small {
+  font-size: 19px;
+}

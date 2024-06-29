@@ -31,7 +31,6 @@
             <th>Teléfono</th>
             <th>Dirección</th>
             <th>Cédula</th>
-            <th>Celular</th>
             <th>Observaciones</th>
             <th>Acciones</th>
           </tr>
@@ -43,11 +42,10 @@
             <td>{{ cliente.telefono }}</td>
             <td>{{ cliente.direccion }}</td>
             <td>{{ cliente.cedula }}</td>
-            <td>{{ cliente.celular }}</td>
             <td>{{ cliente.observacion }}</td>
             <td>
               <button
-                class="btn btn-success me-2"
+                class="btn btn-primary me-2"
                 data-bs-toggle="modal"
                 data-bs-target="#ModificarClienteModal"
                 (click)="
@@ -61,14 +59,16 @@
                     cliente.observacion
                   )
                 "
+                title="Modificar"
               >
-                Modificar
+                <span class="material-icons icon-small">edit</span>
               </button>
               <button
                 class="btn btn-danger"
                 (click)="eliminarCliente(cliente.id)"
+                title="Eliminar"
               >
-                Eliminar
+                <span class="material-icons icon-small">delete</span>
               </button>
             </td>
           </tr>

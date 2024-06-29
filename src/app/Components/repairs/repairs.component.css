@@ -101,3 +101,7 @@ th {
 .modal-footer button {
   width: 100px;
 }
+
+.icon-small {
+  font-size: 19px;
+}

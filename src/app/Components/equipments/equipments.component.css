@@ -72,3 +72,7 @@ th {
 .second-modal .modal {
   z-index: 1052;
 }
+
+.icon-small {
+  font-size: 19px;
+}

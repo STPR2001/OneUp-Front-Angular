@@ -61,26 +61,37 @@
             <button
               class="btn btn-success me-2"
               (click)="verDetallesReparacion(repair)"
+              title="Ver más"
             >
-              Ver más
+              <span class="material-icons icon-small">visibility</span>
             </button>
             <button
               class="btn btn-success me-2"
               [routerLink]="['/modificarReparacion', repair.id]"
+              title="Modificar"
             >
-              Modificar
+              <span class="material-icons icon-small">edit</span>
             </button>
             <button
               class="btn btn-success me-2"
               (click)="abrirModalAgregarNota(repair)"
+              title="Agregar nota"
             >
-              Agregar nota
+              <span class="material-icons icon-small">note_add</span>
+            </button>
+            <button
+              class="btn btn-primary me-2"
+              (click)="generarPDF(reparacion)"
+              title="Imprimir"
+            >
+              <span class="material-icons icon-small">print</span>
             </button>
             <button
               class="btn btn-danger"
               (click)="eliminarReparacion(repair.id)"
+              title="Eliminar"
             >
-              Eliminar
+              <span class="material-icons icon-small">delete</span>
             </button>
           </td>
         </tr>
@@ -224,7 +235,7 @@
             <li *ngFor="let repuesto of reparacionSeleccionada.repuesto">
               <p><strong>Repuesto:</strong> {{ repuesto.descripcion }}</p>
               <p>
-                <strong>Número de parte :</strong> {{ repuesto.numeroDeParte }}
+                <strong>Número de parte:</strong> {{ repuesto.numeroDeParte }}
               </p>
             </li>
           </ul>
