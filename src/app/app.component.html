@@ -12,45 +12,84 @@
       <img src="../assets/logo.png" alt="OneUp Soluciones Logo" class="logo" />
     </div>
     <ul class="SidebarList">
-      <li class="row" routerLink="/home">
+      <li class="row" routerLink="/home" [ngClass]="{ active: isActive('/') }">
         <div class="icon"><span class="material-icons">dashboard</span></div>
         <div class="title">Home</div>
       </li>
-      <li class="row" routerLink="/reparaciones">
+      <li
+        class="row"
+        routerLink="/reparaciones"
+        [ngClass]="{ active: isActive('/reparaciones') }"
+        [ngClass]="{ active: isActive('/agregarReparacion') }"
+        [ngClass]="{ active: isActive('/modificarReparacion/:id') }"
+      >
         <div class="icon"><span class="material-icons">build</span></div>
         <div class="title">Reparaciones</div>
       </li>
-      <li class="row" routerLink="/clients">
+      <li
+        class="row"
+        routerLink="/clients"
+        [ngClass]="{ active: isActive('/clients') }"
+      >
         <div class="icon"><span class="material-icons">people_alt</span></div>
         <div class="title">Clientes</div>
       </li>
-      <li class="row" routerLink="/repuestos">
+      <li
+        class="row"
+        routerLink="/repuestos"
+        [ngClass]="{ active: isActive('/repuestos') }"
+      >
         <div class="icon">
           <span class="material-icons">app_settings_alt</span>
         </div>
         <div class="title">Repuestos</div>
       </li>
-      <li class="row" routerLink="/proveedores">
+      <li
+        class="row"
+        routerLink="/proveedores"
+        [ngClass]="{ active: isActive('/proveedores') }"
+      >
         <div class="icon"><span class="material-icons">person</span></div>
         <div class="title">Proveedores</div>
       </li>
-      <li class="row" routerLink="/tecnicos">
+      <li
+        class="row"
+        routerLink="/tecnicos"
+        [ngClass]="{ active: isActive('/tecnicos') }"
+      >
         <div class="icon"><span class="material-icons">engineering</span></div>
         <div class="title">Técnicos</div>
       </li>
-      <li class="row" routerLink="/compras">
+      <li
+        class="row"
+        routerLink="/compras"
+        [ngClass]="{ active: isActive('/compras') }"
+        [ngClass]="{ active: isActive('/compras/new') }"
+      >
         <div class="icon"><span class="material-icons">shop_two</span></div>
         <div class="title">Compras</div>
       </li>
-      <li class="row" routerLink="/equipos">
+      <li
+        class="row"
+        routerLink="/equipos"
+        [ngClass]="{ active: isActive('/equipos') }"
+      >
         <div class="icon"><span class="material-icons">devices</span></div>
         <div class="title">Equipos</div>
       </li>
-      <li class="row" routerLink="/estadisticas">
+      <li
+        class="row"
+        routerLink="/estadisticas"
+        [ngClass]="{ active: isActive('/estadisticas') }"
+      >
         <div class="icon"><span class="material-icons">assessment</span></div>
         <div class="title">Estadísticas</div>
       </li>
-      <li class="row" routerLink="/configuracion">
+      <li
+        class="row"
+        routerLink="/configuracion"
+        [ngClass]="{ active: isActive('/configuracion') }"
+      >
         <div class="icon"><span class="material-icons">settings</span></div>
         <div class="title">Configuración</div>
       </li>
@@ -60,11 +99,7 @@
       </li>
     </ul>
   </div>
-  <div
-    class="content"
-    [ngClass]="{ expanded: !sidebarOpen }"
-    [ngClass]="{ expanded: !isLogued() }"
-  >
+  <div class="content" [ngClass]="{ expanded: !sidebarOpen || !isLogued() }">
     <router-outlet></router-outlet>
   </div>
 </div>

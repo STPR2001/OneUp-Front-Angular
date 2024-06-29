@@ -96,7 +96,7 @@ export class RepairsComponent implements OnInit {
     private equipoService: EquipoService,
     private repuestosService: RepuestosService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.setFechaActual();
@@ -109,15 +109,22 @@ export class RepairsComponent implements OnInit {
 
   obtenerReparaciones(): void {
     let estadoParam = this.estadoFiltro !== 'Todos' ? this.estadoFiltro : null;
-    this.repairsService.getReparaciones(this.currentPage, this.pageSize, this.nombreCliente, estadoParam ?? '').subscribe(
-      (data) => {
-        this.reparaciones = data.content;
-        this.totalPages = data.totalPages;
-      },
-      (error) => {
-        console.error('Error al obtener reparaciones:', error);
-      }
-    );
+    this.repairsService
+      .getReparaciones(
+        this.currentPage,
+        this.pageSize,
+        this.nombreCliente,
+        estadoParam ?? ''
+      )
+      .subscribe(
+        (data) => {
+          this.reparaciones = data.content;
+          this.totalPages = data.totalPages;
+        },
+        (error) => {
+          console.error('Error al obtener reparaciones:', error);
+        }
+      );
   }
 
   onPageChange(page: number): void {
@@ -230,7 +237,10 @@ export class RepairsComponent implements OnInit {
         //SI EL REPUESTO YA ESTA AGREGADO EN LA REPARACION NO SE AGREGA DE NUEVO!
         let yaExiste = false;
         for (let k = 0; k < this.reparacionSeleccionada.repuesto.length; k++) {
-          if (this.reparacionSeleccionada.repuesto[k].id == this.reparacion.repuesto.id) {
+          if (
+            this.reparacionSeleccionada.repuesto[k].id ==
+            this.reparacion.repuesto.id
+          ) {
             console.log('EL REPUESTO YA EXISTE EN LA REPARACION');
             yaExiste = true;
           }
@@ -243,19 +253,21 @@ export class RepairsComponent implements OnInit {
 
     this.reparacionSeleccionada.notasreparacion.push(nuevaNota);
 
-    this.repairsService.modificarReparacion(this.reparacionSeleccionada).subscribe(
-      () => {
-        console.log('Nota agregada correctamente');
-        this.obtenerReparaciones();
-        if (this.modalCloseUpdate) {
-          this.modalCloseUpdate.nativeElement.click();
+    this.repairsService
+      .modificarReparacion(this.reparacionSeleccionada)
+      .subscribe(
+        () => {
+          console.log('Nota agregada correctamente');
+          this.obtenerReparaciones();
+          if (this.modalCloseUpdate) {
+            this.modalCloseUpdate.nativeElement.click();
+          }
+        },
+        (error) => {
+          this.errorAgregarNotaReparacion = true;
+          console.error('Error al agregar nota a la reparación', error);
         }
-      },
-      (error) => {
-        this.errorAgregarNotaReparacion = true;
-        console.error('Error al agregar nota a la reparación', error);
-      }
-    );
+      );
   }
 
   modificarRepuesto(repuestoModificado: any): void {
