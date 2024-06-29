@@ -65,7 +65,7 @@ export class HomeComponent implements OnInit {
   }
 
   obtenerReparaciones(): void {
-    this.RepairsService.getReparaciones().subscribe(
+    this.RepairsService.getAllReparaciones().subscribe(
       (data) => {
         this.reparaciones = data;
         console.log(this.reparaciones);
@@ -92,7 +92,7 @@ export class HomeComponent implements OnInit {
   }
 
   obtenerClientes(): void {
-    this.ClientsService.getClientes().subscribe(
+    this.ClientsService.getAllClientes().subscribe(
       (data) => {
         this.clientes = data;
       },
@@ -103,7 +103,7 @@ export class HomeComponent implements OnInit {
   }
 
   obtenerTecnicos(): void {
-    this.TecnicsService.getTecnicos().subscribe(
+    this.TecnicsService.getAllTecnicos().subscribe(
       (data) => {
         this.tecnicos = data;
         console.log(this.tecnicos);
@@ -115,7 +115,7 @@ export class HomeComponent implements OnInit {
   }
 
   obtenerEquipos(): void {
-    this.EquipoService.getEquipos().subscribe(
+    this.EquipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
         console.log(this.equipos);
