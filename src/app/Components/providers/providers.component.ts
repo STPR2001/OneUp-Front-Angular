@@ -21,6 +21,10 @@ export class ProvidersComponent implements OnInit {
   proveedorSeleccionado: any = {};
   searchTerm: string = '';
   errorAgregarProveedor = false;
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  nombre: string = '';
 
   constructor(private providersService: ProvidersService, private router: Router, private modalService: NgbModal) { }
 
@@ -29,9 +33,10 @@ export class ProvidersComponent implements OnInit {
   }
 
   getProveedores(): void {
-    this.providersService.getProveedores().subscribe(
+    this.providersService.getProveedores(this.currentPage, this.pageSize, this.nombre).subscribe(
       (data) => {
-        this.proveedores = data;
+        this.proveedores = data.content;
+        this.totalPages = data.totalPages;
       },
       (error) => {
         console.error('Error al obtener la lista de proveedores:', error);
@@ -39,6 +44,15 @@ export class ProvidersComponent implements OnInit {
     );
   }
 
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.getProveedores();
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 0;
+    this.getProveedores();
+  }
   seleccionarProveedor(proveedor: any): void {
     this.proveedorSeleccionado = { ...proveedor };
   }
@@ -58,18 +72,12 @@ export class ProvidersComponent implements OnInit {
     );
   }
 
-  get filteredProveedores() {
-    return this.proveedores.filter((proveedor) =>
-      proveedor.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-  }
-
   agregarProveedor(): void {
     this.providersService.agregarProveedor(this.nuevoProveedor).pipe(
       tap(() => {
         this.router.navigate(['/proveedores']);
         this.nuevoProveedor = {};
-        this.getProveedores(); 
+        this.getProveedores();
         this.modalCloseAdd.nativeElement.click();
       }),
       catchError((error) => {
@@ -85,7 +93,7 @@ export class ProvidersComponent implements OnInit {
 
   modificarProveedor(): void {
     this.providersService.modificarProveedor(this.proveedor).pipe(
-      tap(() => { 
+      tap(() => {
         this.router.navigate(['/proveedores']);
         this.getProveedores();
         this.modalCloseUpdate.nativeElement.click();
@@ -104,7 +112,7 @@ export class ProvidersComponent implements OnInit {
     this.proveedor.id = proveedorId;
     this.proveedor.nombre = proveedorNombre;
     this.proveedor.direccion = proveedorDireccion;
-    this.proveedor.telefono = proveedorTelefono; 
+    this.proveedor.telefono = proveedorTelefono;
     this.proveedor.email = proveedorCorreo;
   }
 

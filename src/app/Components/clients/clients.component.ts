@@ -22,22 +22,27 @@ export class ClientsComponent implements OnInit {
   errorAgregarCliente = false;
   cliente: any = {};
   errorModificarCliente = false;
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  nombre: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private clientsService: ClientsService,
     private modalService: NgbModal
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getClientes();
   }
 
   getClientes(): void {
-    this.clientsService.getClientes().subscribe(
+    this.clientsService.getClientes(this.currentPage, this.pageSize, this.nombre).subscribe(
       (data) => {
-        this.clientes = data;
+        this.clientes = data.content;
+        this.totalPages = data.totalPages;
       },
       (error) => {
         console.error('Error al obtener la lista de clientes:', error);
@@ -45,14 +50,18 @@ export class ClientsComponent implements OnInit {
     );
   }
 
-  seleccionarCliente(cliente: any): void {
-    this.clienteSeleccionado = { ...cliente };
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.getClientes();
   }
 
-  get filteredClientes() {
-    return this.clientes.filter((cliente) =>
-      cliente.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
+  onFilterChange(): void {
+    this.currentPage = 0;
+    this.getClientes();
+  }
+
+  seleccionarCliente(cliente: any): void {
+    this.clienteSeleccionado = { ...cliente };
   }
 
   agregarCliente(): void {

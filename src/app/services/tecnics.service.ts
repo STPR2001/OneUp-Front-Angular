@@ -3,6 +3,7 @@ import {
     HttpClient,
     HttpErrorResponse,
     HttpHeaders,
+    HttpParams,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -21,17 +22,28 @@ export class TecnicsService {
             'Content-Type': 'application/json',
         });
     }
-    getTecnicos(): Observable<any> {
+    getTecnicos(page: number, size: number, nombre?: string): Observable<any> {
+        const headers = this.getHeaders();
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        if (nombre) {
+            params = params.set('nombre', nombre);
+        }
+        return this.http
+            .get<any>(this.apiUrl, { headers, params })
+            .pipe(catchError(this.handleError));
+    }
+
+    getAllTecnicos(): Observable<any> {
         const headers = this.getHeaders();
         return this.http
-            .get<any>(this.apiUrl, { headers })
+            .get<any>(`${this.apiUrl}/all`, { headers })
             .pipe(catchError(this.handleError));
     }
 
     agregarTecnico(nuevoTecnico: any): Observable<any> {
         const headers = this.getHeaders();
         return this.http
-            .post(this.apiUrl, nuevoTecnico, { headers, responseType: 'text'  })
+            .post(this.apiUrl, nuevoTecnico, { headers, responseType: 'text' })
             .pipe(catchError(this.handleError));
     }
 

@@ -35,6 +35,10 @@ export class EquipmentsComponent implements OnInit {
   searchTerm: string = '';
   errorAgregarEquipo = false;
   errorModificarEquipo = false;
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  nombre: string = '';
   nuevoEquipo: any = {
     numeroSerie: '',
     tipo_equipo: { id: '' },
@@ -75,15 +79,25 @@ export class EquipmentsComponent implements OnInit {
   }
 
   getEquipos(): void {
-    this.EquipoService.getEquipos().subscribe(
+    this.EquipoService.getEquipos(this.currentPage, this.pageSize, this.nombre).subscribe(
       (data) => {
-        this.equipos = data;
-        console.log(data);
+        this.equipos = data.content;
+        this.totalPages = data.totalPages;
       },
       (error) => {
         console.error('Error al obtener la lista de equipos:', error);
       }
     );
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.getEquipos();
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 0;
+    this.getEquipos();
   }
 
   agregarEquipo(): void {
@@ -142,12 +156,6 @@ export class EquipmentsComponent implements OnInit {
       (error) => {
         console.error('Error al eliminar equipo', error);
       }
-    );
-  }
-
-  get filteredEquipos() {
-    return this.equipos.filter((equipo) =>
-      equipo.marca.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
 

@@ -148,7 +148,7 @@ export class ModifyRepairComponent implements OnInit {
   }
 
   obtenerClientes(): void {
-    this.ClientsService.getClientes().subscribe(
+    this.ClientsService.getAllClientes().subscribe(
       (data) => {
         this.clientes = data;
       },
@@ -159,7 +159,7 @@ export class ModifyRepairComponent implements OnInit {
   }
 
   obtenerTecnicos(): void {
-    this.TecnicsService.getTecnicos().subscribe(
+    this.TecnicsService.getAllTecnicos().subscribe(
       (data) => {
         this.tecnicos = data;
         console.log(this.tecnicos);
@@ -171,7 +171,7 @@ export class ModifyRepairComponent implements OnInit {
   }
 
   obtenerEquipos(): void {
-    this.EquipoService.getEquipos().subscribe(
+    this.EquipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
         console.log(this.equipos);
@@ -233,7 +233,7 @@ export class ModifyRepairComponent implements OnInit {
       .subscribe();
   }
   getEquipos(): void {
-    this.EquipoService.getEquipos().subscribe(
+    this.EquipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
         console.log(data);

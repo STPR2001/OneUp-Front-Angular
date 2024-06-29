@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 
@@ -17,9 +17,17 @@ export class RepairsService {
     });
   }
 
-  getReparaciones(): Observable<any> {
+  getReparaciones(page: number, size: number, nombreCliente?: string, estado?: string): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.get<any>(this.apiUrl, { headers });
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombreCliente) {
+      params = params.set('nombreCliente', nombreCliente);
+    }
+    if (estado) {
+      params = params.set('estado', estado);
+    }
+    return this.http
+      .get<any>(this.apiUrl, { headers, params });
   }
 
   agregarReparacion(nuevaReparacion: any): Observable<any> {

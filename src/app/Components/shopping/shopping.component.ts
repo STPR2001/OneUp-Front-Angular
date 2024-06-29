@@ -15,6 +15,9 @@ export class ShoppingComponent implements OnInit {
   @ViewChild('ModificarCompraModal') modalCloseUpdate: any;
 
   compra: any = {};
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
   errorModificarCompra = false;
   nuevoCompra: any = {};
   compras: any[] = [];
@@ -32,15 +35,20 @@ export class ShoppingComponent implements OnInit {
   }
 
   getCompras(): void {
-    this.shoppingService.getCompras().subscribe(
+    this.shoppingService.getCompras(this.currentPage, this.pageSize, this.startDate, this.endDate).subscribe(
       (data) => {
-        console.log(data)
-        this.compras = data;
+        this.compras = data.content;
+        this.totalPages = data.totalPages;
       },
       (error) => {
         console.error('Error al obtener la lista de compras:', error);
       }
     );
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.getCompras();
   }
 
   seleccionarCompra(compra: any): void {
@@ -50,7 +58,10 @@ export class ShoppingComponent implements OnInit {
   navigateToUpdateCompra(id: string, nombre: string): void {
     this.router.navigateByUrl(`/compras/update`, { state: { nombre: nombre, id: id } });
   }
-
+  onFilterChange(): void {
+    this.currentPage = 0;
+    this.getCompras();
+  }
   eliminarCompra(id: number): void {
     this.shoppingService.eliminarCompra(id).subscribe(
       () => {
@@ -60,20 +71,7 @@ export class ShoppingComponent implements OnInit {
         console.error('Error al eliminar compra:', error);
       }
     );
-  }
-
-  get filteredCompras() {
-    const start = new Date(this.startDate).getTime();
-    const end = new Date(this.endDate).getTime();
-
-    return this.compras
-      .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
-      .filter(compra => {
-        const compraDate = new Date(compra.fecha).getTime();
-        return (!this.startDate || compraDate >= start) && (!this.endDate || compraDate <= end);
-      });
-  }
-
+  } 
   formatDate(isoDate: string): string {
     const date = new Date(isoDate);
     return date.toLocaleDateString('es-ES', {

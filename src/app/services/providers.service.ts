@@ -3,6 +3,7 @@ import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
+  HttpParams,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -12,31 +13,42 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class ProvidersService {
-    private apiUrl = 'http://localhost:3000/oneup-backend/api/proveedor';
-    constructor(private http: HttpClient, private authService: AuthService) { }
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/proveedor';
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
-    private getHeaders(): HttpHeaders {
-        return new HttpHeaders({
-            Authorization: `Bearer ${this.authService.getAuthenticatedToken()}`,
-            'Content-Type': 'application/json',
-        });
-    }
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      Authorization: `Bearer ${this.authService.getAuthenticatedToken()}`,
+      'Content-Type': 'application/json',
+    });
+  }
 
-  getProveedores(): Observable<any> {
+  getProveedores(page: number, size: number, nombre?: string): Observable<any> {
     const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombre', nombre);
+    }
     return this.http
-      .get<any>(this.apiUrl, { headers })
+      .get<any>(this.apiUrl, { headers, params })
       .pipe(catchError(this.handleError));
   }
 
-    getRepuestos(): Observable<any[]> {
-        const headers = this.getHeaders();
-        return this.http.get<any>(`http://localhost:3000/oneup-backend/api/repuesto`, { headers });
-    }
+  getAllProveedores(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/all`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  getRepuestos(): Observable<any[]> {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`http://localhost:3000/oneup-backend/api/repuesto/all`, { headers });
+  }
   agregarProveedor(nuevoProveedor: any): Observable<any> {
     const headers = this.getHeaders();
     return this.http
-      .post(this.apiUrl, nuevoProveedor, { headers, responseType: 'text'  })
+      .post(this.apiUrl, nuevoProveedor, { headers, responseType: 'text' })
       .pipe(catchError(this.handleError));
   }
 
