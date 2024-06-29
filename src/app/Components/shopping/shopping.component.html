@@ -56,8 +56,12 @@
           <td>{{ getTotalCantidad(compra) }}</td>
           <td>{{ compra.total }}</td>
           <td>
-            <button class="btn btn-danger" (click)="eliminarCompra(compra.id)">
-              Eliminar
+            <button
+              class="btn btn-danger"
+              (click)="eliminarCompra(compra.id)"
+              title="Eliminar"
+            >
+              <span class="material-icons icon-small">delete</span>
             </button>
           </td>
         </tr>

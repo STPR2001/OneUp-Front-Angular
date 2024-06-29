@@ -1,257 +1,282 @@
 <div class="container">
-    <h2>Tabla de Repuestos</h2>
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <input
-                type="text"
-                placeholder="Buscar por nombre..."
-                [(ngModel)]="searchTerm"
-                class="form-control"
-                />
-        </div>
-        <div class="col-md-6 text-end">
+  <h2>Tabla de Repuestos</h2>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input
+        type="text"
+        placeholder="Buscar por nombre..."
+        [(ngModel)]="searchTerm"
+        class="form-control"
+      />
+    </div>
+    <div class="col-md-6 text-end">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#agregarRepuestoModal"
+      >
+        Agregar Repuesto
+      </button>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Numero de parte</th>
+          <th>Descripción</th>
+          <th>Precio costo</th>
+          <th>Precio venta</th>
+          <th>Stock</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let repuesto of filteredRepuestos" class="hover-row">
+          <td>{{ repuesto.numeroDeParte }}</td>
+          <td>{{ repuesto.descripcion }}</td>
+          <td>{{ repuesto.precioCosto }}</td>
+          <td>{{ repuesto.precioVenta }}</td>
+          <td>{{ repuesto.stock }}</td>
+          <td>
             <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#agregarRepuestoModal"
-                >
-                Agregar Repuesto
+              type="button"
+              class="btn btn-primary me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#ModificarRepuestoModal"
+              (click)="
+                abrirModalModificacion(
+                  repuesto.id,
+                  repuesto.numeroDeParte,
+                  repuesto.descripcion,
+                  repuesto.precioCosto,
+                  repuesto.precioVenta,
+                  repuesto.stock
+                )
+              "
+              title="Modificar"
+            >
+              <span class="material-icons icon-small">edit</span>
             </button>
-        </div>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Numero de parte</th>
-                    <th>Descripción</th>
-                    <th>Precio costo</th>
-                    <th>Precio venta</th>
-                    <th>Stock</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let repuesto of filteredRepuestos" class="hover-row">
-                    <td>{{ repuesto.numeroDeParte }}</td>
-                    <td>{{ repuesto.descripcion }}</td>
-                    <td>{{ repuesto.precioCosto }}</td>
-                    <td>{{ repuesto.precioVenta }}</td>
-                    <td>{{ repuesto.stock }}</td>
-                    <td>
-                        <button
-                            type="button"
-                            class="btn btn-success me-2"
-                            data-bs-toggle="modal"
-                            data-bs-target="#ModificarRepuestoModal"
-                            (click)="abrirModalModificacion(repuesto.id, repuesto.numeroDeParte, repuesto.descripcion, repuesto.precioCosto, repuesto.precioVenta, repuesto.stock)"
-                            >
-                            Modificar
-                        </button>
+            <button
+              class="btn btn-danger"
+              (click)="eliminarRepuesto(repuesto.id)"
+              title="Eliminar"
+            >
+              <span class="material-icons icon-small">delete</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-                        <button
-                            class="btn btn-danger"
-                            (click)="eliminarRepuesto(repuesto.id)"
-                            >
-                            Eliminar
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div
-        class="modal fade"
-        id="agregarRepuestoModal"
-        tabindex="-1"
-        aria-labelledby="agregarRepuestoModalLabel"
-        aria-hidden="true" 
-        >
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <form (ngSubmit)="agregarRepuesto()">
-                    <div class="modal-header">
-                        <h2 class="text-center fs-2">Agregar Repuesto</h2>
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                            #agregarRepuestoModal
-                            ></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="numero_de_parte" class="form-label fs-5">Numero de parte: </label>
-                            <input
-                                type="text"
-                                id="numero_de_parte"
-                                name="numero_de_parte"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="nuevoRepuesto.numeroDeParte"
-                                />
-                        </div>
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="descripcion" class="form-label fs-5">Descripcion: </label>
-                            <input
-                                type="text"
-                                id="descripcion"
-                                name="descripcion"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="nuevoRepuesto.descripcion"
-                                />
-                        </div>
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="precio_costo" class="form-label fs-5">Precio de costo: </label>
-                            <input
-                                type="text"
-                                id="precio_costo"
-                                name="precio_costo"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="nuevoRepuesto.precioCosto"
-                                />
-                        </div>
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="precio_venta" class="form-label fs-5">Precio de Venta: </label>
-                            <input
-                                type="text"
-                                id="precio_venta"
-                                name="precio_venta"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="nuevoRepuesto.precioVenta"
-                                />
-                        </div>
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="stock" class="form-label fs-5">Stock: </label>
-                            <input
-                                type="text"
-                                id="stock"
-                                name="stock"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="nuevoRepuesto.stock"
-                                />
-                        </div>
-                        <div *ngIf="errorAgregarRepuesto" class="text-danger">
-                            Error al agregar el repuesto.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button
-                            type="button"
-                            class="btn btn-secondary btn-lg"
-                            data-bs-dismiss="modal"
-                            >
-                            Cerrar
-                        </button>
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            Agregar
-                        </button>
-                    </div>
-                </form>
-            </div>
+<div
+  class="modal fade"
+  id="agregarRepuestoModal"
+  tabindex="-1"
+  aria-labelledby="agregarRepuestoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="agregarRepuesto()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Agregar Repuesto</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #agregarRepuestoModal
+          ></button>
         </div>
-    </div>
-
-    <div
-        class="modal fade"
-        id="ModificarRepuestoModal"
-        tabindex="-1"
-        aria-labelledby="ModificarRepuestoModalLabel"
-        aria-hidden="true"
-        >
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <form (ngSubmit)="modificarRepuesto()">
-                    <div class="modal-header">
-                        <h2 class="text-center fs-2">Modificar Repuesto</h2>
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                            #ModificarRepuestoModal
-                            ></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="numero_de_parte" class="form-label fs-5">Numero de parte: </label>
-                            <input
-                                type="text"
-                                id="numero_de_parte"
-                                name="numero_de_parte"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="repuesto.numeroDeParte"
-                                />
-                        </div>
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="descripcion" class="form-label fs-5">Descripción: </label>
-                            <input
-                                type="text"
-                                id="descripcion"
-                                name="descripcion"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="repuesto.descripcion"
-                                />
-                        </div>
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="precio_costo" class="form-label fs-5">Precio de costo: </label>
-                            <input
-                                type="text"
-                                id="precio_costo"
-                                name="precio_costo"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="repuesto.precioCosto"
-                                />
-                        </div>
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="precio_venta" class="form-label fs-5">Precio de venta: </label>
-                            <input
-                                type="text"
-                                id="precio_venta"
-                                name="precio_venta"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="repuesto.precioVenta"
-                                />
-                        </div>
-                        <div class="mb-3 d-grid gap-2">
-                            <label for="stock" class="form-label fs-5">Stock:  </label>
-                            <input
-                                type="text"
-                                id="stock"
-                                name="stock"
-                                class="fs-5"
-                                required
-                                [(ngModel)]="repuesto.stock"
-                                />
-                        </div>
-                        <div *ngIf="errorModificarRepuesto" class="text-danger">
-                            Error al modificar el repuesto.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button
-                            type="button"
-                            class="btn btn-secondary btn-lg"
-                            data-bs-dismiss="modal"
-                            >
-                            Cerrar
-                        </button>
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            Modificar
-                        </button>
-                    </div>
-                </form>
-            </div>
+        <div class="modal-body">
+          <div class="mb-3 d-grid gap-2">
+            <label for="numero_de_parte" class="form-label fs-5"
+              >Numero de parte:
+            </label>
+            <input
+              type="text"
+              id="numero_de_parte"
+              name="numero_de_parte"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.numeroDeParte"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="descripcion" class="form-label fs-5"
+              >Descripcion:
+            </label>
+            <input
+              type="text"
+              id="descripcion"
+              name="descripcion"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.descripcion"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="precio_costo" class="form-label fs-5"
+              >Precio de costo:
+            </label>
+            <input
+              type="text"
+              id="precio_costo"
+              name="precio_costo"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.precioCosto"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="precio_venta" class="form-label fs-5"
+              >Precio de Venta:
+            </label>
+            <input
+              type="text"
+              id="precio_venta"
+              name="precio_venta"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.precioVenta"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="stock" class="form-label fs-5">Stock: </label>
+            <input
+              type="text"
+              id="stock"
+              name="stock"
+              class="fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.stock"
+            />
+          </div>
+          <div *ngIf="errorAgregarRepuesto" class="text-danger">
+            Error al agregar el repuesto.
+          </div>
         </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="ModificarRepuestoModal"
+  tabindex="-1"
+  aria-labelledby="ModificarRepuestoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="modificarRepuesto()">
+        <div class="modal-header">
+          <h2 class="text-center fs-2">Modificar Repuesto</h2>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #ModificarRepuestoModal
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 d-grid gap-2">
+            <label for="numero_de_parte" class="form-label fs-5"
+              >Numero de parte:
+            </label>
+            <input
+              type="text"
+              id="numero_de_parte"
+              name="numero_de_parte"
+              class="fs-5"
+              required
+              [(ngModel)]="repuesto.numeroDeParte"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="descripcion" class="form-label fs-5"
+              >Descripción:
+            </label>
+            <input
+              type="text"
+              id="descripcion"
+              name="descripcion"
+              class="fs-5"
+              required
+              [(ngModel)]="repuesto.descripcion"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="precio_costo" class="form-label fs-5"
+              >Precio de costo:
+            </label>
+            <input
+              type="text"
+              id="precio_costo"
+              name="precio_costo"
+              class="fs-5"
+              required
+              [(ngModel)]="repuesto.precioCosto"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="precio_venta" class="form-label fs-5"
+              >Precio de venta:
+            </label>
+            <input
+              type="text"
+              id="precio_venta"
+              name="precio_venta"
+              class="fs-5"
+              required
+              [(ngModel)]="repuesto.precioVenta"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="stock" class="form-label fs-5">Stock: </label>
+            <input
+              type="text"
+              id="stock"
+              name="stock"
+              class="fs-5"
+              required
+              [(ngModel)]="repuesto.stock"
+            />
+          </div>
+          <div *ngIf="errorModificarRepuesto" class="text-danger">
+            Error al modificar el repuesto.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary btn-lg">
+            Modificar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

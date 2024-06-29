@@ -232,7 +232,7 @@ export class RepairsComponent implements OnInit {
         console.log(repuestoModificado);
         this.modificarRepuesto(repuestoModificado);
 
-        //SI EL REPUESTO YA ESTA AGREGADO EN LA REPARACION NO SE AGREGARSE DE NUEVO!
+        //SI EL REPUESTO YA ESTA AGREGADO EN LA REPARACION NO SE AGREGA DE NUEVO!
         let yaExiste = false;
         for (let k = 0; k < this.reparacionSeleccionada.repuesto.length; k++) {
           if (
@@ -303,14 +303,39 @@ export class RepairsComponent implements OnInit {
 
   //Imprimir / descargar pdf
   generarPDF(reparacion: any): void {
+    const formatFecha = (fecha: string) => {
+      const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      };
+      return new Date(fecha).toLocaleDateString('es-ES', options);
+    };
+
     const pdfContent = `
-    <div style="margin-left: 20px; font-size: 16px;">
-      <h1>Detalles de Reparación</h1>
-      <p><strong>Cliente:</strong> ${reparacion.cliente.nombre}</p>
-      <p><strong>Equipo:</strong> ${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre}</p>
+    <div style="margin-left: 20px; font-size: 40px;">
+      <h1 style="font-size: 70px; text-align:center;">Detalles de Reparación</h1>
+      <p><strong>Orden:</strong> ${reparacion.id}</p>
+      <p><strong>Fecha:</strong> ${formatFecha(reparacion.fechaIngreso)}</p>
+      <br/>
+      <p><strong>Cliente</strong></p>
+      <p><strong>Nombre:</strong> ${reparacion.cliente.nombre}</p>
+      <p><strong>Dirección:</strong> ${reparacion.cliente.direccion}</p>
+      <p><strong>Teléfono:</strong> ${reparacion.cliente.telefono}</p>
+      <p><strong>Email:</strong> ${reparacion.cliente.email}</p>
+      <br/>
+      <p><strong>Equipo</strong></p>
+      <p><strong>Tipo equipo:</strong> ${
+        reparacion.equipo.tipo_equipo.nombre
+      }</p>
+      <p><strong>Marca:</strong> ${reparacion.equipo.marca.nombre}</p>
+      <p><strong>Modelo:</strong> ${reparacion.equipo.modelo.nombre}</p>
+      <p><strong>Número de serie</strong> ${reparacion.equipo.numeroSerie}</p>
+      <br/>
       <p><strong>Falla:</strong> ${reparacion.falla}</p>
-      <p><strong>Técnico:</strong> ${reparacion.tecnico.nombre}</p>
-      <p><strong>Código de seguimiento:</strong> ${reparacion.codigoSeguimiento}</p>
+      <p><strong>Código de seguimiento:</strong> ${
+        reparacion.codigoSeguimiento
+      }</p>
     </div>
   `;
 

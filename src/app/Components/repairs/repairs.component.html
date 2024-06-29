@@ -61,35 +61,35 @@
               (click)="verDetallesReparacion(reparacion)"
               title="Ver más"
             >
-              <span class="material-icons">visibility</span>
+              <span class="material-icons icon-small">visibility</span>
             </button>
             <button
               class="btn btn-primary me-2"
               [routerLink]="['/modificarReparacion', reparacion.id]"
               title="Modificar"
             >
-              <span class="material-icons">edit</span>
+              <span class="material-icons icon-small">edit</span>
             </button>
             <button
               class="btn btn-primary me-2"
               (click)="abrirModalAgregarNota(reparacion)"
               title="Agregar nota"
             >
-              <span class="material-icons">note_add</span>
+              <span class="material-icons icon-small">note_add</span>
             </button>
             <button
               class="btn btn-primary me-2"
               (click)="generarPDF(reparacion)"
               title="Imprimir"
             >
-              <span class="material-icons">print</span>
+              <span class="material-icons icon-small">print</span>
             </button>
             <button
               class="btn btn-danger"
               (click)="eliminarReparacion(reparacion.id)"
               title="Eliminar"
             >
-              <span class="material-icons">delete</span>
+              <span class="material-icons icon-small">delete</span>
             </button>
           </td>
         </tr>
