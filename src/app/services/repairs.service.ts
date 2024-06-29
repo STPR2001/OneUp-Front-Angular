@@ -30,6 +30,12 @@ export class RepairsService {
       .get<any>(this.apiUrl, { headers, params });
   }
 
+  getAllReparaciones(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/all`, { headers });
+  }
+
   agregarReparacion(nuevaReparacion: any): Observable<any> {
     const headers = this.getHeaders();
     return this.http.post(this.apiUrl, nuevaReparacion, { headers, responseType: 'text' });
