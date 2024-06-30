@@ -29,7 +29,7 @@ hr {
 }
 
 .main-content {
-    max-height: calc(100vh - 160px); /* Adjust according to your header height */
+    max-height: calc(100vh - 160px); 
     overflow-y: auto;
     padding: 20px;
 }
@@ -58,6 +58,8 @@ hr {
     flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
+    margin: 0 auto;
+    max-width: 1200px;
 }
 
 .card {
@@ -66,7 +68,7 @@ hr {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding: 20px;
     max-width: 300px;
-    width: 100%;
+    width: calc(100% - 40px); 
     display: flex;
     flex-direction: column;
 }
