@@ -28,6 +28,12 @@ hr {
     margin: 20px 0;
 }
 
+.main-content {
+    max-height: calc(100vh - 160px); /* Adjust according to your header height */
+    overflow-y: auto;
+    padding: 20px;
+}
+
 .row {
     display: flex;
     justify-content: center;
