@@ -64,15 +64,23 @@ export class RepairsService {
     return this.http.get<any>(url, { headers });
   }
 
-  getReparacionesPorMes(): Observable<any> {
+  getReparacionesPorMes(anio?: number): Observable<any> {
     const headers = this.getHeaders();
+    let params = new HttpParams();
+    if (anio) {
+      params = params.append('anio', anio.toString());
+    }
     return this.http
-      .get<any>(`${this.apiUrl}/reparaciones-por-mes`, { headers });
+      .get<any>(`${this.apiUrl}/reparaciones-por-mes`, { headers, params });
   }
 
-  getReparacionesPorTecnico(): Observable<any> {
+  getReparacionesPorTecnico(anio?: number): Observable<any> {
     const headers = this.getHeaders();
+    let params = new HttpParams();
+    if (anio) {
+      params = params.append('anio', anio.toString());
+    }
     return this.http
-      .get<any>(`${this.apiUrl}/reparaciones-por-tecnico`, { headers });
+      .get<any>(`${this.apiUrl}/reparaciones-por-tecnico`, { headers, params });
   }
 }

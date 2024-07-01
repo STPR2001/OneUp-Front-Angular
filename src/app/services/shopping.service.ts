@@ -37,17 +37,25 @@ export class ShoppingService {
             .pipe(catchError(this.handleError));
     }
 
-    getComprasPorMes(): Observable<any> {
+    getComprasPorMes(anio?: number): Observable<any> {
         const headers = this.getHeaders();
+        let params = new HttpParams();
+        if (anio) {
+            params = params.append('anio', anio.toString());
+        }
         return this.http
-            .get<any>(`${this.apiUrl}/compras-por-mes`, { headers })
+            .get<any>(`${this.apiUrl}/compras-por-mes`, { headers, params })
             .pipe(catchError(this.handleError));
     }
 
-    getComprasPorProveedor(): Observable<any> {
+    getComprasPorProveedor(anio?: number): Observable<any> {
         const headers = this.getHeaders();
+        let params = new HttpParams();
+        if (anio) {
+            params = params.append('anio', anio.toString());
+        }
         return this.http
-            .get<any>(`${this.apiUrl}/compras-por-proveedor`, { headers })
+            .get<any>(`${this.apiUrl}/compras-por-proveedor`, { headers, params })
             .pipe(catchError(this.handleError));
     }
 
