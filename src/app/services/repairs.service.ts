@@ -35,6 +35,11 @@ export class RepairsService {
     return this.http
       .get<any>(`${this.apiUrl}/all`, { headers });
   }
+  getReparacion(codigo: any): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/codigo/${codigo}`);
+  }
 
   agregarReparacion(nuevaReparacion: any): Observable<any> {
     const headers = this.getHeaders();
