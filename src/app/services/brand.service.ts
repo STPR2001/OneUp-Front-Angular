@@ -7,7 +7,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class BrandService {
-  private apiUrl = 'http://localhost:3000/oneup-backend/api/marca';
+  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/marca';
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getHeaders(): HttpHeaders {

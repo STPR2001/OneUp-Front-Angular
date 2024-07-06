@@ -14,7 +14,7 @@ import { AuthService } from './auth/auth.service';
 })
 export class ShoppingService {
 
-    private apiUrl = 'http://localhost:3000/oneup-backend/api/compra';
+    private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/compra';
     constructor(private http: HttpClient, private authService: AuthService) { }
 
     private getHeaders(): HttpHeaders {
