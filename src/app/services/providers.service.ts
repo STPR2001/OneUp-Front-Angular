@@ -43,7 +43,7 @@ export class ProvidersService {
 
   getRepuestos(): Observable<any[]> {
     const headers = this.getHeaders();
-    return this.http.get<any>(`http://localhost:3000/oneup-backend/api/repuesto/all`, { headers });
+    return this.http.get<any>(`http://216.238.102.160:3000/oneup-backend/api/repuesto/all`, { headers });
   }
   agregarProveedor(nuevoProveedor: any): Observable<any> {
     const headers = this.getHeaders();
