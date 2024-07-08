@@ -1,7 +1,7 @@
 <div class="container">
-  <h2 class="text-center my-4">Listado de Reparaciones</h2>
+  <h2>Listado de Reparaciones (prueba)</h2>
   <div class="row mb-3">
-    <div class="col-md-6 mb-2 mb-md-0">
+    <div class="col-md-6">
       <input
         type="text"
         placeholder="Buscar por cliente..."
@@ -10,7 +10,7 @@
         class="form-control"
       />
     </div>
-    <div class="col-md-2 mb-2 mb-md-0">
+    <div class="col-md-2">
       <select
         [(ngModel)]="estadoFiltro"
         class="form-select"
@@ -22,10 +22,10 @@
         </option>
       </select>
     </div>
-    <div class="col-md-4 text-md-end text-center">
+    <div class="col-md-4 text-end">
       <button
         type="button"
-        class="btn btn-primary w-100 w-md-auto"
+        class="btn btn-primary"
         routerLink="/agregarReparacion"
       >
         Agregar Reparación
