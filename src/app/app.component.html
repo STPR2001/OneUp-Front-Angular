@@ -1,192 +1,172 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-
-  <div class="dashboard-container">
-    <button
-      class="toggle-sidebar"
-      (click)="toggleSidebar()"
-      [ngClass]="{ menu: !sidebarOpen, close: sidebarOpen }"
-    >
-      <span class="material-icons">{{ sidebarOpen ? "close" : "menu" }}</span>
-    </button>
-    <div class="sidebar" [class.closed]="!sidebarOpen">
-      <div class="logo-container">
-        <img
-          src="../assets/logo.png"
-          alt="OneUp Soluciones Logo"
-          class="logo"
-        />
-      </div>
-      <ul class="SidebarList">
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/home"
-          [ngClass]="{ active: isActive('/') }"
-        >
-          <div class="icon">
-            <span class="material-icons">dashboard</span>
-          </div>
-          <div class="title">Home</div>
-        </li>
-        <li
-          class="row"
-          routerLink="/seguimiento"
-          [ngClass]="{ active: isActive('/seguimiento') }"
-        >
-          <div class="icon">
-            <span class="material-icons">manage_search</span>
-          </div>
-          <div class="title">Seguimiento</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/reparaciones"
-          [ngClass]="{ active: isActive('/reparaciones') }"
-          [ngClass]="{ active: isActive('/agregarReparacion') }"
-          [ngClass]="{ active: isActive('/modificarReparacion/:id') }"
-        >
-          <div class="icon"><span class="material-icons">build</span></div>
-          <div class="title">Reparaciones</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/clients"
-          [ngClass]="{ active: isActive('/clients') }"
-        >
-          <div class="icon">
-            <span class="material-icons">people_alt</span>
-          </div>
-          <div class="title">Clientes</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/repuestos"
-          [ngClass]="{ active: isActive('/repuestos') }"
-        >
-          <div class="icon">
-            <span class="material-icons">app_settings_alt</span>
-          </div>
-          <div class="title">Repuestos</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/proveedores"
-          [ngClass]="{ active: isActive('/proveedores') }"
-        >
-          <div class="icon"><span class="material-icons">person</span></div>
-          <div class="title">Proveedores</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/tecnicos"
-          [ngClass]="{ active: isActive('/tecnicos') }"
-        >
-          <div class="icon">
-            <span class="material-icons">engineering</span>
-          </div>
-          <div class="title">Técnicos</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/compras"
-          [ngClass]="{ active: isActive('/compras') }"
-          [ngClass]="{ active: isActive('/compras/new') }"
-        >
-          <div class="icon"><span class="material-icons">shop_two</span></div>
-          <div class="title">Compras</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/equipos"
-          [ngClass]="{ active: isActive('/equipos') }"
-        >
-          <div class="icon"><span class="material-icons">devices</span></div>
-          <div class="title">Equipos</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/estadisticas"
-          [ngClass]="{ active: isActive('/estadisticas') }"
-        >
-          <div class="icon">
-            <span class="material-icons">assessment</span>
-          </div>
-          <div class="title">Estadísticas</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          routerLink="/configuracion"
-          [ngClass]="{ active: isActive('/configuracion') }"
-        >
-          <div class="icon"><span class="material-icons">settings</span></div>
-          <div class="title">Configuración</div>
-        </li>
-        <li
-          *ngIf="isLogued()"
-          class="row"
-          data-bs-toggle="modal"
-          data-bs-target="#cerrarSesion"
-        >
-          <div class="icon"><span class="material-icons">logout</span></div>
-          <div class="title">Cerrar sesión</div>
-        </li>
-        <li
-          *ngIf="!isLogued()"
-          class="row"
-          routerLink="/login"
-          [ngClass]="{ active: isActive('/login') }"
-        >
-          <div class="icon"><span class="material-icons">logout</span></div>
-          <div class="title">Iniciar Sesión</div>
-        </li>
-      </ul>
-    </div>
-    <div class="content" [ngClass]="{ expanded: !sidebarOpen || !isLogued() }">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
-
-  <div
-    class="modal fade"
-    id="cerrarSesion"
-    tabindex="-1"
-    aria-labelledby="cerrarSesionLabel"
-    aria-hidden="true"
+<div class="dashboard-container">
+  <button
+    class="toggle-sidebar"
+    (click)="toggleSidebar()"
+    [ngClass]="{ menu: !sidebarOpen, close: sidebarOpen }"
   >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div>
-          <h2 class="text-center fs-2">¿Seguro que quiere irse?</h2>
+    <span class="material-icons">{{ sidebarOpen ? "close" : "menu" }}</span>
+  </button>
+  <div class="sidebar" [class.closed]="!sidebarOpen">
+    <div class="logo-container">
+      <img src="../assets/logo.png" alt="OneUp Soluciones Logo" class="logo" />
+    </div>
+    <ul class="SidebarList">
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/home"
+        [ngClass]="{ active: isActive('/') }"
+      >
+        <div class="icon"><span class="material-icons">dashboard</span></div>
+        <div class="title">Home</div>
+      </li>
+      <li
+        class="row"
+        routerLink="/seguimiento"
+        [ngClass]="{ active: isActive('/seguimiento') }"
+      >
+        <div class="icon">
+          <span class="material-icons">manage_search</span>
         </div>
-        <div class="modal-footer justify-content-evenly">
-          <button
-            type="button"
-            class="btn btn-primary col-4"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-            #cerrarSesion
-          >
-            Cerrar
-          </button>
-          <button type="submit" (click)="logout()" class="btn btn-danger col-4">
-            Cerrar sesión
-          </button>
+        <div class="title">Seguimiento</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/reparaciones"
+        [ngClass]="{ active: isActive('/reparaciones') }"
+        [ngClass]="{ active: isActive('/agregarReparacion') }"
+        [ngClass]="{ active: isActive('/modificarReparacion/:id') }"
+      >
+        <div class="icon"><span class="material-icons">build</span></div>
+        <div class="title">Reparaciones</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/clients"
+        [ngClass]="{ active: isActive('/clients') }"
+      >
+        <div class="icon"><span class="material-icons">people_alt</span></div>
+        <div class="title">Clientes</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/repuestos"
+        [ngClass]="{ active: isActive('/repuestos') }"
+      >
+        <div class="icon">
+          <span class="material-icons">app_settings_alt</span>
         </div>
+        <div class="title">Repuestos</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/proveedores"
+        [ngClass]="{ active: isActive('/proveedores') }"
+      >
+        <div class="icon"><span class="material-icons">person</span></div>
+        <div class="title">Proveedores</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/tecnicos"
+        [ngClass]="{ active: isActive('/tecnicos') }"
+      >
+        <div class="icon"><span class="material-icons">engineering</span></div>
+        <div class="title">Técnicos</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/compras"
+        [ngClass]="{ active: isActive('/compras') }"
+        [ngClass]="{ active: isActive('/compras/new') }"
+      >
+        <div class="icon"><span class="material-icons">shop_two</span></div>
+        <div class="title">Compras</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/equipos"
+        [ngClass]="{ active: isActive('/equipos') }"
+      >
+        <div class="icon"><span class="material-icons">devices</span></div>
+        <div class="title">Equipos</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/estadisticas"
+        [ngClass]="{ active: isActive('/estadisticas') }"
+      >
+        <div class="icon"><span class="material-icons">assessment</span></div>
+        <div class="title">Estadísticas</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/configuracion"
+        [ngClass]="{ active: isActive('/configuracion') }"
+      >
+        <div class="icon"><span class="material-icons">settings</span></div>
+        <div class="title">Configuración</div>
+      </li>
+      <li
+        *ngIf="isLogued()"
+        class="row"
+        data-bs-toggle="modal"
+        data-bs-target="#cerrarSesion"
+      >
+        <div class="icon"><span class="material-icons">logout</span></div>
+        <div class="title">Cerrar sesión</div>
+      </li>
+      <li
+        *ngIf="!isLogued()"
+        class="row"
+        routerLink="/login"
+        [ngClass]="{ active: isActive('/login') }"
+      >
+        <div class="icon"><span class="material-icons">logout</span></div>
+        <div class="title">Iniciar Sesión</div>
+      </li>
+    </ul>
+  </div>
+  <div class="content" [ngClass]="{ expanded: !sidebarOpen || !isLogued() }">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="cerrarSesion"
+  tabindex="-1"
+  aria-labelledby="cerrarSesionLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div>
+        <h2 class="text-center fs-2">¿Seguro que quiere irse?</h2>
+      </div>
+      <div class="modal-footer justify-content-evenly">
+        <button
+          type="button"
+          class="btn btn-primary col-4"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          #cerrarSesion
+        >
+          Cerrar
+        </button>
+        <button type="submit" (click)="logout()" class="btn btn-danger col-4">
+          Cerrar sesión
+        </button>
       </div>
     </div>
   </div>
-</html>
+</div>
