@@ -1,5 +1,10 @@
+.container {
+  margin-top: 30px;
+}
+
 .table-container {
-  max-height: unset; /* Elimina la restricción de altura */
+  max-height: unset;
+  margin-top: 20px;
 }
 
 .table {
@@ -12,10 +17,7 @@ td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-}
-
-th {
-  background-color: #f2f2f2;
+  vertical-align: middle;
 }
 
 .rounded-table {
