@@ -68,3 +68,29 @@ td {
 .icon-small {
   font-size: 1rem;
 }
+
+/* RESPONSIVE */
+
+@media only screen and (max-width: 600px) {
+  /* Estilos para pantallas pequeñas (por ejemplo, teléfonos móviles) */
+}
+
+@media only screen and (min-width: 600px) and (max-width: 768px) {
+  /* Estilos para pantallas medianas (por ejemplo, tablets) */
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  /* Estilos para pantallas grandes (por ejemplo, tablets grandes o pantallas pequeñas de computadoras) */
+
+  * {
+    font-size: 10px;
+  }
+
+  .icon-small {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  /* Estilos para pantallas muy grandes (por ejemplo, computadoras de escritorio) */
+}
