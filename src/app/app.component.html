@@ -21,6 +21,7 @@
         <div class="title">Home</div>
       </li>
       <li
+        *ngIf="!isLogued()"
         class="row"
         routerLink="/seguimiento"
         [ngClass]="{ active: isActive('/seguimiento') }"

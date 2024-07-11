@@ -1,9 +1,13 @@
 <div class="container">
-  <h2 class="text-center">Seguimiento de Reparación</h2>
+  <h2 class="text-center">Seguimiento de reparación</h2>
+  <p class="text-center descripcion">
+    Ingresa el código de seguimiento de tu ticket de reparación para verificar
+    el estado y los detalles de tu reparación.
+  </p>
   <form [formGroup]="form" (ngSubmit)="buscarReparacion()" class="mt-4">
     <div class="mb-3 row">
       <div class="col-9">
-        <label for="idBusqueda" class="form-label">Codigo de rastreo</label>
+        <label for="idBusqueda" class="form-label">Código de rastreo</label>
         <input
           type="text"
           class="form-control"
@@ -21,18 +25,18 @@
         *ngIf="form.get('codigo')?.invalid && form.get('codigo')?.touched"
         class="text-danger"
       >
-        El codigo de rastreo es obligatorio.
+        El código de rastreo es obligatorio.
       </div>
     </div>
   </form>
 
-  <div *ngIf="reparacionBuscada" class="mt-4">
+  <div *ngIf="reparacionBuscada" class="mt-4 detalles-reparacion">
     <div class="text-center">
       <h3>Detalles de la Reparación</h3>
-      <p><strong>Codigo:</strong> {{ reparacionBuscada.codigoSeguimiento }}</p>
+      <p><strong>Código:</strong> {{ reparacionBuscada.codigoSeguimiento }}</p>
       <p><strong>Descripción:</strong> {{ ultimaNota }}</p>
       <p>
-        <strong>Fécha de entrega:</strong>
+        <strong>Fecha de entrega:</strong>
         {{ reparacionBuscada.fechaEntrega ?? "Aún no se entregó" }}
       </p>
       <p><strong>Cliente:</strong> {{ reparacionBuscada.cliente.nombre }}</p>
@@ -49,8 +53,8 @@
     "
     class="mt-4"
   >
-    <p>
-      No se encontró la reparacion con el codigo {{ form.get("codigo")?.value }}
+    <p class="text-danger">
+      No se encontró la reparación con el código {{ form.get("codigo")?.value }}
     </p>
   </div>
 </div>
