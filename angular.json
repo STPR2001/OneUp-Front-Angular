@@ -25,7 +25,9 @@
             ],
             "scripts": [
               "node_modules/html2canvas/dist/html2canvas.min.js",
-              "node_modules/jspdf/dist/jspdf.min.js"
+              "node_modules/jspdf/dist/jspdf.min.js",
+              "node_modules/@popperjs/core/dist/umd/popper.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js"
             ]
           },
           "configurations": {

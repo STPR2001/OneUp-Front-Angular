@@ -37,7 +37,7 @@
       <thead class="thead-dark">
         <tr>
           <th scope="col">Orden</th>
-          <th scope="col">Fecha ingreso</th>
+          <th scope="col">Fecha</th>
           <th scope="col">Cliente</th>
           <th scope="col">Marca</th>
           <th scope="col">Modelo</th>
@@ -60,39 +60,61 @@
           <td>
             <button
               class="btn btn-primary me-2"
-              (click)="verDetallesReparacion(repair)"
-              title="Ver más"
-            >
-              <span class="material-icons icon-small">visibility</span>
-            </button>
-            <button
-              class="btn btn-primary me-2"
               [routerLink]="['/modificarReparacion', repair.id]"
               title="Modificar"
             >
               <span class="material-icons icon-small">edit</span>
             </button>
             <button
-              class="btn btn-primary me-2"
-              (click)="abrirModalAgregarNota(repair)"
-              title="Agregar nota"
-            >
-              <span class="material-icons icon-small">note_add</span>
-            </button>
-            <button
-              class="btn btn-primary me-2"
-              (click)="generarPDF(repair)"
-              title="Imprimir"
-            >
-              <span class="material-icons icon-small">print</span>
-            </button>
-            <button
-              class="btn btn-danger"
+              class="btn btn-danger me-2"
               (click)="eliminarReparacion(repair.id)"
               title="Eliminar"
             >
               <span class="material-icons icon-small">delete</span>
             </button>
+            <div class="btn-group">
+              <button
+                type="button"
+                class="btn btn-secondary dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                title="Extras"
+              >
+                Extras
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <button
+                    class="dropdown-item"
+                    (click)="verDetallesReparacion(repair)"
+                    title="Ver más"
+                  >
+                    <span class="material-icons icon-small">visibility</span>
+                    Ver más
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="dropdown-item"
+                    (click)="abrirModalAgregarNota(repair)"
+                    title="Agregar nota"
+                  >
+                    <span class="material-icons icon-small">note_add</span>
+                    Agregar nota
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="dropdown-item"
+                    (click)="generarPDF(repair)"
+                    title="Imprimir"
+                  >
+                    <span class="material-icons icon-small">print</span>
+                    Imprimir
+                  </button>
+                </li>
+              </ul>
+            </div>
           </td>
         </tr>
       </tbody>
