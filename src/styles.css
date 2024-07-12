@@ -30,7 +30,7 @@ html {
 @media only screen and (min-width: 768px) and (max-width: 1370px) {
   /* Estilos para pantallas grandes (por ejemplo, tablets grandes o pantallas pequeñas de computadoras) */
   * {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .icon-small {
@@ -38,7 +38,7 @@ html {
   }
 
   .h2-title {
-    font-size: 20px;
+    font-size: 25px;
   }
 
   .logo {
