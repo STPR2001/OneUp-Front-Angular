@@ -27,6 +27,10 @@ html {
   white-space: nowrap !important;
 }
 
+.container {
+  margin-top: 17px !important;
+}
+
 /* RESPONSIVE */
 
 @media only screen and (max-width: 600px) {
