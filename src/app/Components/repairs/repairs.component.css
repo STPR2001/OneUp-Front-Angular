@@ -3,17 +3,6 @@
   padding: 0 1rem;
 }
 
-.table-container {
-  margin-top: 1.25rem;
-  overflow-x: auto;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  white-space: nowrap;
-}
-
 th,
 td {
   border: 1px solid #ddd;

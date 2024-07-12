@@ -17,6 +17,16 @@ html {
     "Lucida Sans", Arial, sans-serif;
 }
 
+.table-container {
+  overflow-x: auto !important;
+}
+
+.table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  white-space: nowrap !important;
+}
+
 /* RESPONSIVE */
 
 @media only screen and (max-width: 600px) {
@@ -38,18 +48,50 @@ html {
   }
 
   .h2-title {
-    font-size: 25px;
+    font-size: 23px;
   }
 
   .logo {
-    max-width: 55% !important;
+    max-width: 65% !important;
   }
 
   .title {
     font-size: 13px !important;
   }
+
+  .SidebarList .row {
+    padding: 8px !important;
+    margin: 4px !important;
+  }
+
+  .sidebar {
+    width: 200px !important;
+  }
+
+  .content {
+    margin-left: 200px !important;
+  }
 }
 
 @media only screen and (min-width: 1370px) {
   /* Estilos para pantallas muy grandes (por ejemplo, computadoras de escritorio) */
+}
+
+/* REVISAER ESTO */
+
+/* Estilos del track de la scrollbar */
+.container::-webkit-scrollbar {
+  width: 12px; /* Ancho de la scrollbar */
+}
+
+/* Estilos de la parte que puedes desplazar (thumb) */
+.container::-webkit-scrollbar-thumb {
+  background: #888; /* Color del thumb */
+  border-radius: 10px; /* Redondeo de las esquinas */
+}
+
+/* Estilos del track de la scrollbar */
+.container::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color del track */
+  border-radius: 10px; /* Redondeo de las esquinas */
 }
