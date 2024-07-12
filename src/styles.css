@@ -52,7 +52,7 @@ html {
   }
 
   .logo {
-    max-width: 65% !important;
+    max-width: 70% !important;
   }
 
   .title {
@@ -71,6 +71,11 @@ html {
   .content {
     margin-left: 200px !important;
   }
+
+  .toggle-sidebar.close {
+    left: 150px !important;
+    color: #fff !important;
+  }
 }
 
 @media only screen and (min-width: 1370px) {
@@ -81,17 +86,17 @@ html {
 
 /* Estilos del track de la scrollbar */
 .container::-webkit-scrollbar {
-  width: 12px; /* Ancho de la scrollbar */
+  width: 12px !important; /* Ancho de la scrollbar */
 }
 
 /* Estilos de la parte que puedes desplazar (thumb) */
 .container::-webkit-scrollbar-thumb {
-  background: #888; /* Color del thumb */
-  border-radius: 10px; /* Redondeo de las esquinas */
+  background: #888 !important; /* Color del thumb */
+  border-radius: 10px !important; /* Redondeo de las esquinas */
 }
 
 /* Estilos del track de la scrollbar */
 .container::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Color del track */
-  border-radius: 10px; /* Redondeo de las esquinas */
+  background: #f1f1f1 !important; /* Color del track */
+  border-radius: 10px !important; /* Redondeo de las esquinas */
 }
