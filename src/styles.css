@@ -30,7 +30,7 @@ html {
 @media only screen and (min-width: 768px) and (max-width: 1370px) {
   /* Estilos para pantallas grandes (por ejemplo, tablets grandes o pantallas pequeñas de computadoras) */
   * {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .icon-small {
