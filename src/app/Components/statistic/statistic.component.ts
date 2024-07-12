@@ -45,6 +45,8 @@ export class StatisticComponent implements OnInit {
             theme: 'light2',
             title: {
               text: 'Reparaciones por mes',
+              fontSize: 20,
+              margin: 15,
             },
             axisY: {
               title: 'Cantidad de reparaciones',
@@ -55,6 +57,11 @@ export class StatisticComponent implements OnInit {
                 dataPoints: dataPoints,
               },
             ],
+            backgroundColor: 'transparent',
+            borderThickness: 0,
+            toolTip: {
+              borderThickness: 0,
+            },
           });
           chart.render();
         }
@@ -86,6 +93,8 @@ export class StatisticComponent implements OnInit {
             theme: 'light2',
             title: {
               text: 'Gastos en el año',
+              fontSize: 18,
+              margin: 15,
             },
             axisY: {
               title: '',
@@ -96,6 +105,11 @@ export class StatisticComponent implements OnInit {
                 dataPoints: dataPoints,
               },
             ],
+            backgroundColor: 'transparent',
+            borderThickness: 0,
+            toolTip: {
+              borderThickness: 0,
+            },
           });
           chart.render();
         }
@@ -129,6 +143,8 @@ export class StatisticComponent implements OnInit {
             theme: 'light2',
             title: {
               text: 'Compras por proveedor',
+              fontSize: 18,
+              margin: 15,
             },
             data: [
               {
@@ -141,6 +157,11 @@ export class StatisticComponent implements OnInit {
                 dataPoints: dataPoints,
               },
             ],
+            backgroundColor: 'transparent',
+            borderThickness: 0,
+            toolTip: {
+              borderThickness: 0,
+            },
           });
           chart.render();
         }
@@ -176,9 +197,11 @@ export class StatisticComponent implements OnInit {
             theme: 'light2',
             title: {
               text: 'Reparaciones por técnico',
+              fontSize: 18,
+              margin: 15,
             },
             axisY: {
-              title: 'Cantidad de reparaciones',
+              title: '',
             },
             data: [
               {
@@ -186,6 +209,11 @@ export class StatisticComponent implements OnInit {
                 dataPoints: dataPoints,
               },
             ],
+            backgroundColor: 'transparent',
+            borderThickness: 0,
+            toolTip: {
+              borderThickness: 0,
+            },
           });
           chart.render();
         }

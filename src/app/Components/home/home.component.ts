@@ -8,10 +8,10 @@ import { EquipoService } from 'src/app/services/equipo.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
- reparaciones: any[] = [];
+  reparaciones: any[] = [];
   tecnicos: any[] = [];
   equipos: any[] = [];
   clientes: any[] = [];
@@ -140,8 +140,7 @@ export class HomeComponent implements OnInit {
         .toLowerCase()
         .includes(this.searchTerm.toLowerCase());
       const matchesEstado =
-        this.estadoFiltro === '' ||
-        reparacion.estado === 'En taller';
+        this.estadoFiltro === '' || reparacion.estado === 'En taller';
       return matchesCliente && matchesEstado;
     });
   }
@@ -154,4 +153,3 @@ export class HomeComponent implements OnInit {
     this.nuevaReparacion.fechaIngreso = `${year}-${month}-${day}`;
   }
 }
-
