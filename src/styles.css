@@ -48,7 +48,7 @@ html {
   }
 
   .h2-title {
-    font-size: 23px;
+    font-size: 24px;
   }
 
   .logo {
@@ -72,6 +72,10 @@ html {
     margin-left: 200px !important;
   }
 
+  .content.expanded {
+    margin-left: 0px !important;
+  }
+
   .toggle-sidebar.close {
     left: 150px !important;
     color: #fff !important;
@@ -80,23 +84,4 @@ html {
 
 @media only screen and (min-width: 1370px) {
   /* Estilos para pantallas muy grandes (por ejemplo, computadoras de escritorio) */
-}
-
-/* REVISAER ESTO */
-
-/* Estilos del track de la scrollbar */
-.container::-webkit-scrollbar {
-  width: 12px !important; /* Ancho de la scrollbar */
-}
-
-/* Estilos de la parte que puedes desplazar (thumb) */
-.container::-webkit-scrollbar-thumb {
-  background: #888 !important; /* Color del thumb */
-  border-radius: 10px !important; /* Redondeo de las esquinas */
-}
-
-/* Estilos del track de la scrollbar */
-.container::-webkit-scrollbar-track {
-  background: #f1f1f1 !important; /* Color del track */
-  border-radius: 10px !important; /* Redondeo de las esquinas */
 }

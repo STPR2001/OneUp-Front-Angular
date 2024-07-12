@@ -85,3 +85,7 @@ p strong {
   color: #d9534f;
   font-weight: bold;
 }
+
+.container {
+  margin-top: 20px;
+}
