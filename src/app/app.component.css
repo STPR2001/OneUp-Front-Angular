@@ -124,3 +124,7 @@
 .row.active .icon {
   color: #fe9b01;
 }
+
+.btnPeronalizado{
+  background-color: #242529 !important;
+}
