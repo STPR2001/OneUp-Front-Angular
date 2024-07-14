@@ -128,3 +128,25 @@
 .btnPeronalizado{
   background-color: #242529 !important;
 }
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: -17px; /* ver si funciona responsive*/
+}
+.modal-body p {
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+.modal-footer .btn {
+  padding: 10px 20px;
+}
+@media (max-width: 768px) {
+  .modal-footer .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .modal-footer .btn + .btn {
+    margin-left: 0;
+  }
+}
