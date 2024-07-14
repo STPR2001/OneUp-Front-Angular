@@ -16,6 +16,7 @@ import { NewShoppingComponent } from './Components/shopping/new-shopping/new-sho
 import { ConfigComponent } from './Components/config/config.component';
 import { StatisticComponent } from './Components/statistic/statistic.component';
 import { SeguimientoComponent } from './Components/seguimiento/seguimiento.component';
+import { RestoreDataComponent } from './Components/restore-data/restore-data.component';
 
 const routes: Routes = [
   { path: 'clients', component: ClientsComponent, canActivate: [AuthGuard] },
@@ -30,6 +31,7 @@ const routes: Routes = [
   { path: 'equipos', component: EquipmentsComponent, canActivate: [AuthGuard] },
   { path: 'repuestos', component: RepuestosComponent, canActivate: [AuthGuard] },
   { path: 'configuracion', component: ConfigComponent, canActivate: [AuthGuard] },
+  { path: 'restore', component: RestoreDataComponent, canActivate: [AuthGuard]},
   { path: 'seguimiento', component: SeguimientoComponent},
   { path: 'login', component: LoginComponent },
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },

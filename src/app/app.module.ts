@@ -24,6 +24,7 @@ import { ConfigComponent } from './Components/config/config.component';
 import { StatisticComponent } from './Components/statistic/statistic.component';
 import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
 import { SeguimientoComponent } from './Components/seguimiento/seguimiento.component';
+import { RestoreDataComponent } from './Components/restore-data/restore-data.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { SeguimientoComponent } from './Components/seguimiento/seguimiento.compo
     ConfigComponent,
     StatisticComponent,
     SeguimientoComponent,
+    RestoreDataComponent
   ],
   imports: [
     BrowserModule,
