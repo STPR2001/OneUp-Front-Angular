@@ -2,10 +2,6 @@
   font-size: 17px;
 }
 
-.card {
-  margin-bottom: 20px;
-}
-
 @media (max-width: 768px) {
   .container {
     padding: 0 15px;
@@ -15,8 +11,7 @@
   }
 }
 
-.requerido {
-  color: red !important;
-  font-size: 14px;
-  font-weight: 900;
+
+.container {
+  margin-top: 0px !important;
 }

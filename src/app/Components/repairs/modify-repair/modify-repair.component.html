@@ -1,13 +1,15 @@
-<div class="container mt-5 d-flex justify-content-center">
+<div class="container vh-100 d-flex justify-content-center align-items-center">
   <div class="card shadow-sm w-100" style="max-width: 800px">
     <div class="card-body p-4">
       <form (ngSubmit)="modificarReparacion()">
         <div class="text-center mb-4">
-          <h2 class="fs-2">Modificar reparación</h2>
+          <h2 class="fs-2 h2-title">Modificar reparación</h2>
         </div>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label for="fecha" class="form-label">Fecha:</label>
+            <label for="fecha" class="form-label"
+              >Fecha <span class="requerido">*</span></label
+            >
             <input
               type="date"
               id="fecha"
@@ -19,7 +21,9 @@
             />
           </div>
           <div class="col-md-6 mb-3">
-            <label for="estado" class="form-label">Estado:</label>
+            <label for="estado" class="form-label"
+              >Estado <span class="requerido">*</span></label
+            >
             <select
               id="estado"
               name="estado"
@@ -35,7 +39,9 @@
         </div>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label for="tecnico" class="form-label">Técnico:</label>
+            <label for="tecnico" class="form-label"
+              >Técnico <span class="requerido">*</span></label
+            >
             <div class="input-group">
               <select
                 id="tecnico"
@@ -60,7 +66,9 @@
             </div>
           </div>
           <div class="col-md-6 mb-3">
-            <label for="cliente" class="form-label">Cliente:</label>
+            <label for="cliente" class="form-label"
+              >Cliente <span class="requerido">*</span></label
+            >
             <div class="input-group">
               <select
                 id="cliente"
@@ -87,7 +95,9 @@
         </div>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label for="equipo" class="form-label">Equipo:</label>
+            <label for="equipo" class="form-label"
+              >Equipo <span class="requerido">*</span></label
+            >
             <div class="input-group">
               <select
                 id="equipo"
@@ -97,7 +107,13 @@
                 class="form-select fs-5"
               >
                 <option *ngFor="let equipo of equipos" [value]="equipo.id">
-                  {{ equipo.marca.nombre + " " + equipo.modelo.nombre + " - " + equipo.numeroSerie }}
+                  {{
+                    equipo.marca.nombre +
+                      " " +
+                      equipo.modelo.nombre +
+                      " - " +
+                      equipo.numeroSerie
+                  }}
                 </option>
               </select>
               <button
@@ -111,7 +127,7 @@
             </div>
           </div>
           <div class="col-md-6 mb-3">
-            <label for="accesorios" class="form-label">Accesorios:</label>
+            <label for="accesorios" class="form-label">Accesorios </label>
             <input
               type="text"
               id="accesorios"
@@ -122,7 +138,9 @@
           </div>
         </div>
         <div class="mb-3">
-          <label for="falla" class="form-label">Falla:</label>
+          <label for="falla" class="form-label"
+            >Falla <span class="requerido">*</span></label
+          >
           <textarea
             id="falla"
             name="falla"
@@ -138,15 +156,13 @@
         <div class="d-flex justify-content-end">
           <button
             type="button"
-            class="btn btn-secondary btn-lg me-2"
+            class="btn btn-danger col-3 me-2"
             data-bs-dismiss="modal"
             routerLink="/reparaciones"
           >
             Cerrar
           </button>
-          <button type="submit" class="btn btn-primary btn-lg">
-            Modificar
-          </button>
+          <button type="submit" class="btn btn-success col-3">Modificar</button>
         </div>
       </form>
     </div>
@@ -166,7 +182,7 @@
     <div class="modal-content">
       <form (ngSubmit)="agregarTecnico()">
         <div class="modal-header">
-          <h2 class="text-center fs-2">Agregar técnico</h2>
+          <h2 class="text-center fs-2 h2-title">Agregar técnico</h2>
           <button
             type="button"
             class="btn-close"
@@ -177,7 +193,7 @@
         </div>
         <div class="modal-body">
           <div class="mb-3 d-grid gap-2">
-            <label for="nombre">Nombre:</label>
+            <label for="nombre">Nombre <span class="requerido">*</span></label>
             <input
               type="text"
               id="nombre"
@@ -194,12 +210,12 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-secondary btn-lg"
+            class="btn btn-danger col-3 me-2"
             data-bs-dismiss="modal"
           >
             Cerrar
           </button>
-          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+          <button type="submit" class="btn btn-success col-3">Agregar</button>
         </div>
       </form>
     </div>
@@ -220,7 +236,7 @@
     <div class="modal-content">
       <form (ngSubmit)="agregarCliente()">
         <div class="modal-header">
-          <h2 class="text-center fs-2">Agregar cliente</h2>
+          <h2 class="text-center fs-2 h2-title">Agregar cliente</h2>
           <button
             type="button"
             class="btn-close"
@@ -231,7 +247,7 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="nombre">Nombre:</label>
+            <label for="nombre">Nombre <span class="requerido">*</span></label>
             <input
               type="text"
               id="nombre"
@@ -242,7 +258,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="email">Email:</label>
+            <label for="email">Email</label>
             <input
               type="email"
               id="email"
@@ -253,7 +269,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="telefono">Teléfono:</label>
+            <label for="telefono">Teléfono</label>
             <input
               type="text"
               id="telefono"
@@ -264,7 +280,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="direccion">Dirección:</label>
+            <label for="direccion">Dirección</label>
             <input
               type="text"
               id="direccion"
@@ -275,7 +291,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="cedula">Cédula:</label>
+            <label for="cedula">Cédula</label>
             <input
               type="text"
               id="cedula"
@@ -286,7 +302,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="observacion">Observaciones:</label>
+            <label for="observacion">Observaciones</label>
             <textarea
               id="observacion"
               name="observacion"
@@ -302,12 +318,12 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-secondary btn-lg"
+            class="btn btn-danger col-3 me-2"
             data-bs-dismiss="modal"
           >
             Cerrar
           </button>
-          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+          <button type="submit" class="btn btn-success col-3">Agregar</button>
         </div>
       </form>
     </div>
@@ -320,7 +336,9 @@
   <div class="modal-content">
     <form (ngSubmit)="agregarEquipo()">
       <div class="modal-header">
-        <h2 class="text-center fs-2">Agregar equipo</h2>
+        <h2 class="text-center fs-2 h2-title">
+          Agregar equipo <span class="requerido">*</span>
+        </h2>
         <button
           type="button"
           class="btn-close"
@@ -331,7 +349,9 @@
       <div class="modal-body">
         <div class="mb-3 d-flex align-items-center">
           <div class="flex-grow-1">
-            <label for="tipoEquipo">Tipo Equipo:</label>
+            <label for="tipoEquipo"
+              >Tipo equipo <span class="requerido">*</span></label
+            >
             <select
               id="tipoEquipo"
               name="tipoEquipo"
@@ -357,7 +377,7 @@
         </div>
         <div class="mb-3 d-flex align-items-center">
           <div class="flex-grow-1">
-            <label for="marca">Marca:</label>
+            <label for="marca">Marca <span class="requerido">*</span></label>
             <select
               id="marca"
               name="marca"
@@ -380,7 +400,7 @@
         </div>
         <div class="mb-3 d-flex align-items-center">
           <div class="flex-grow-1">
-            <label for="modelo">Modelo:</label>
+            <label for="modelo">Modelo <span class="requerido">*</span></label>
             <select
               id="modelo"
               name="modelo"
@@ -402,7 +422,9 @@
           </button>
         </div>
         <div class="mb-3">
-          <label for="numeroSerie">Numero de serie:</label>
+          <label for="numeroSerie"
+            >Numero de serie <span class="requerido">*</span></label
+          >
           <input
             type="text"
             id="numeroSerie"
@@ -419,12 +441,12 @@
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-secondary btn-lg"
+          class="btn btn-danger col-3 me-2"
           (click)="modal.dismiss('Close click')"
         >
           Cerrar
         </button>
-        <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        <button type="submit" class="btn btn-success col-3">Agregar</button>
       </div>
     </form>
   </div>
@@ -435,7 +457,7 @@
   <div class="modal-content">
     <form (ngSubmit)="agregarTipoEquipo()">
       <div class="modal-header">
-        <h2 class="text-center fs-2">Agregar tipo de equipo</h2>
+        <h2 class="text-center fs-2 h2-title">Agregar tipo de equipo</h2>
         <button
           type="button"
           class="btn-close"
@@ -445,7 +467,9 @@
       </div>
       <div class="modal-body">
         <div class="mb-3">
-          <label for="tipoEquipo">Tipo de equipo:</label>
+          <label for="tipoEquipo"
+            >Tipo de equipo <span class="requerido">*</span></label
+          >
           <input
             type="text"
             id="tipoEquipo"
@@ -463,12 +487,12 @@
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-secondary btn-lg"
+          class="btn btn-danger col-3 me-2"
           (click)="modal.dismiss('Close click')"
         >
           Cerrar
         </button>
-        <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        <button type="submit" class="btn btn-success col-3">Agregar</button>
       </div>
     </form>
   </div>
@@ -479,7 +503,7 @@
   <div class="modal-content">
     <form (ngSubmit)="agregarMarca()">
       <div class="modal-header">
-        <h2 class="text-center fs-2">Agregar marca</h2>
+        <h2 class="text-center fs-2 h2-title">Agregar marca</h2>
         <button
           type="button"
           class="btn-close"
@@ -489,7 +513,7 @@
       </div>
       <div class="modal-body">
         <div class="mb-3">
-          <label for="marca">Marca:</label>
+          <label for="marca">Marca <span class="requerido">*</span></label>
           <input
             type="text"
             id="marca"
@@ -507,12 +531,12 @@
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-secondary btn-lg"
+          class="btn btn-danger col-3 me-2"
           (click)="modal.dismiss('Close click')"
         >
           Cerrar
         </button>
-        <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        <button type="submit" class="btn btn-success col-3">Agregar</button>
       </div>
     </form>
   </div>
@@ -523,7 +547,7 @@
   <div class="modal-content">
     <form (ngSubmit)="agregarModelo()">
       <div class="modal-header">
-        <h2 class="text-center fs-2">Agregar modelo</h2>
+        <h2 class="text-center fs-2 h2-title">Agregar modelo</h2>
         <button
           type="button"
           class="btn-close"
@@ -534,7 +558,7 @@
       <div class="modal-body">
         <div class="mb-3 d-flex align-items-center">
           <div class="flex-grow-1">
-            <label for="marca">Marca:</label>
+            <label for="marca">Marca <span class="requerido">*</span></label>
             <select
               id="marca"
               name="marca"
@@ -549,7 +573,7 @@
           </div>
         </div>
         <div class="mb-3">
-          <label for="modelo">Modelo:</label>
+          <label for="modelo">Modelo <span class="requerido">*</span></label>
           <input
             type="text"
             id="modelo"
@@ -567,12 +591,12 @@
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-secondary btn-lg"
+          class="btn btn-danger col-3 me-2"
           (click)="modal.dismiss('Close click')"
         >
           Cerrar
         </button>
-        <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+        <button type="submit" class="btn btn-success col-3">Agregar</button>
       </div>
     </form>
   </div>

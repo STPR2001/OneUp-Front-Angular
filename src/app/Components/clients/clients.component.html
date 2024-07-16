@@ -151,7 +151,7 @@
     <div class="modal-content">
       <form (ngSubmit)="agregarCliente()">
         <div class="modal-header">
-          <h2 class="text-center fs-2">Agregar cliente</h2>
+          <h2 class="text-center fs-2 h2-title">Agregar cliente</h2>
           <button
             type="button"
             class="btn-close"
@@ -162,7 +162,7 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="nombre">Nombre:</label>
+            <label for="nombre">Nombre <span class="requerido">*</span></label>
             <input
               type="text"
               id="nombre"
@@ -173,7 +173,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="email">Email:</label>
+            <label for="email">Email</label>
             <input
               type="email"
               id="email"
@@ -184,7 +184,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="telefono">Teléfono:</label>
+            <label for="telefono">Teléfono</label>
             <input
               type="text"
               id="telefono"
@@ -195,7 +195,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="direccion">Dirección:</label>
+            <label for="direccion">Dirección</label>
             <input
               type="text"
               id="direccion"
@@ -206,7 +206,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="cedula">Cédula:</label>
+            <label for="cedula">Cédula</label>
             <input
               type="text"
               id="cedula"
@@ -217,7 +217,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="observacion">Observaciones:</label>
+            <label for="observacion">Observaciones</label>
             <textarea
               id="observacion"
               name="observacion"
@@ -233,12 +233,12 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-secondary btn-lg"
+            class="btn btn-danger col-3 me-2"
             data-bs-dismiss="modal"
           >
             Cerrar
           </button>
-          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+          <button type="submit" class="btn btn-success col-3">Agregar</button>
         </div>
       </form>
     </div>
@@ -258,7 +258,7 @@
     <div class="modal-content">
       <form (ngSubmit)="modificarCliente()">
         <div class="modal-header">
-          <h2 class="text-center fs-2">Modificar cliente</h2>
+          <h2 class="text-center fs-2 h2-title">Modificar cliente</h2>
           <button
             type="button"
             class="btn-close"
@@ -269,7 +269,7 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="nombre">Nombre:</label>
+            <label for="nombre">Nombre <span class="requerido">*</span></label>
             <input
               type="text"
               id="nombre"
@@ -280,7 +280,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="email">Email:</label>
+            <label for="email">Email</label>
             <input
               type="email"
               id="email"
@@ -291,7 +291,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="telefono">Teléfono:</label>
+            <label for="telefono">Teléfono</label>
             <input
               type="text"
               id="telefono"
@@ -302,7 +302,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="direccion">Dirección:</label>
+            <label for="direccion">Dirección</label>
             <input
               type="text"
               id="direccion"
@@ -313,7 +313,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="cedula">Cédula:</label>
+            <label for="cedula">Cédula</label>
             <input
               type="text"
               id="cedula"
@@ -324,7 +324,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="observaciones">Observaciones:</label>
+            <label for="observaciones">Observaciones</label>
             <textarea
               id="observaciones"
               name="observaciones"
@@ -340,14 +340,12 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-secondary btn-lg"
+            class="btn btn-danger col-3 me-2"
             data-bs-dismiss="modal"
           >
             Cerrar
           </button>
-          <button type="submit" class="btn btn-primary btn-lg">
-            Modificar Cliente
-          </button>
+          <button type="submit" class="btn btn-success col-3">Modificar</button>
         </div>
       </form>
     </div>
