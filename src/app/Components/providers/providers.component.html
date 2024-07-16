@@ -1,5 +1,5 @@
 <div class="container">
-  <h2>Tabla de Proveedores</h2>
+  <h2 class="h2-title">Proveedores</h2>
   <div class="row mb-3">
     <div class="col-md-6">
       <input
@@ -13,11 +13,11 @@
     <div class="col-md-6 text-end">
       <button
         type="button"
-        class="btn btn-primary"
+        class="btn btn-success"
         data-bs-toggle="modal"
         data-bs-target="#agregarProveedorModal"
       >
-        Agregar Proveedor
+        Agregar proveedor
       </button>
     </div>
   </div>
@@ -140,7 +140,7 @@
       <div class="modal-content">
         <form (ngSubmit)="agregarProveedor()">
           <div class="modal-header">
-            <h2 class="text-center fs-2">Agregar Proveedor</h2>
+            <h2 class="text-center fs-2 h2-title">Agregar proveedor</h2>
             <button
               type="button"
               class="btn-close"
@@ -151,45 +151,47 @@
           </div>
           <div class="modal-body">
             <div class="mb-3 d-grid gap-2">
-              <label for="nombre" class="form-label fs-5">Nombre:</label>
+              <label for="nombre"
+                >Nombre <span class="requerido">*</span></label
+              >
               <input
                 type="text"
                 id="nombre"
                 name="nombre"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="nuevoProveedor.nombre"
               />
             </div>
             <div class="mb-3 d-grid gap-2">
-              <label for="direccion" class="form-label fs-5">Dirección:</label>
+              <label for="direccion">Dirección</label>
               <input
                 type="text"
                 id="direccion"
                 name="direccion"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="nuevoProveedor.direccion"
               />
             </div>
             <div class="mb-3 d-grid gap-2">
-              <label for="telefono" class="form-label fs-5">Teléfono: </label>
+              <label for="telefono">Teléfono </label>
               <input
                 type="text"
                 id="telefono"
                 name="telefono"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="nuevoProveedor.telefono"
               />
             </div>
             <div class="mb-3 d-grid gap-2">
-              <label for="correo" class="form-label fs-5">Correo:</label>
+              <label for="correo">Correo</label>
               <input
                 type="text"
                 id="correo"
                 name="correo"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="nuevoProveedor.email"
               />
@@ -201,14 +203,12 @@
           <div class="modal-footer">
             <button
               type="button"
-              class="btn btn-secondary btn-lg"
+              class="btn btn-danger col-3 me-2"
               data-bs-dismiss="modal"
             >
               Cerrar
             </button>
-            <button type="submit" class="btn btn-primary btn-lg">
-              Agregar
-            </button>
+            <button type="submit" class="btn btn-success col-3">Agregar</button>
           </div>
         </form>
       </div>
@@ -226,7 +226,7 @@
       <div class="modal-content">
         <form (ngSubmit)="modificarProveedor()">
           <div class="modal-header">
-            <h2 class="text-center fs-2">Modificar Proveedor</h2>
+            <h2 class="text-center fs-2 h2-title">Modificar Proveedor</h2>
             <button
               type="button"
               class="btn-close"
@@ -237,45 +237,47 @@
           </div>
           <div class="modal-body">
             <div class="mb-3 d-grid gap-2">
-              <label for="nombre" class="form-label fs-5">Nombre:</label>
+              <label for="nombre"
+                >Nombre <span class="requerido">*</span></label
+              >
               <input
                 type="text"
                 id="nombre"
                 name="nombre"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="proveedor.nombre"
               />
             </div>
             <div class="mb-3 d-grid gap-2">
-              <label for="direccion" class="form-label fs-5">Dirección:</label>
+              <label for="direccion">Dirección</label>
               <input
                 type="text"
                 id="direccion"
                 name="direccion"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="proveedor.direccion"
               />
             </div>
             <div class="mb-3 d-grid gap-2">
-              <label for="telefono" class="form-label fs-5">Telefono: </label>
+              <label for="telefono">Telefono </label>
               <input
                 type="text"
                 id="telefono"
                 name="telefono"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="proveedor.telefono"
               />
             </div>
             <div class="mb-3 d-grid gap-2">
-              <label for="correo" class="form-label fs-5">Correo: </label>
+              <label for="correo">Correo </label>
               <input
                 type="text"
                 id="correo"
                 name="correo"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="proveedor.email"
               />
@@ -287,12 +289,12 @@
           <div class="modal-footer">
             <button
               type="button"
-              class="btn btn-secondary btn-lg"
+              class="btn btn-danger col-3 me-2"
               data-bs-dismiss="modal"
             >
               Cerrar
             </button>
-            <button type="submit" class="btn btn-primary btn-lg">
+            <button type="submit" class="btn btn-success col-3">
               Modificar
             </button>
           </div>

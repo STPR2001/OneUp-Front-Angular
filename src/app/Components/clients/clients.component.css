@@ -10,10 +10,6 @@ td {
   text-align: left;
 }
 
-th {
-  background-color: #f2f2f2;
-}
-
 .rounded-table {
   border-collapse: separate;
   border-spacing: 0;
@@ -64,5 +60,5 @@ th {
 }
 
 .icon-small {
-  font-size: 19px;
+  font-size: 17px;
 }

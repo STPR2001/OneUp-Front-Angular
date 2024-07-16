@@ -1,6 +1,9 @@
-<div class="container mt-5">
-  <h2>Estadísticas de Reparaciones</h2>
-  <div class="d-flex m-3 justify-content-center">
+<div class="container">
+  <h2 class="h2-title">Estadísticas anuales</h2>
+  <p class="description">
+    Consulta las estadísticas anuales de reparaciones y gastos
+  </p>
+  <div class="d-flex m-3 justify-content-center year-input-container">
     <label for="yearInput" class="text-f">Año:</label>
     <input
       type="number"
@@ -10,33 +13,26 @@
       placeholder="YYYY"
       min="2017"
       max="2100"
-      class="rounded"
+      class="rounded year-input"
     />
   </div>
-  <div id="reparacionesPorMes" style="height: 300px; width: 100%"></div>
-  <div id="noDataReparacionesPorMes" style="display: none">
-    No se encontraron datos históricos para la gráfica 'Reparaciones por Mes'
+  <div id="reparacionesPorMes" class="chart"></div>
+  <div id="noDataReparacionesPorMes" class="no-data">
+    No se encontraron datos históricos para la gráfica 'Reparaciones por mes'
   </div>
 
-  <div id="gastosEnElAno" style="height: 300px; width: 100%" class="mt-4"></div>
-  <div id="noDataGastosEnElAno" style="display: none">
-    No se encontraron datos históricos para la gráfica 'Gastos en el Año'
+  <div id="gastosEnElAno" class="chart mt-4"></div>
+  <div id="noDataGastosEnElAno" class="no-data">
+    No se encontraron datos históricos para la gráfica 'Gastos en el año'
   </div>
-  <div
-    id="comprasPorProveedor"
-    style="height: 300px; width: 100%"
-    class="mt-4"
-  ></div>
-  <div id="noDataComprasPorProveedor" style="display: none">
-    No se encontraron datos históricos para la gráfica 'Compras por Proveedor'
+  <div id="comprasPorProveedor" class="chart mt-4"></div>
+  <div id="noDataComprasPorProveedor" class="no-data">
+    No se encontraron datos históricos para la gráfica 'Compras por proveedor'
   </div>
 
-  <div
-    id="reparacionesPorTecnico"
-    style="height: 300px; width: 100%"
-    class="mt-4"
-  ></div>
-  <div id="noDataReparacionesPorTecnico" style="display: none">
-    No se encontraron datos históricos para la gráfica 'Reparaciones por Técnico'
+  <div id="reparacionesPorTecnico" class="chart mt-4"></div>
+  <div id="noDataReparacionesPorTecnico" class="no-data">
+    No se encontraron datos históricos para la gráfica 'Reparaciones por
+    técnico'
   </div>
 </div>

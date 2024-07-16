@@ -1,5 +1,5 @@
 <div class="container">
-  <h2>Tabla de Técnicos</h2>
+  <h2 class="h2-title">Técnicos</h2>
   <div class="row mb-3">
     <div class="col-md-6">
       <input
@@ -13,11 +13,11 @@
     <div class="col-md-6 text-end">
       <button
         type="button"
-        class="btn btn-primary"
+        class="btn btn-success"
         data-bs-toggle="modal"
         data-bs-target="#agregarTecnicoModal"
       >
-        Agregar Técnico
+        Agregar técnico
       </button>
     </div>
   </div>
@@ -125,7 +125,7 @@
       <div class="modal-content">
         <form (ngSubmit)="agregarTecnico()">
           <div class="modal-header">
-            <h2 class="text-center fs-2">Agregar Tecnico</h2>
+            <h2 class="text-center fs-2 h2-title">Agregar técnico</h2>
             <button
               type="button"
               class="btn-close"
@@ -136,12 +136,14 @@
           </div>
           <div class="modal-body">
             <div class="mb-3 d-grid gap-2">
-              <label for="nombre" class="form-label fs-5">Nombre:</label>
+              <label for="nombre"
+                >Nombre <span class="requerido">*</span></label
+              >
               <input
                 type="text"
                 id="nombre"
                 name="nombre"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="nuevoTecnico.nombre"
               />
@@ -153,14 +155,12 @@
           <div class="modal-footer">
             <button
               type="button"
-              class="btn btn-secondary btn-lg"
+              class="btn btn-danger col-3 me-2"
               data-bs-dismiss="modal"
             >
               Cerrar
             </button>
-            <button type="submit" class="btn btn-primary btn-lg">
-              Agregar
-            </button>
+            <button type="submit" class="btn btn-success col-3">Agregar</button>
           </div>
         </form>
       </div>
@@ -178,7 +178,7 @@
       <div class="modal-content">
         <form (ngSubmit)="modificarTecnico()">
           <div class="modal-header">
-            <h2 class="text-center fs-2">Modificar Tecnico</h2>
+            <h2 class="text-center fs-2 h2-title">Modificar técnico</h2>
             <button
               type="button"
               class="btn-close"
@@ -189,12 +189,14 @@
           </div>
           <div class="modal-body">
             <div class="mb-3 d-grid gap-2">
-              <label for="nombre" class="form-label fs-5">Nombre:</label>
+              <label for="nombre"
+                >Nombre <span class="requerido">*</span></label
+              >
               <input
                 type="text"
                 id="nombre"
                 name="nombre"
-                class="fs-5"
+                class="form-control fs-5"
                 required
                 [(ngModel)]="tecnico.nombre"
               />
@@ -206,12 +208,12 @@
           <div class="modal-footer">
             <button
               type="button"
-              class="btn btn-secondary btn-lg"
+              class="btn btn-danger col-3 me-2"
               data-bs-dismiss="modal"
             >
               Cerrar
             </button>
-            <button type="submit" class="btn btn-primary btn-lg">
+            <button type="submit" class="btn btn-success col-3">
               Modificar
             </button>
           </div>

@@ -3,15 +3,17 @@ import { CanvasJS } from '@canvasjs/angular-charts';
 import { RepairsService } from 'src/app/services/repairs.service';
 import { ShoppingService } from 'src/app/services/shopping.service';
 
-
 @Component({
   selector: 'app-statistic',
   templateUrl: './statistic.component.html',
-  styleUrls: ['./statistic.component.css']
+  styleUrls: ['./statistic.component.css'],
 })
 export class StatisticComponent implements OnInit {
   selectedYear: number = new Date().getFullYear();
-  constructor(private shoppingService: ShoppingService, private repairsService: RepairsService) { }
+  constructor(
+    private shoppingService: ShoppingService,
+    private repairsService: RepairsService
+  ) {}
 
   ngOnInit(): void {
     this.renderReparacionesPorMesChart();
@@ -22,37 +24,49 @@ export class StatisticComponent implements OnInit {
 
   renderReparacionesPorMesChart() {
     this.repairsService.getReparacionesPorMes(this.selectedYear).subscribe(
-      data => {
+      (data) => {
         if (data.length === 0) {
           document.getElementById('reparacionesPorMes')!.style.display = 'none';
-          document.getElementById('noDataReparacionesPorMes')!.style.display = 'block';
+          document.getElementById('noDataReparacionesPorMes')!.style.display =
+            'block';
         } else {
-          document.getElementById('reparacionesPorMes')!.style.display = 'block';
-          document.getElementById('noDataReparacionesPorMes')!.style.display = 'none';
-          let dataPoints = data.map((item: { [x: string]: any; }) => {
+          document.getElementById('reparacionesPorMes')!.style.display =
+            'block';
+          document.getElementById('noDataReparacionesPorMes')!.style.display =
+            'none';
+          let dataPoints = data.map((item: { [x: string]: any }) => {
             let nombreMes = Object.keys(item)[0];
             let valor = item[nombreMes];
             return { label: nombreMes, y: valor };
           });
 
-          let chart = new CanvasJS.Chart("reparacionesPorMes", {
+          let chart = new CanvasJS.Chart('reparacionesPorMes', {
             animationEnabled: true,
-            theme: "light2",
+            theme: 'light2',
             title: {
-              text: "Reparaciones por Mes"
+              text: 'Reparaciones por mes',
+              fontSize: 20,
+              margin: 15,
             },
             axisY: {
-              title: "Cantidad de Reparaciones"
+              title: 'Cantidad de reparaciones',
             },
-            data: [{
-              type: "column",
-              dataPoints: dataPoints
-            }]
+            data: [
+              {
+                type: 'column',
+                dataPoints: dataPoints,
+              },
+            ],
+            backgroundColor: 'transparent',
+            borderThickness: 0,
+            toolTip: {
+              borderThickness: 0,
+            },
           });
           chart.render();
         }
       },
-      error => {
+      (error) => {
         console.error('Error fetching reparaciones por mes:', error);
       }
     );
@@ -60,36 +74,47 @@ export class StatisticComponent implements OnInit {
 
   renderGastosEnElAnoChart() {
     this.shoppingService.getComprasPorMes(this.selectedYear).subscribe(
-      data => {
+      (data) => {
         if (data.length === 0) {
           document.getElementById('gastosEnElAno')!.style.display = 'none';
-          document.getElementById('noDataGastosEnElAno')!.style.display = 'block';
+          document.getElementById('noDataGastosEnElAno')!.style.display =
+            'block';
         } else {
           document.getElementById('gastosEnElAno')!.style.display = 'block';
-          document.getElementById('noDataGastosEnElAno')!.style.display = 'none';
-          let dataPoints = data.map((item: { [x: string]: any; }) => {
+          document.getElementById('noDataGastosEnElAno')!.style.display =
+            'none';
+          let dataPoints = data.map((item: { [x: string]: any }) => {
             let nombreMes = Object.keys(item)[0];
             let valor = item[nombreMes];
             return { label: nombreMes, y: valor };
           });
-          let chart = new CanvasJS.Chart("gastosEnElAno", {
+          let chart = new CanvasJS.Chart('gastosEnElAno', {
             animationEnabled: true,
-            theme: "light2",
+            theme: 'light2',
             title: {
-              text: "Gastos en el Año"
+              text: 'Gastos en el año',
+              fontSize: 18,
+              margin: 15,
             },
             axisY: {
-              title: "Monto en USD"
+              title: '',
             },
-            data: [{
-              type: "line",
-              dataPoints: dataPoints
-            }]
+            data: [
+              {
+                type: 'line',
+                dataPoints: dataPoints,
+              },
+            ],
+            backgroundColor: 'transparent',
+            borderThickness: 0,
+            toolTip: {
+              borderThickness: 0,
+            },
           });
           chart.render();
         }
       },
-      error => {
+      (error) => {
         console.error('Error fetching reparaciones por mes:', error);
       }
     );
@@ -97,38 +122,51 @@ export class StatisticComponent implements OnInit {
 
   renderComprasPorProveedorChart() {
     this.shoppingService.getComprasPorProveedor(this.selectedYear).subscribe(
-      data => {
+      (data) => {
         if (data.length === 0) {
-          document.getElementById('comprasPorProveedor')!.style.display = 'none';
-          document.getElementById('noDataComprasPorProveedor')!.style.display = 'block';
+          document.getElementById('comprasPorProveedor')!.style.display =
+            'none';
+          document.getElementById('noDataComprasPorProveedor')!.style.display =
+            'block';
         } else {
-          document.getElementById('comprasPorProveedor')!.style.display = 'block';
-          document.getElementById('noDataComprasPorProveedor')!.style.display = 'none';
-          let dataPoints = data.map((item: { [x: string]: any; }) => {
+          document.getElementById('comprasPorProveedor')!.style.display =
+            'block';
+          document.getElementById('noDataComprasPorProveedor')!.style.display =
+            'none';
+          let dataPoints = data.map((item: { [x: string]: any }) => {
             let nombreMes = Object.keys(item)[0];
             let valor = item[nombreMes];
             return { label: nombreMes, y: valor };
           });
-          let chart = new CanvasJS.Chart("comprasPorProveedor", {
+          let chart = new CanvasJS.Chart('comprasPorProveedor', {
             animationEnabled: true,
-            theme: "light2",
+            theme: 'light2',
             title: {
-              text: "Compras por Proveedor"
+              text: 'Compras por proveedor',
+              fontSize: 18,
+              margin: 15,
             },
-            data: [{
-              type: "doughnut",
-              startAngle: 60,
-              innerRadius: 60,
-              indexLabelFontSize: 17,
-              indexLabel: "{label} - #percent%",
-              toolTipContent: "<b>{label}:</b> {y} (#percent%)",
-              dataPoints: dataPoints
-            }]
+            data: [
+              {
+                type: 'doughnut',
+                startAngle: 60,
+                innerRadius: 60,
+                indexLabelFontSize: 17,
+                indexLabel: '{label} - #percent%',
+                toolTipContent: '<b>{label}:</b> {y} (#percent%)',
+                dataPoints: dataPoints,
+              },
+            ],
+            backgroundColor: 'transparent',
+            borderThickness: 0,
+            toolTip: {
+              borderThickness: 0,
+            },
           });
           chart.render();
         }
       },
-      error => {
+      (error) => {
         console.error('Error fetching reparaciones por mes:', error);
       }
     );
@@ -136,36 +174,51 @@ export class StatisticComponent implements OnInit {
 
   renderReparacionesPorTecnicoChart() {
     this.repairsService.getReparacionesPorTecnico(this.selectedYear).subscribe(
-      data => {
+      (data) => {
         if (data.length === 0) {
-          document.getElementById('reparacionesPorTecnico')!.style.display = 'none';
-          document.getElementById('noDataReparacionesPorTecnico')!.style.display = 'block';
+          document.getElementById('reparacionesPorTecnico')!.style.display =
+            'none';
+          document.getElementById(
+            'noDataReparacionesPorTecnico'
+          )!.style.display = 'block';
         } else {
-          document.getElementById('reparacionesPorTecnico')!.style.display = 'block';
-          document.getElementById('noDataReparacionesPorTecnico')!.style.display = 'none';
-          let dataPoints = data.map((item: { [x: string]: any; }) => {
+          document.getElementById('reparacionesPorTecnico')!.style.display =
+            'block';
+          document.getElementById(
+            'noDataReparacionesPorTecnico'
+          )!.style.display = 'none';
+          let dataPoints = data.map((item: { [x: string]: any }) => {
             let nombreMes = Object.keys(item)[0];
             let valor = item[nombreMes];
             return { label: nombreMes, y: valor };
           });
-          let chart = new CanvasJS.Chart("reparacionesPorTecnico", {
+          let chart = new CanvasJS.Chart('reparacionesPorTecnico', {
             animationEnabled: true,
-            theme: "light2",
+            theme: 'light2',
             title: {
-              text: "Reparaciones por Técnico"
+              text: 'Reparaciones por técnico',
+              fontSize: 18,
+              margin: 15,
             },
             axisY: {
-              title: "Cantidad de Reparaciones"
+              title: '',
             },
-            data: [{
-              type: "bar",
-              dataPoints: dataPoints
-            }]
+            data: [
+              {
+                type: 'bar',
+                dataPoints: dataPoints,
+              },
+            ],
+            backgroundColor: 'transparent',
+            borderThickness: 0,
+            toolTip: {
+              borderThickness: 0,
+            },
           });
           chart.render();
         }
       },
-      error => {
+      (error) => {
         console.error('Error fetching reparaciones por mes:', error);
       }
     );

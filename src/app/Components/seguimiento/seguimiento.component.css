@@ -1,0 +1,91 @@
+/* General container styling */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styling */
+h2.text-center {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Description styling */
+p.descripcion {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+/* Form styling */
+form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.form-control {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button.btn.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+button.btn.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.text-danger {
+  font-size: 14px;
+}
+
+/* Styling for the results section */
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+h3 {
+  font-size: 20px;
+  color: #333;
+}
+
+p {
+  font-size: 16px;
+  color: #555;
+}
+
+p strong {
+  color: #333;
+}
+
+/* Conditional styling for non-found reparations */
+.mt-4 p.text-danger {
+  color: #d9534f;
+  font-weight: bold;
+}
+
+.container {
+  margin-top: 20px;
+}

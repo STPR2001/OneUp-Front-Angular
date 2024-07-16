@@ -21,6 +21,7 @@
         <div class="title">Home</div>
       </li>
       <li
+        *ngIf="!isLogued()"
         class="row"
         routerLink="/seguimiento"
         [ngClass]="{ active: isActive('/seguimiento') }"
@@ -117,6 +118,15 @@
         <div class="title">Configuración</div>
       </li>
       <li
+      *ngIf="isLogued()"
+      class="row"
+      routerLink="/restore"
+      [ngClass]="{ active: isActive('/restore') }"
+    >
+      <div class="icon"><span class="material-icons">delete</span></div>
+      <div class="title">Restaurar</div>
+    </li>
+      <li
         *ngIf="isLogued()"
         class="row"
         data-bs-toggle="modal"
@@ -136,7 +146,7 @@
       </li>
     </ul>
   </div>
-  <div class="content" [ngClass]="{ expanded: !sidebarOpen || !isLogued() }">
+  <div class="content" [ngClass]="{ expanded: !sidebarOpen }">
     <router-outlet></router-outlet>
   </div>
 </div>
@@ -150,16 +160,23 @@
 >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div>
-        <h2 class="text-center fs-2">¿Seguro que quiere irse?</h2>
-      </div>
-      <div class="modal-footer justify-content-evenly">
+      <div class="modal-header border-0">
+        <h2 class="modal-title text-center w-100 fs-2">¿Seguro que quiere irse?</h2>
         <button
           type="button"
-          class="btn btn-primary col-4"
+          class="btn-close"
           data-bs-dismiss="modal"
           aria-label="Close"
-          #cerrarSesion
+        ></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <p>Está a punto de cerrar sesión y salir de la aplicación.</p>
+      </div>
+      <div class="modal-footer justify-content-evenly border-0">
+        <button
+          type="button"
+          class="btn btn-secondary col-4"
+          data-bs-dismiss="modal"
         >
           Cerrar
         </button>

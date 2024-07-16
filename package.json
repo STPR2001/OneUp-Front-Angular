@@ -20,7 +20,7 @@
     "@angular/router": "^15.1.0",
     "@canvasjs/angular-charts": "^1.2.0",
     "@ng-bootstrap/ng-bootstrap": "^14.2.0",
-    "@popperjs/core": "^2.11.6",
+    "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
     "html2canvas": "^1.4.1",
     "jspdf": "^1.5.3",

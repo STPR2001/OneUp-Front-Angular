@@ -51,7 +51,7 @@
 }
 
 .logo {
-  max-width: 70%;
+  max-width: 65%;
   height: auto;
 }
 
@@ -76,6 +76,10 @@
   width: 100%;
 }
 
+.SidebarList {
+  margin-top: 20px;
+}
+
 .SidebarList .row:hover {
   background-color: rgba(255, 255, 255, 0.1);
   transform: scale(1.05);
@@ -97,7 +101,7 @@
 
 .title {
   color: #fff;
-  font-size: 1.1em;
+  font-size: 16px;
   flex: 1;
 }
 
@@ -119,4 +123,30 @@
 
 .row.active .icon {
   color: #fe9b01;
+}
+
+.btnPeronalizado {
+  background-color: #242529 !important;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: -17px; /* ver si funciona responsive*/
+}
+.modal-body p {
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+.modal-footer .btn {
+  padding: 10px 20px;
+}
+@media (max-width: 768px) {
+  .modal-footer .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .modal-footer .btn + .btn {
+    margin-left: 0;
+  }
 }

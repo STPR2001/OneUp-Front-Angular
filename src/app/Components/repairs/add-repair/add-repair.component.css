@@ -1,3 +1,17 @@
 .icon-small {
   font-size: 17px;
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+  .card {
+    margin: 0 10px;
+  }
+}
+
+
+.container {
+  margin-top: 0px !important;
+}

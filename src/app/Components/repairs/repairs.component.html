@@ -1,7 +1,7 @@
 <div class="container">
-  <h2>Listado de Reparaciones</h2>
+  <h2 class="h2-title">Reparaciones</h2>
   <div class="row mb-3">
-    <div class="col-md-6">
+    <div class="col-12 col-md-6 mb-2 mb-md-0">
       <input
         type="text"
         placeholder="Buscar por cliente..."
@@ -10,7 +10,7 @@
         class="form-control"
       />
     </div>
-    <div class="col-md-2">
+    <div class="col-6 col-md-2 mb-2 mb-md-0">
       <select
         [(ngModel)]="estadoFiltro"
         class="form-select"
@@ -22,22 +22,22 @@
         </option>
       </select>
     </div>
-    <div class="col-md-4 text-end">
+    <div class="col-6 col-md-4 text-md-end">
       <button
         type="button"
-        class="btn btn-primary"
+        class="btn btn-success w-100 w-md-auto"
         routerLink="/agregarReparacion"
       >
-        Agregar Reparación
+        Agregar reparación
       </button>
     </div>
   </div>
   <div class="table-responsive table-container">
     <table class="table table-striped">
-      <thead>
+      <thead class="thead-dark">
         <tr>
           <th scope="col">Orden</th>
-          <th scope="col">Fecha Ingreso</th>
+          <th scope="col">Fecha</th>
           <th scope="col">Cliente</th>
           <th scope="col">Marca</th>
           <th scope="col">Modelo</th>
@@ -60,39 +60,61 @@
           <td>
             <button
               class="btn btn-primary me-2"
-              (click)="verDetallesReparacion(repair)"
-              title="Ver más"
-            >
-              <span class="material-icons icon-small">visibility</span>
-            </button>
-            <button
-              class="btn btn-primary me-2"
               [routerLink]="['/modificarReparacion', repair.id]"
               title="Modificar"
             >
               <span class="material-icons icon-small">edit</span>
             </button>
             <button
-              class="btn btn-primary me-2"
-              (click)="abrirModalAgregarNota(repair)"
-              title="Agregar nota"
-            >
-              <span class="material-icons icon-small">note_add</span>
-            </button>
-            <button
-              class="btn btn-primary me-2"
-              (click)="generarPDF(repair)"
-              title="Imprimir"
-            >
-              <span class="material-icons icon-small">print</span>
-            </button>
-            <button
-              class="btn btn-danger"
+              class="btn btn-danger me-2"
               (click)="eliminarReparacion(repair.id)"
               title="Eliminar"
             >
               <span class="material-icons icon-small">delete</span>
             </button>
+            <div class="btn-group">
+              <button
+                type="button"
+                class="btn btn-secondary dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                title="Extras"
+              >
+                Extras
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <button
+                    class="dropdown-item"
+                    (click)="verDetallesReparacion(repair)"
+                    title="Ver más"
+                  >
+                    <span class="material-icons icon-small">visibility</span>
+                    Ver más
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="dropdown-item"
+                    (click)="abrirModalAgregarNota(repair)"
+                    title="Agregar nota"
+                  >
+                    <span class="material-icons icon-small">note_add</span>
+                    Agregar nota
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="dropdown-item"
+                    (click)="generarPDF(repair)"
+                    title="Imprimir"
+                  >
+                    <span class="material-icons icon-small">print</span>
+                    Imprimir
+                  </button>
+                </li>
+              </ul>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -170,7 +192,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="text-center fs-2">Detalles de la Reparación</h2>
+        <h2 class="text-center fs-2">Detalles de la reparación</h2>
         <button
           type="button"
           class="btn-close"
@@ -321,12 +343,12 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-secondary btn-lg"
+            class="btn btn-danger col-3 me-2"
             data-bs-dismiss="modal"
           >
             Cerrar
           </button>
-          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+          <button type="submit" class="btn btn-success col-3">Agregar</button>
         </div>
       </form>
     </div>

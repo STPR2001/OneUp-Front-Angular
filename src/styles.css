@@ -16,3 +16,86 @@ html {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
     "Lucida Sans", Arial, sans-serif;
 }
+
+.table-container {
+  overflow-x: auto !important;
+}
+
+.table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  white-space: nowrap !important;
+}
+
+.container {
+  margin-top: 17px !important;
+}
+
+.h2-title {
+  font-weight: 600;
+}
+
+.requerido {
+  color: red !important;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+/* RESPONSIVE */
+
+@media only screen and (max-width: 600px) {
+  /* Estilos para pantallas pequeñas (por ejemplo, teléfonos móviles) */
+}
+
+@media only screen and (min-width: 600px) and (max-width: 768px) {
+  /* Estilos para pantallas medianas (por ejemplo, tablets) */
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1370px) {
+  /* Estilos para pantallas grandes (por ejemplo, tablets grandes o pantallas pequeñas de computadoras) */
+  * {
+    font-size: 13px;
+  }
+
+  .icon-small {
+    font-size: 14px;
+  }
+
+  .h2-title {
+    font-size: 24px;
+  }
+
+  .logo {
+    max-width: 70% !important;
+  }
+
+  .title {
+    font-size: 13px !important;
+  }
+
+  .SidebarList .row {
+    padding: 8px !important;
+    margin: 4px !important;
+  }
+
+  .sidebar {
+    width: 200px !important;
+  }
+
+  .content {
+    margin-left: 200px !important;
+  }
+
+  .content.expanded {
+    margin-left: 0px !important;
+  }
+
+  .toggle-sidebar.close {
+    left: 150px !important;
+    color: #fff !important;
+  }
+}
+
+@media only screen and (min-width: 1370px) {
+  /* Estilos para pantallas muy grandes (por ejemplo, computadoras de escritorio) */
+}
