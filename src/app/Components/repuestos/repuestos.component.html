@@ -141,7 +141,7 @@
     <div class="modal-content">
       <form (ngSubmit)="agregarRepuesto()">
         <div class="modal-header">
-          <h2 class="text-center fs-2">Agregar repuesto</h2>
+          <h2 class="text-center fs-2 h2-title">Agregar repuesto</h2>
           <button
             type="button"
             class="btn-close"
@@ -152,18 +152,9 @@
         </div>
         <div class="modal-body">
           <div class="mb-3 d-grid gap-2">
-            <label for="numero_de_parte">Numero de parte: </label>
-            <input
-              type="text"
-              id="numero_de_parte"
-              name="numero_de_parte"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoRepuesto.numeroDeParte"
-            />
-          </div>
-          <div class="mb-3 d-grid gap-2">
-            <label for="descripcion">Descripcion: </label>
+            <label for="descripcion"
+              >Repuesto <span class="requerido">*</span></label
+            >
             <input
               type="text"
               id="descripcion"
@@ -174,7 +165,18 @@
             />
           </div>
           <div class="mb-3 d-grid gap-2">
-            <label for="precio_costo">Precio de costo: </label>
+            <label for="numero_de_parte">Numero de parte </label>
+            <input
+              type="text"
+              id="numero_de_parte"
+              name="numero_de_parte"
+              class="form-control fs-5"
+              required
+              [(ngModel)]="nuevoRepuesto.numeroDeParte"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="precio_costo">Precio de costo </label>
             <input
               type="text"
               id="precio_costo"
@@ -185,7 +187,7 @@
             />
           </div>
           <div class="mb-3 d-grid gap-2">
-            <label for="precio_venta">Precio de Venta: </label>
+            <label for="precio_venta">Precio de venta </label>
             <input
               type="text"
               id="precio_venta"
@@ -196,7 +198,7 @@
             />
           </div>
           <div class="mb-3 d-grid gap-2">
-            <label for="stock">Stock: </label>
+            <label for="stock">Stock <span class="requerido">*</span></label>
             <input
               type="text"
               id="stock"
@@ -213,12 +215,12 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-secondary btn-lg"
+            class="btn btn-danger col-3 me-2"
             data-bs-dismiss="modal"
           >
             Cerrar
           </button>
-          <button type="submit" class="btn btn-primary btn-lg">Agregar</button>
+          <button type="submit" class="btn btn-success col-3">Agregar</button>
         </div>
       </form>
     </div>
@@ -236,7 +238,7 @@
     <div class="modal-content">
       <form (ngSubmit)="modificarRepuesto()">
         <div class="modal-header">
-          <h2 class="text-center fs-2">Modificar Repuesto</h2>
+          <h2 class="text-center fs-2 h2-title">Modificar Repuesto</h2>
           <button
             type="button"
             class="btn-close"
@@ -247,64 +249,58 @@
         </div>
         <div class="modal-body">
           <div class="mb-3 d-grid gap-2">
-            <label for="numero_de_parte" class="form-label fs-5"
-              >Numero de parte:
-            </label>
-            <input
-              type="text"
-              id="numero_de_parte"
-              name="numero_de_parte"
-              class="fs-5"
-              required
-              [(ngModel)]="repuesto.numeroDeParte"
-            />
-          </div>
-          <div class="mb-3 d-grid gap-2">
-            <label for="descripcion" class="form-label fs-5"
-              >Descripción:
-            </label>
+            <label for="descripcion"
+              >Repuesto <span class="requerido">*</span></label
+            >
             <input
               type="text"
               id="descripcion"
               name="descripcion"
-              class="fs-5"
+              class="form-control fs-5"
               required
               [(ngModel)]="repuesto.descripcion"
             />
           </div>
           <div class="mb-3 d-grid gap-2">
-            <label for="precio_costo" class="form-label fs-5"
-              >Precio de costo:
-            </label>
+            <label for="numero_de_parte">Numero de parte </label>
+            <input
+              type="text"
+              id="numero_de_parte"
+              name="numero_de_parte"
+              class="form-control fs-5"
+              required
+              [(ngModel)]="repuesto.numeroDeParte"
+            />
+          </div>
+          <div class="mb-3 d-grid gap-2">
+            <label for="precio_costo">Precio de costo </label>
             <input
               type="text"
               id="precio_costo"
               name="precio_costo"
-              class="fs-5"
+              class="form-control fs-5"
               required
               [(ngModel)]="repuesto.precioCosto"
             />
           </div>
           <div class="mb-3 d-grid gap-2">
-            <label for="precio_venta" class="form-label fs-5"
-              >Precio de venta:
-            </label>
+            <label for="precio_venta">Precio de venta </label>
             <input
               type="text"
               id="precio_venta"
               name="precio_venta"
-              class="fs-5"
+              class="form-control fs-5"
               required
               [(ngModel)]="repuesto.precioVenta"
             />
           </div>
           <div class="mb-3 d-grid gap-2">
-            <label for="stock" class="form-label fs-5">Stock: </label>
+            <label for="stock">Stock <span class="requerido">*</span></label>
             <input
               type="text"
               id="stock"
               name="stock"
-              class="fs-5"
+              class="form-control fs-5"
               required
               [(ngModel)]="repuesto.stock"
             />
@@ -316,14 +312,12 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-secondary btn-lg"
+            class="btn btn-danger col-3 me-2"
             data-bs-dismiss="modal"
           >
             Cerrar
           </button>
-          <button type="submit" class="btn btn-primary btn-lg">
-            Modificar
-          </button>
+          <button type="submit" class="btn btn-success col-3">Modificar</button>
         </div>
       </form>
     </div>

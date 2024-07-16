@@ -31,6 +31,16 @@ html {
   margin-top: 17px !important;
 }
 
+.h2-title {
+  font-weight: 600;
+}
+
+.requerido {
+  color: red !important;
+  font-size: 14px;
+  font-weight: 900;
+}
+
 /* RESPONSIVE */
 
 @media only screen and (max-width: 600px) {
