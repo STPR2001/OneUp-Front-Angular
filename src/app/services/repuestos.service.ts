@@ -13,8 +13,8 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class RepuestosService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/repuesto';
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/repuesto';
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -26,7 +26,9 @@ export class RepuestosService {
 
   getRepuestos(page: number, size: number, nombre?: string): Observable<any> {
     const headers = this.getHeaders();
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
     if (nombre) {
       params = params.set('numero_de_parte', nombre);
     }

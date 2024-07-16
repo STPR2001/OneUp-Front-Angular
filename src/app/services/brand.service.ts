@@ -7,8 +7,8 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class BrandService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/marca';
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/marca';
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -24,7 +24,10 @@ export class BrandService {
 
   agregarMarca(nuevaMarca: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(this.apiUrl, nuevaMarca, { headers, responseType: 'text'  });
+    return this.http.post(this.apiUrl, nuevaMarca, {
+      headers,
+      responseType: 'text',
+    });
   }
 
   modificarMarca(marca: any): Observable<any> {
@@ -48,7 +51,6 @@ export class BrandService {
   cargarMarcasModelos(): Observable<string> {
     const url = `${this.apiUrl}/TraerMarcas`;
     const headers = this.getHeaders();
-    return this.http.get(url, { headers, responseType: 'text'  });
+    return this.http.get(url, { headers, responseType: 'text' });
   }
-
 }

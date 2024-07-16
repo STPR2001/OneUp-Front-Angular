@@ -7,8 +7,8 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class ModelService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/modelo';
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/modelo';
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -24,7 +24,10 @@ export class ModelService {
 
   agregarModelo(nuevoModelo: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(this.apiUrl, nuevoModelo, { headers, responseType: 'text'  });
+    return this.http.post(this.apiUrl, nuevoModelo, {
+      headers,
+      responseType: 'text',
+    });
   }
 
   modificarModelo(modelo: any): Observable<any> {
@@ -47,6 +50,8 @@ export class ModelService {
 
   getModelosPorMarca(marcaId: number): Observable<any[]> {
     const headers = this.getHeaders();
-    return this.http.get<any[]>(`${this.apiUrl}/modelos/${marcaId}`, { headers });
+    return this.http.get<any[]>(`${this.apiUrl}/modelos/${marcaId}`, {
+      headers,
+    });
   }
 }
