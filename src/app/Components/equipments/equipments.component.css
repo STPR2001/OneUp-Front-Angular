@@ -59,6 +59,10 @@ td {
   max-height: unset;
 }
 
+.icon-small {
+  font-size: 17px;
+}
+
 /* modals */
 .second-modal .modal-backdrop {
   z-index: 1051;
@@ -66,8 +70,4 @@ td {
 
 .second-modal .modal {
   z-index: 1052;
-}
-
-.icon-small {
-  font-size: 17px;
 }

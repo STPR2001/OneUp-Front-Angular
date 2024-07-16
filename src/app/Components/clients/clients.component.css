@@ -62,3 +62,40 @@ td {
 .icon-small {
   font-size: 17px;
 }
+
+/*MODAL AGREGAR Y MODIFICAR CLIENTE */
+
+.modal-content {
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.modal-header {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  border-top: 1px solid #e5e5e5;
+}
+
+.form-control {
+  font-size: 1rem;
+  padding: 0.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.requerido {
+  color: red;
+}
+
+.text-danger {
+  margin-top: 1rem;
+}

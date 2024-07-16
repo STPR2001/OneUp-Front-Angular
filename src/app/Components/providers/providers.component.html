@@ -136,11 +136,13 @@
     aria-labelledby="agregarProveedorModalLabel"
     aria-hidden="true"
   >
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <form (ngSubmit)="agregarProveedor()">
           <div class="modal-header">
-            <h2 class="text-center fs-2 h2-title">Agregar proveedor</h2>
+            <h2 class="modal-title text-center fs-2 h2-title">
+              Agregar proveedor
+            </h2>
             <button
               type="button"
               class="btn-close"
@@ -150,51 +152,55 @@
             ></button>
           </div>
           <div class="modal-body">
-            <div class="mb-3 d-grid gap-2">
-              <label for="nombre"
-                >Nombre <span class="requerido">*</span></label
-              >
-              <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                class="form-control fs-5"
-                required
-                [(ngModel)]="nuevoProveedor.nombre"
-              />
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="nombre"
+                  >Nombre <span class="requerido">*</span></label
+                >
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  class="form-control fs-5"
+                  required
+                  [(ngModel)]="nuevoProveedor.nombre"
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="direccion">Dirección</label>
+                <input
+                  type="text"
+                  id="direccion"
+                  name="direccion"
+                  class="form-control fs-5"
+                  required
+                  [(ngModel)]="nuevoProveedor.direccion"
+                />
+              </div>
             </div>
-            <div class="mb-3 d-grid gap-2">
-              <label for="direccion">Dirección</label>
-              <input
-                type="text"
-                id="direccion"
-                name="direccion"
-                class="form-control fs-5"
-                required
-                [(ngModel)]="nuevoProveedor.direccion"
-              />
-            </div>
-            <div class="mb-3 d-grid gap-2">
-              <label for="telefono">Teléfono </label>
-              <input
-                type="text"
-                id="telefono"
-                name="telefono"
-                class="form-control fs-5"
-                required
-                [(ngModel)]="nuevoProveedor.telefono"
-              />
-            </div>
-            <div class="mb-3 d-grid gap-2">
-              <label for="correo">Correo</label>
-              <input
-                type="text"
-                id="correo"
-                name="correo"
-                class="form-control fs-5"
-                required
-                [(ngModel)]="nuevoProveedor.email"
-              />
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="telefono">Teléfono</label>
+                <input
+                  type="text"
+                  id="telefono"
+                  name="telefono"
+                  class="form-control fs-5"
+                  required
+                  [(ngModel)]="nuevoProveedor.telefono"
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="correo">Correo</label>
+                <input
+                  type="email"
+                  id="correo"
+                  name="correo"
+                  class="form-control fs-5"
+                  required
+                  [(ngModel)]="nuevoProveedor.email"
+                />
+              </div>
             </div>
             <div *ngIf="errorAgregarProveedor" class="text-danger">
               Error al agregar el proveedor.
@@ -222,11 +228,13 @@
     aria-labelledby="ModificarProveedorModalLabel"
     aria-hidden="true"
   >
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <form (ngSubmit)="modificarProveedor()">
           <div class="modal-header">
-            <h2 class="text-center fs-2 h2-title">Modificar Proveedor</h2>
+            <h2 class="modal-title text-center fs-2 h2-title">
+              Modificar proveedor
+            </h2>
             <button
               type="button"
               class="btn-close"
@@ -236,51 +244,55 @@
             ></button>
           </div>
           <div class="modal-body">
-            <div class="mb-3 d-grid gap-2">
-              <label for="nombre"
-                >Nombre <span class="requerido">*</span></label
-              >
-              <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                class="form-control fs-5"
-                required
-                [(ngModel)]="proveedor.nombre"
-              />
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="nombre"
+                  >Nombre <span class="requerido">*</span></label
+                >
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  class="form-control fs-5"
+                  required
+                  [(ngModel)]="proveedor.nombre"
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="direccion">Dirección</label>
+                <input
+                  type="text"
+                  id="direccion"
+                  name="direccion"
+                  class="form-control fs-5"
+                  required
+                  [(ngModel)]="proveedor.direccion"
+                />
+              </div>
             </div>
-            <div class="mb-3 d-grid gap-2">
-              <label for="direccion">Dirección</label>
-              <input
-                type="text"
-                id="direccion"
-                name="direccion"
-                class="form-control fs-5"
-                required
-                [(ngModel)]="proveedor.direccion"
-              />
-            </div>
-            <div class="mb-3 d-grid gap-2">
-              <label for="telefono">Telefono </label>
-              <input
-                type="text"
-                id="telefono"
-                name="telefono"
-                class="form-control fs-5"
-                required
-                [(ngModel)]="proveedor.telefono"
-              />
-            </div>
-            <div class="mb-3 d-grid gap-2">
-              <label for="correo">Correo </label>
-              <input
-                type="text"
-                id="correo"
-                name="correo"
-                class="form-control fs-5"
-                required
-                [(ngModel)]="proveedor.email"
-              />
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="telefono">Teléfono</label>
+                <input
+                  type="text"
+                  id="telefono"
+                  name="telefono"
+                  class="form-control fs-5"
+                  required
+                  [(ngModel)]="proveedor.telefono"
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="correo">Correo</label>
+                <input
+                  type="email"
+                  id="correo"
+                  name="correo"
+                  class="form-control fs-5"
+                  required
+                  [(ngModel)]="proveedor.email"
+                />
+              </div>
             </div>
             <div *ngIf="errorModificarProveedor" class="text-danger">
               Error al modificar el proveedor.

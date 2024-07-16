@@ -135,84 +135,57 @@
         ></button>
       </div>
       <div class="modal-body">
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
-            <label for="tipoEquipo"
-              >Tipo equipo <span class="requerido">*</span></label
-            >
-            <select
-              id="tipoEquipo"
-              name="tipoEquipo"
-              [(ngModel)]="nuevoEquipo.tipo_equipo.id"
-              required
-              class="form-select fs-5"
-            >
-              <option
-                *ngFor="let tipoEquipo of tiposEquipo"
-                [value]="tipoEquipo.id"
-              >
-                {{ tipoEquipo.nombre }}
-              </option>
-            </select>
-          </div>
-          <button
-            type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end"
-            (click)="openAgregarTipoEquipoModal()"
+        <div class="mb-3">
+          <label for="tipoEquipo"
+            >Tipo de equipo <span class="requerido">*</span></label
           >
-            +
-          </button>
+          <select
+            id="tipoEquipo"
+            name="tipoEquipo"
+            [(ngModel)]="nuevoEquipo.tipo_equipo.id"
+            required
+            class="form-select fs-5"
+          >
+            <option
+              *ngFor="let tipoEquipo of tiposEquipo"
+              [value]="tipoEquipo.id"
+            >
+              {{ tipoEquipo.nombre }}
+            </option>
+          </select>
         </div>
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
-            <label for="marca">Marca <span class="requerido">*</span></label>
-            <select
-              id="marca"
-              name="marca"
-              [(ngModel)]="nuevoEquipo.marca.id"
-              required
-              class="form-select fs-5"
-              (change)="onMarcaChange($event)"
-            >
-              <option *ngFor="let marca of marcas" [value]="marca.id">
-                {{ marca.nombre }}
-              </option>
-            </select>
-          </div>
-          <button
-            type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end"
-            (click)="openAgregarMarcaModal()"
+        <div class="mb-3">
+          <label for="marca">Marca <span class="requerido">*</span></label>
+          <select
+            id="marca"
+            name="marca"
+            [(ngModel)]="nuevoEquipo.marca.id"
+            required
+            class="form-select fs-5"
+            (change)="onMarcaChange($event)"
           >
-            +
-          </button>
+            <option *ngFor="let marca of marcas" [value]="marca.id">
+              {{ marca.nombre }}
+            </option>
+          </select>
         </div>
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
-            <label for="modelo">Modelo <span class="requerido">*</span></label>
-            <select
-              id="modelo"
-              name="modelo"
-              [(ngModel)]="nuevoEquipo.modelo.id"
-              required
-              class="form-select fs-5"
-            >
-              <option *ngFor="let modelo of modelos" [value]="modelo.id">
-                {{ modelo.nombre }}
-              </option>
-            </select>
-          </div>
-          <button
-            type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end"
-            (click)="openAgregarModeloModal()"
+        <div class="mb-3">
+          <label for="modelo">Modelo <span class="requerido">*</span></label>
+          <select
+            id="modelo"
+            name="modelo"
+            [(ngModel)]="nuevoEquipo.modelo.id"
+            required
+            class="form-select fs-5"
           >
-            +
-          </button>
+            <option *ngFor="let modelo of modelos" [value]="modelo.id">
+              {{ modelo.nombre }}
+            </option>
+          </select>
         </div>
         <div class="mb-3">
           <label for="numeroSerie"
-            >Numero de serie <span class="requerido">*</span></label
+            >Número de serie <span class="requerido">*</span></label
           >
           <input
             type="text"
