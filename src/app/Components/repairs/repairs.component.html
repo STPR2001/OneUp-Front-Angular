@@ -189,10 +189,12 @@
   aria-labelledby="verDetallesModalLabel"
   aria-hidden="true"
 >
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="text-center fs-2 h2-title">Detalles de la reparación</h2>
+        <h2 class="modal-title text-center fs-2 h2-title">
+          Detalles de la reparación
+        </h2>
         <button
           type="button"
           class="btn-close"
@@ -202,71 +204,115 @@
         ></button>
       </div>
       <div class="modal-body">
-        <p><strong>Orden:</strong> {{ reparacionSeleccionada.id }}</p>
-        <p>
-          <strong>Fecha Ingreso:</strong>
-          {{ reparacionSeleccionada.fechaIngreso | date }}
-        </p>
-        <p>
-          <strong>Cliente:</strong> {{ reparacionSeleccionada.cliente.nombre }}
-        </p>
-        <p>
-          <strong>Técnico:</strong> {{ reparacionSeleccionada.tecnico.nombre }}
-        </p>
-        <p>
-          <strong>Equipo:</strong>
-          {{ reparacionSeleccionada.equipo.tipo_equipo.nombre }}
-        </p>
-        <p>
-          <strong>Marca:</strong>
-          {{ reparacionSeleccionada.equipo.marca.nombre }}
-        </p>
-        <p>
-          <strong>Modelo:</strong>
-          {{ reparacionSeleccionada.equipo.modelo.nombre }}
-        </p>
-        <p>
-          <strong>Número de serie:</strong>
-          {{ reparacionSeleccionada.equipo.numeroSerie }}
-        </p>
-        <p>
-          <strong>Código de seguimiento:</strong>
-          {{ reparacionSeleccionada.codigoSeguimiento }}
-        </p>
-        <p><strong>Falla:</strong> {{ reparacionSeleccionada.falla }}</p>
-        <p>
-          <strong>Accesorios:</strong>
-          {{ reparacionSeleccionada.accesorios }}
-        </p>
-
-        <p><strong>Estado:</strong> {{ reparacionSeleccionada.estado }}</p>
-
-        <div *ngIf="reparacionSeleccionada.notasreparacion.length > 0">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="detalle-item">
+              <p><strong>Orden:</strong> {{ reparacionSeleccionada.id }}</p>
+            </div>
+            <div class="detalle-item">
+              <p>
+                <strong>Fecha Ingreso:</strong>
+                {{ reparacionSeleccionada.fechaIngreso | date }}
+              </p>
+            </div>
+            <div class="detalle-item">
+              <p>
+                <strong>Cliente:</strong>
+                {{ reparacionSeleccionada.cliente.nombre }}
+              </p>
+            </div>
+            <div class="detalle-item">
+              <p>
+                <strong>Técnico:</strong>
+                {{ reparacionSeleccionada.tecnico.nombre }}
+              </p>
+            </div>
+            <div class="detalle-item">
+              <p>
+                <strong>Equipo:</strong>
+                {{ reparacionSeleccionada.equipo.tipo_equipo.nombre }}
+              </p>
+            </div>
+            <div class="detalle-item">
+              <p>
+                <strong>Marca:</strong>
+                {{ reparacionSeleccionada.equipo.marca.nombre }}
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="detalle-item">
+              <p>
+                <strong>Modelo:</strong>
+                {{ reparacionSeleccionada.equipo.modelo.nombre }}
+              </p>
+            </div>
+            <div class="detalle-item">
+              <p>
+                <strong>Número de serie:</strong>
+                {{ reparacionSeleccionada.equipo.numeroSerie }}
+              </p>
+            </div>
+            <div class="detalle-item">
+              <p>
+                <strong>Código de seguimiento:</strong>
+                {{ reparacionSeleccionada.codigoSeguimiento }}
+              </p>
+            </div>
+            <div class="detalle-item">
+              <p><strong>Falla:</strong> {{ reparacionSeleccionada.falla }}</p>
+            </div>
+            <div class="detalle-item">
+              <p>
+                <strong>Accesorios:</strong>
+                {{ reparacionSeleccionada.accesorios }}
+              </p>
+            </div>
+            <div class="detalle-item">
+              <p>
+                <strong>Estado:</strong> {{ reparacionSeleccionada.estado }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          *ngIf="reparacionSeleccionada.notasreparacion.length > 0"
+          class="detalle-item mt-3"
+        >
           <p><strong>Notas de reparación:</strong></p>
-          <ul>
-            <li *ngFor="let nota of reparacionSeleccionada.notasreparacion">
+          <div
+            class="card mb-3"
+            *ngFor="let nota of reparacionSeleccionada.notasreparacion"
+          >
+            <div class="card-body">
               <p><strong>Fecha:</strong> {{ nota.fecha | date }}</p>
               <p><strong>Nota:</strong> {{ nota.informe }}</p>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
 
-        <div *ngIf="reparacionSeleccionada.repuesto.length > 0">
+        <div
+          *ngIf="reparacionSeleccionada.repuesto.length > 0"
+          class="detalle-item mt-3"
+        >
           <p><strong>Repuestos utilizados:</strong></p>
-          <ul>
-            <li *ngFor="let repuesto of reparacionSeleccionada.repuesto">
+          <div
+            class="card mb-3"
+            *ngFor="let repuesto of reparacionSeleccionada.repuesto"
+          >
+            <div class="card-body">
               <p><strong>Repuesto:</strong> {{ repuesto.descripcion }}</p>
               <p>
                 <strong>Número de parte:</strong> {{ repuesto.numeroDeParte }}
               </p>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-secondary"
+          class="btn btn-danger col-3 me-2"
           data-bs-dismiss="modal"
           (click)="cerrarModal()"
         >

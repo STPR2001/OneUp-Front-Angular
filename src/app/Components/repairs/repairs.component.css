@@ -56,3 +56,49 @@ td {
 .icon-small {
   font-size: 1rem;
 }
+
+/*MODAL DETALLE REPARACION */
+
+.modal-content {
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.modal-header {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-body .detalle-item {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 10px 0;
+}
+
+.modal-body .detalle-item:last-child {
+  border-bottom: none;
+}
+
+.modal-body p {
+  margin: 0;
+}
+
+.modal-footer {
+  border-top: 1px solid #e5e5e5;
+}
+
+.detalle-item {
+  margin-bottom: 10px;
+}
+
+.detalle-item:last-child {
+  margin-bottom: 0;
+}
+
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 15px;
+}

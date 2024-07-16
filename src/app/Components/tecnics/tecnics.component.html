@@ -125,7 +125,9 @@
       <div class="modal-content">
         <form (ngSubmit)="agregarTecnico()">
           <div class="modal-header">
-            <h2 class="text-center fs-2 h2-title">Agregar técnico</h2>
+            <h2 class="modal-title text-center fs-2 h2-title">
+              Agregar técnico
+            </h2>
             <button
               type="button"
               class="btn-close"
@@ -135,7 +137,7 @@
             ></button>
           </div>
           <div class="modal-body">
-            <div class="mb-3 d-grid gap-2">
+            <div class="mb-3">
               <label for="nombre"
                 >Nombre <span class="requerido">*</span></label
               >
@@ -149,7 +151,7 @@
               />
             </div>
             <div *ngIf="errorAgregarTecnico" class="text-danger">
-              Error al agregar el tecnico.
+              Error al agregar el técnico.
             </div>
           </div>
           <div class="modal-footer">
