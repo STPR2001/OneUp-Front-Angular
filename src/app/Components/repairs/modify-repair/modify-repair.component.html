@@ -344,9 +344,7 @@
   <div class="modal-content">
     <form (ngSubmit)="agregarEquipo()">
       <div class="modal-header">
-        <h2 class="text-center fs-2 h2-title">
-          Agregar equipo <span class="requerido">*</span>
-        </h2>
+        <h2 class="text-center fs-2 h2-title">Agregar equipo</h2>
         <button
           type="button"
           class="btn-close"
@@ -392,6 +390,7 @@
               [(ngModel)]="nuevoEquipo.marca.id"
               required
               class="form-select fs-5"
+              (change)="onMarcaChange($event)"
             >
               <option *ngFor="let marca of marcas" [value]="marca.id">
                 {{ marca.nombre }}
