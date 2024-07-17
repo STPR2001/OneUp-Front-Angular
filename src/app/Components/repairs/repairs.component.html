@@ -366,11 +366,15 @@
               required
               class="form-select fs-5"
             >
-              <option *ngFor="let repuesto of repuestos" [value]="repuesto.id">
+              <option
+                *ngFor="let repuesto of getRepuestosConStock()"
+                [value]="repuesto.id"
+              >
                 {{ repuesto.descripcion }}
               </option>
             </select>
           </div>
+
           <div class="mb-3">
             <label for="nota">Nota:</label>
             <textarea
