@@ -182,7 +182,7 @@
     <div class="modal-content">
       <form (ngSubmit)="agregarTecnico()">
         <div class="modal-header">
-          <h2 class="text-center fs-2 h2-title">Agregar técnico</h2>
+          <h2 class="modal-title text-center fs-2 h2-title">Agregar técnico</h2>
           <button
             type="button"
             class="btn-close"
@@ -192,7 +192,7 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3 d-grid gap-2">
+          <div class="mb-3">
             <label for="nombre">Nombre <span class="requerido">*</span></label>
             <input
               type="text"
@@ -204,7 +204,7 @@
             />
           </div>
           <div *ngIf="errorAgregarTecnico" class="text-danger">
-            Error al agregar el tecnico.
+            Error al agregar el técnico.
           </div>
         </div>
         <div class="modal-footer">
@@ -232,11 +232,11 @@
   aria-labelledby="agregarClienteModalLabel"
   aria-hidden="true"
 >
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <form (ngSubmit)="agregarCliente()">
         <div class="modal-header">
-          <h2 class="text-center fs-2 h2-title">Agregar cliente</h2>
+          <h2 class="modal-title text-center fs-2 h2-title">Agregar cliente</h2>
           <button
             type="button"
             class="btn-close"
@@ -246,70 +246,78 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
-            <label for="nombre">Nombre <span class="requerido">*</span></label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              [(ngModel)]="nuevoCliente.nombre"
-              required
-              class="form-control fs-5"
-            />
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="nombre"
+                >Nombre <span class="requerido">*</span></label
+              >
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                [(ngModel)]="nuevoCliente.nombre"
+                required
+                class="form-control fs-5"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                [(ngModel)]="nuevoCliente.email"
+                required
+                class="form-control fs-5"
+              />
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              [(ngModel)]="nuevoCliente.email"
-              required
-              class="form-control fs-5"
-            />
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="telefono">Teléfono</label>
+              <input
+                type="text"
+                id="telefono"
+                name="telefono"
+                [(ngModel)]="nuevoCliente.telefono"
+                required
+                class="form-control fs-5"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="direccion">Dirección</label>
+              <input
+                type="text"
+                id="direccion"
+                name="direccion"
+                [(ngModel)]="nuevoCliente.direccion"
+                required
+                class="form-control fs-5"
+              />
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="telefono">Teléfono</label>
-            <input
-              type="text"
-              id="telefono"
-              name="telefono"
-              [(ngModel)]="nuevoCliente.telefono"
-              required
-              class="form-control fs-5"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="direccion">Dirección</label>
-            <input
-              type="text"
-              id="direccion"
-              name="direccion"
-              [(ngModel)]="nuevoCliente.direccion"
-              required
-              class="form-control fs-5"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="cedula">Cédula</label>
-            <input
-              type="text"
-              id="cedula"
-              name="cedula"
-              [(ngModel)]="nuevoCliente.cedula"
-              required
-              class="form-control fs-5"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="observacion">Observaciones</label>
-            <textarea
-              id="observacion"
-              name="observacion"
-              [(ngModel)]="nuevoCliente.observacion"
-              required
-              class="form-control fs-5"
-            ></textarea>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="cedula">Cédula</label>
+              <input
+                type="text"
+                id="cedula"
+                name="cedula"
+                [(ngModel)]="nuevoCliente.cedula"
+                required
+                class="form-control fs-5"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="observacion">Observaciones</label>
+              <input
+                id="observacion"
+                name="observacion"
+                [(ngModel)]="nuevoCliente.observacion"
+                class="form-control fs-5"
+                rows="3"
+              />
+            </div>
           </div>
           <div *ngIf="errorAgregarCliente" class="text-danger">
             Error al agregar el cliente.
@@ -369,7 +377,7 @@
           </div>
           <button
             type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end"
+            class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
             (click)="openAgregarTipoEquipoModal()"
           >
             +
@@ -392,7 +400,7 @@
           </div>
           <button
             type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end"
+            class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
             (click)="openAgregarMarcaModal()"
           >
             +
@@ -415,7 +423,7 @@
           </div>
           <button
             type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end"
+            class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
             (click)="openAgregarModeloModal()"
           >
             +

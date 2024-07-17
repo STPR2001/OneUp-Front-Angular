@@ -33,7 +33,7 @@ html {
 
 .h2-title {
   font-weight: 600;
-  color: #576168;
+  color: #495156;
 }
 
 .requerido {
@@ -95,8 +95,19 @@ html {
     left: 150px !important;
     color: #fff !important;
   }
+
+  .btnAdd {
+    font-size: 18px;
+    font-weight: 600px;
+    margin-bottom: -0.1px !important;
+  }
 }
 
 @media only screen and (min-width: 1370px) {
   /* Estilos para pantallas muy grandes (por ejemplo, computadoras de escritorio) */
+  .btnAdd {
+    font-size: 21px;
+    font-weight: 600px;
+    margin-bottom: -0.1px !important;
+  }
 }
