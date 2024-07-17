@@ -70,7 +70,7 @@ export class EquipmentsComponent implements OnInit {
     private BrandService: BrandService,
     private EquipmentTypeService: EquipmentTypeService,
     private ModelService: ModelService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getEquipos();
@@ -79,7 +79,11 @@ export class EquipmentsComponent implements OnInit {
   }
 
   getEquipos(): void {
-    this.EquipoService.getEquipos(this.currentPage, this.pageSize, this.nombre).subscribe(
+    this.EquipoService.getEquipos(
+      this.currentPage,
+      this.pageSize,
+      this.nombre
+    ).subscribe(
       (data) => {
         this.equipos = data.content;
         this.totalPages = data.totalPages;
@@ -174,7 +178,6 @@ export class EquipmentsComponent implements OnInit {
     this.EquipmentTypeService.getTipoEquipos().subscribe(
       (data) => {
         this.tiposEquipo = data;
-        console.log(data);
       },
       (error) => {
         console.error('Error al obtener la lista de tipos de equipos:', error);

@@ -167,7 +167,6 @@ export class RepairsComponent implements OnInit {
     this.tecnicsService.getAllTecnicos().subscribe(
       (data) => {
         this.tecnicos = data;
-        console.log(this.tecnicos);
       },
       (error) => {
         console.error('Error al obtener los tecnicos:', error);
@@ -194,7 +193,6 @@ export class RepairsComponent implements OnInit {
     this.equipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
-        console.log(this.equipos);
       },
       (error) => {
         console.error('Error al obtener los equipos:', error);
@@ -235,7 +233,6 @@ export class RepairsComponent implements OnInit {
           precioVenta: this.repuestos[i].precioVenta,
           stock: this.repuestos[i].stock - 1,
         };
-        console.log(repuestoModificado);
         this.modificarRepuesto(repuestoModificado);
 
         //SI EL REPUESTO YA ESTA AGREGADO EN LA REPARACION NO SE AGREGA DE NUEVO!
@@ -245,7 +242,6 @@ export class RepairsComponent implements OnInit {
             this.reparacionSeleccionada.repuesto[k].id ==
             this.reparacion.repuesto.id
           ) {
-            console.log('EL REPUESTO YA EXISTE EN LA REPARACION');
             yaExiste = true;
           }
         }

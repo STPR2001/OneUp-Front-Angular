@@ -127,7 +127,6 @@ export class ModifyRepairComponent implements OnInit {
   }
 
   modificarReparacion(): void {
-    console.log(this.reparacion);
     this.RepairsService.modificarReparacion(this.reparacion)
       .pipe(
         tap(() => {
@@ -161,7 +160,6 @@ export class ModifyRepairComponent implements OnInit {
     this.TecnicsService.getAllTecnicos().subscribe(
       (data) => {
         this.tecnicos = data;
-        console.log(this.tecnicos);
       },
       (error) => {
         console.error('Error al obtener los tecnicos:', error);
@@ -173,7 +171,6 @@ export class ModifyRepairComponent implements OnInit {
     this.EquipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
-        console.log(this.equipos);
       },
       (error) => {
         console.error('Error al obtener los equipos:', error);
@@ -235,7 +232,6 @@ export class ModifyRepairComponent implements OnInit {
     this.EquipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
-        console.log(data);
       },
       (error) => {
         console.error('Error al obtener la lista de equipos:', error);
@@ -306,7 +302,6 @@ export class ModifyRepairComponent implements OnInit {
     this.EquipmentTypeService.getTipoEquipos().subscribe(
       (data) => {
         this.tiposEquipo = data;
-        console.log(data);
       },
       (error) => {
         console.error('Error al obtener la lista de tipos de equipos:', error);

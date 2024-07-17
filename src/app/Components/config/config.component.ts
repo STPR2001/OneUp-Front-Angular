@@ -4,22 +4,20 @@ import { BrandService } from 'src/app/services/brand.service';
 @Component({
   selector: 'app-config',
   templateUrl: './config.component.html',
-  styleUrls: ['./config.component.css']
+  styleUrls: ['./config.component.css'],
 })
 export class ConfigComponent implements OnInit {
   isLoading: boolean = false;
   successMessage: string | null = null;
 
-  constructor(private brandServices: BrandService) { }
-  ngOnInit(): void {
-  }
+  constructor(private brandServices: BrandService) {}
+  ngOnInit(): void {}
 
   cargarMarcasModelos(): void {
     this.isLoading = true;
     this.successMessage = null;
     this.brandServices.cargarMarcasModelos().subscribe({
       next: (response) => {
-        console.log(response);
         this.isLoading = false;
         this.successMessage = 'Datos cargados con éxito';
         setTimeout(() => {
@@ -33,8 +31,7 @@ export class ConfigComponent implements OnInit {
         setTimeout(() => {
           this.successMessage = null;
         }, 5000);
-      }
+      },
     });
   }
 }
-

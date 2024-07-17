@@ -68,7 +68,6 @@ export class HomeComponent implements OnInit {
     this.RepairsService.getAllReparaciones().subscribe(
       (data) => {
         this.reparaciones = data;
-        console.log(this.reparaciones);
       },
       (error) => {
         console.error('Error al obtener reparaciones:', error);
@@ -106,7 +105,6 @@ export class HomeComponent implements OnInit {
     this.TecnicsService.getAllTecnicos().subscribe(
       (data) => {
         this.tecnicos = data;
-        console.log(this.tecnicos);
       },
       (error) => {
         console.error('Error al obtener los tecnicos:', error);
@@ -118,7 +116,6 @@ export class HomeComponent implements OnInit {
     this.EquipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
-        console.log(this.equipos);
       },
       (error) => {
         console.error('Error al obtener los equipos:', error);
