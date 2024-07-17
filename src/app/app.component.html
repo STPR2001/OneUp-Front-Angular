@@ -118,14 +118,14 @@
         <div class="title">Configuración</div>
       </li>
       <li
-      *ngIf="isLogued()"
-      class="row"
-      routerLink="/restore"
-      [ngClass]="{ active: isActive('/restore') }"
-    >
-      <div class="icon"><span class="material-icons">delete</span></div>
-      <div class="title">Restaurar</div>
-    </li>
+        *ngIf="isLogued()"
+        class="row"
+        routerLink="/restore"
+        [ngClass]="{ active: isActive('/restore') }"
+      >
+        <div class="icon"><span class="material-icons">delete</span></div>
+        <div class="title">Restaurar</div>
+      </li>
       <li
         *ngIf="isLogued()"
         class="row"
@@ -161,12 +161,15 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-0">
-        <h2 class="modal-title text-center w-100 fs-2">¿Seguro que quiere irse?</h2>
+        <h2 class="modal-title text-center w-100 fs-2">
+          ¿Seguro que quiere irse?
+        </h2>
         <button
           type="button"
           class="btn-close"
           data-bs-dismiss="modal"
           aria-label="Close"
+          #cerrarSesion
         ></button>
       </div>
       <div class="modal-body text-center py-4">

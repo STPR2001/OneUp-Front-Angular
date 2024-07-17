@@ -125,7 +125,6 @@ export class AddRepairComponent implements OnInit {
           };
           this.setFechaActual();
           this.router.navigate(['/reparaciones']);
-          console.log(this.nuevaReparacion);
         }),
         catchError((error) => {
           console.error('Error al agregar reparación:', error);
@@ -154,7 +153,6 @@ export class AddRepairComponent implements OnInit {
     this.TecnicsService.getAllTecnicos().subscribe(
       (data) => {
         this.tecnicos = data;
-        console.log(this.tecnicos);
       },
       (error) => {
         console.error('Error al obtener los tecnicos:', error);
@@ -166,7 +164,6 @@ export class AddRepairComponent implements OnInit {
     this.EquipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
-        console.log(this.equipos);
       },
       (error) => {
         console.error('Error al obtener los equipos:', error);
@@ -229,7 +226,6 @@ export class AddRepairComponent implements OnInit {
     this.EquipoService.getAllEquipos().subscribe(
       (data) => {
         this.equipos = data;
-        console.log(data);
       },
       (error) => {
         console.error('Error al obtener la lista de equipos:', error);
@@ -299,7 +295,6 @@ export class AddRepairComponent implements OnInit {
     this.EquipmentTypeService.getTipoEquipos().subscribe(
       (data) => {
         this.tiposEquipo = data;
-        console.log(data);
       },
       (error) => {
         console.error('Error al obtener la lista de tipos de equipos:', error);
