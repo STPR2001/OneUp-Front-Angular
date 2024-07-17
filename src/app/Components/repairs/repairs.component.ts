@@ -186,6 +186,10 @@ export class RepairsComponent implements OnInit {
     );
   }
 
+  getRepuestosConStock(): any[] {
+    return this.repuestos.filter((repuesto) => repuesto.stock > 0);
+  }
+
   obtenerEquipos(): void {
     this.equipoService.getAllEquipos().subscribe(
       (data) => {
