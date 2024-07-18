@@ -1,0 +1,12 @@
+<h2 mat-dialog-title class="custom-dialog-title">Confirmar eliminación</h2>
+<mat-dialog-content class="custom-dialog-content">
+  ¿Estás seguro de que deseas eliminar este elemento?
+</mat-dialog-content>
+<mat-dialog-actions class="custom-dialog-actions">
+  <button type="button" class="btn btn-primary col-3 me-2" (click)="onCancel()">
+    Cancelar
+  </button>
+  <button type="button" class="btn btn-danger col-3" (click)="onConfirm()">
+    Eliminar
+  </button>
+</mat-dialog-actions>

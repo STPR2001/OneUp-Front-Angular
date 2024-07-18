@@ -3,15 +3,15 @@
   <hr />
   <div class="form-group">
     <p>
-      Cargar marcas y modelos desde una api (Esto puede tardar unos segundos).
+      Cargar marcas y modelos desde una API (Esto puede tardar unos segundos).
     </p>
-    <div class="d-flex justify-content-center">
+    <div class="d-flex">
       <button
-        class="btn btn-primary align-content-center"
+        class="btn btn-primary align-content-center btnCargarMarcasYModelos"
         (click)="cargarMarcasModelos()"
         [disabled]="isLoading"
       >
-        Cargar Marcas y Modelos
+        Cargar marcas y modelos
       </button>
     </div>
     <div *ngIf="isLoading" class="loading-indicator p-2">

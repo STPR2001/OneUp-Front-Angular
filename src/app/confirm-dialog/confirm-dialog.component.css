@@ -1,0 +1,28 @@
+.custom-dialog-title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.custom-dialog-content {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.custom-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.custom-button {
+  min-width: 100px;
+  margin-left: 10px;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Ajustes adicionales según necesidades de diseño */

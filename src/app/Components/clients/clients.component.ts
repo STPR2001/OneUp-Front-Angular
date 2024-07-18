@@ -5,6 +5,8 @@ import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
+import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-clients',
@@ -31,23 +33,26 @@ export class ClientsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private clientsService: ClientsService,
-    private modalService: NgbModal
-  ) { }
+    private modalService: NgbModal,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.getClientes();
   }
 
   getClientes(): void {
-    this.clientsService.getClientes(this.currentPage, this.pageSize, this.nombre).subscribe(
-      (data) => {
-        this.clientes = data.content;
-        this.totalPages = data.totalPages;
-      },
-      (error) => {
-        console.error('Error al obtener la lista de clientes:', error);
-      }
-    );
+    this.clientsService
+      .getClientes(this.currentPage, this.pageSize, this.nombre)
+      .subscribe(
+        (data) => {
+          this.clientes = data.content;
+          this.totalPages = data.totalPages;
+        },
+        (error) => {
+          console.error('Error al obtener la lista de clientes:', error);
+        }
+      );
   }
 
   onPageChange(page: number): void {
@@ -127,13 +132,18 @@ export class ClientsComponent implements OnInit {
   }
 
   eliminarCliente(id: number): void {
-    this.clientsService.eliminarCliente(id).subscribe(
-      () => {
-        this.getClientes();
-      },
-      (error) => {
-        console.error('Error al eliminar cliente', error);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.clientsService.eliminarCliente(id).subscribe(
+          () => {
+            this.getClientes();
+          },
+          (error) => {
+            console.error('Error al eliminar cliente', error);
+          }
+        );
       }
-    );
+    });
   }
 }

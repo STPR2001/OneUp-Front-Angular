@@ -10,6 +10,8 @@ import { of } from 'rxjs';
 import * as bootstrap from 'bootstrap';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-repairs',
@@ -95,7 +97,8 @@ export class RepairsComponent implements OnInit {
     private clientsService: ClientsService,
     private equipoService: EquipoService,
     private repuestosService: RepuestosService,
-    private router: Router
+    private router: Router,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -138,14 +141,20 @@ export class RepairsComponent implements OnInit {
   }
 
   eliminarReparacion(id: number): void {
-    this.repairsService.eliminarReparacion(id).subscribe(
-      () => {
-        this.obtenerReparaciones();
-      },
-      (error) => {
-        console.error('Error al eliminar reparacion', error);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.repairsService.eliminarReparacion(id).subscribe(
+          () => {
+            this.obtenerReparaciones();
+          },
+          (error) => {
+            console.error('Error al eliminar reparacion', error);
+          }
+        );
       }
-    );
+    });
   }
 
   seleccionaReparacion(reparacion: any): void {

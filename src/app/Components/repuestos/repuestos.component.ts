@@ -4,11 +4,13 @@ import { Router } from '@angular/router';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-repuestos',
   templateUrl: './repuestos.component.html',
-  styleUrls: ['./repuestos.component.css']
+  styleUrls: ['./repuestos.component.css'],
 })
 export class RepuestosComponent implements OnInit {
   @ViewChild('agregarRepuestoModal') modalCloseAdd: any;
@@ -26,22 +28,29 @@ export class RepuestosComponent implements OnInit {
   totalPages: number = 0;
   nombre: string = '';
 
-  constructor(private repuestosService: RepuestosService, private router: Router, private modalService: NgbModal) { }
+  constructor(
+    private repuestosService: RepuestosService,
+    private router: Router,
+    private modalService: NgbModal,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.getRepuestos();
   }
 
   getRepuestos(): void {
-    this.repuestosService.getRepuestos(this.currentPage, this.pageSize, this.nombre).subscribe(
-      (data) => {
-        this.repuestos = data.content;
-        this.totalPages = data.totalPages;
-      },
-      (error) => {
-        console.error('Error al obtener la lista de repuestos:', error);
-      }
-    );
+    this.repuestosService
+      .getRepuestos(this.currentPage, this.pageSize, this.nombre)
+      .subscribe(
+        (data) => {
+          this.repuestos = data.content;
+          this.totalPages = data.totalPages;
+        },
+        (error) => {
+          console.error('Error al obtener la lista de repuestos:', error);
+        }
+      );
   }
 
   onPageChange(page: number): void {
@@ -59,18 +68,25 @@ export class RepuestosComponent implements OnInit {
   }
 
   navigateToUpdateRepuesto(id: string, nombre: string): void {
-    this.router.navigateByUrl(`/repuestos/update`, { state: { nombre: nombre, id: id } });
+    this.router.navigateByUrl(`/repuestos/update`, {
+      state: { nombre: nombre, id: id },
+    });
   }
 
   eliminarRepuesto(id: number): void {
-    this.repuestosService.eliminarRepuesto(id).subscribe(
-      () => {
-        this.getRepuestos();
-      },
-      (error) => {
-        console.error('Error al eliminar repuesto:', error);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.repuestosService.eliminarRepuesto(id).subscribe(
+          () => {
+            this.getRepuestos();
+          },
+          (error) => {
+            console.error('Error al eliminar repuesto:', error);
+          }
+        );
       }
-    );
+    });
   }
 
   agregarRepuesto(): void {
@@ -89,29 +105,38 @@ export class RepuestosComponent implements OnInit {
           this.errorAgregarRepuesto = false;
         }, 5000);
         return of(error);
-      }
-    }
-    );
+      },
+    });
   }
 
   modificarRepuesto(): void {
-    this.repuestosService.modificarRepuesto(this.repuesto).pipe(
-      tap(() => {
-        this.router.navigate(['/repuestos']);
-        this.getRepuestos();
-        this.modalCloseUpdate.nativeElement.click();
-      }),
-      catchError((error) => {
-        console.error('Error al modificar repuesto:', error);
-        this.errorModificarRepuesto = true;
-        setTimeout(() => {
-          this.errorModificarRepuesto = false;
-        }, 5000);
-        return of(error);
-      })
-    ).subscribe();
+    this.repuestosService
+      .modificarRepuesto(this.repuesto)
+      .pipe(
+        tap(() => {
+          this.router.navigate(['/repuestos']);
+          this.getRepuestos();
+          this.modalCloseUpdate.nativeElement.click();
+        }),
+        catchError((error) => {
+          console.error('Error al modificar repuesto:', error);
+          this.errorModificarRepuesto = true;
+          setTimeout(() => {
+            this.errorModificarRepuesto = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
   }
-  abrirModalModificacion(repuestoId: string, repuestoNumeroDeParte: string, repuestoDescripcion: string, repuestoPrecioCosto: number, repuestoPrecioVenta: number, repuestoStock: number) {
+  abrirModalModificacion(
+    repuestoId: string,
+    repuestoNumeroDeParte: string,
+    repuestoDescripcion: string,
+    repuestoPrecioCosto: number,
+    repuestoPrecioVenta: number,
+    repuestoStock: number
+  ) {
     this.repuesto.id = repuestoId;
     this.repuesto.numeroDeParte = repuestoNumeroDeParte;
     this.repuesto.descripcion = repuestoDescripcion;

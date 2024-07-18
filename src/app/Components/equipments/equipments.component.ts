@@ -10,6 +10,8 @@ import { EquipmentTypeService } from 'src/app/services/equipment-type.service';
 import { ModelService } from 'src/app/services/model.service';
 import { AfterViewInit, Renderer2 } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-equipments',
@@ -69,7 +71,8 @@ export class EquipmentsComponent implements OnInit {
     private modalService: NgbModal,
     private BrandService: BrandService,
     private EquipmentTypeService: EquipmentTypeService,
-    private ModelService: ModelService
+    private ModelService: ModelService,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -153,14 +156,19 @@ export class EquipmentsComponent implements OnInit {
   }
 
   eliminarEquipo(id: number): void {
-    this.EquipoService.eliminarEquipo(id).subscribe(
-      () => {
-        this.getEquipos();
-      },
-      (error) => {
-        console.error('Error al eliminar equipo', error);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.EquipoService.eliminarEquipo(id).subscribe(
+          () => {
+            this.getEquipos();
+          },
+          (error) => {
+            console.error('Error al eliminar equipo', error);
+          }
+        );
       }
-    );
+    });
   }
 
   getMarcas(): void {

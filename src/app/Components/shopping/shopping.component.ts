@@ -3,14 +3,15 @@ import { Router } from '@angular/router';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { ShoppingService } from 'src/app/services/shopping.service';
+import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-shopping',
   templateUrl: './shopping.component.html',
-  styleUrls: ['./shopping.component.css']
+  styleUrls: ['./shopping.component.css'],
 })
 export class ShoppingComponent implements OnInit {
-
   @ViewChild('agregarCompraModal') modalCloseAdd: any;
   @ViewChild('ModificarCompraModal') modalCloseUpdate: any;
 
@@ -27,7 +28,11 @@ export class ShoppingComponent implements OnInit {
   endDate: string = '';
   today: string = '';
 
-  constructor(private shoppingService: ShoppingService, private router: Router) { }
+  constructor(
+    private shoppingService: ShoppingService,
+    private router: Router,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.getCompras();
@@ -35,15 +40,17 @@ export class ShoppingComponent implements OnInit {
   }
 
   getCompras(): void {
-    this.shoppingService.getCompras(this.currentPage, this.pageSize, this.startDate, this.endDate).subscribe(
-      (data) => {
-        this.compras = data.content;
-        this.totalPages = data.totalPages;
-      },
-      (error) => {
-        console.error('Error al obtener la lista de compras:', error);
-      }
-    );
+    this.shoppingService
+      .getCompras(this.currentPage, this.pageSize, this.startDate, this.endDate)
+      .subscribe(
+        (data) => {
+          this.compras = data.content;
+          this.totalPages = data.totalPages;
+        },
+        (error) => {
+          console.error('Error al obtener la lista de compras:', error);
+        }
+      );
   }
 
   onPageChange(page: number): void {
@@ -56,22 +63,29 @@ export class ShoppingComponent implements OnInit {
   }
 
   navigateToUpdateCompra(id: string, nombre: string): void {
-    this.router.navigateByUrl(`/compras/update`, { state: { nombre: nombre, id: id } });
+    this.router.navigateByUrl(`/compras/update`, {
+      state: { nombre: nombre, id: id },
+    });
   }
   onFilterChange(): void {
     this.currentPage = 0;
     this.getCompras();
   }
   eliminarCompra(id: number): void {
-    this.shoppingService.eliminarCompra(id).subscribe(
-      () => {
-        this.getCompras();
-      },
-      (error) => {
-        console.error('Error al eliminar compra:', error);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.shoppingService.eliminarCompra(id).subscribe(
+          () => {
+            this.getCompras();
+          },
+          (error) => {
+            console.error('Error al eliminar compra:', error);
+          }
+        );
       }
-    );
-  } 
+    });
+  }
   formatDate(isoDate: string): string {
     const date = new Date(isoDate);
     return date.toLocaleDateString('es-ES', {
@@ -80,50 +94,58 @@ export class ShoppingComponent implements OnInit {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
+      second: '2-digit',
     });
   }
 
   getTotalCantidad(compra: any): number {
-    return compra.compraRepuesto.reduce((sum: number, repuesto: any) => sum + repuesto.cant, 0);
+    return compra.compraRepuesto.reduce(
+      (sum: number, repuesto: any) => sum + repuesto.cant,
+      0
+    );
   }
 
-
   agregarCompra(): void {
-    this.shoppingService.agregarCompra(this.nuevoCompra).pipe(
-      tap(() => {
-        this.router.navigate(['/compras']);
-        this.nuevoCompra = {};
-        this.getCompras();
-        this.modalCloseAdd.nativeElement.click();
-      }),
-      catchError((error) => {
-        console.error('Error al agregar compra:', error);
-        this.errorAgregarCompra = true;
-        setTimeout(() => {
-          this.errorAgregarCompra = false;
-        }, 5000);
-        return of(error);
-      })
-    ).subscribe();
+    this.shoppingService
+      .agregarCompra(this.nuevoCompra)
+      .pipe(
+        tap(() => {
+          this.router.navigate(['/compras']);
+          this.nuevoCompra = {};
+          this.getCompras();
+          this.modalCloseAdd.nativeElement.click();
+        }),
+        catchError((error) => {
+          console.error('Error al agregar compra:', error);
+          this.errorAgregarCompra = true;
+          setTimeout(() => {
+            this.errorAgregarCompra = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
   }
 
   modificarCompra(): void {
-    this.shoppingService.modificarCompra(this.compra).pipe(
-      tap(() => {
-        this.router.navigate(['/compras']);
-        this.getCompras();
-        this.modalCloseUpdate.nativeElement.click();
-      }),
-      catchError((error) => {
-        console.error('Error al modificar compra:', error);
-        this.errorModificarCompra = true;
-        setTimeout(() => {
-          this.errorModificarCompra = false;
-        }, 5000);
-        return of(error);
-      })
-    ).subscribe();
+    this.shoppingService
+      .modificarCompra(this.compra)
+      .pipe(
+        tap(() => {
+          this.router.navigate(['/compras']);
+          this.getCompras();
+          this.modalCloseUpdate.nativeElement.click();
+        }),
+        catchError((error) => {
+          console.error('Error al modificar compra:', error);
+          this.errorModificarCompra = true;
+          setTimeout(() => {
+            this.errorModificarCompra = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
   }
   abrirModalModificacion(compraId: string, compraNombre: string) {
     this.compra.id = compraId;

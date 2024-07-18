@@ -25,6 +25,10 @@ import { StatisticComponent } from './Components/statistic/statistic.component';
 import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
 import { SeguimientoComponent } from './Components/seguimiento/seguimiento.component';
 import { RestoreDataComponent } from './Components/restore-data/restore-data.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +48,8 @@ import { RestoreDataComponent } from './Components/restore-data/restore-data.com
     ConfigComponent,
     StatisticComponent,
     SeguimientoComponent,
-    RestoreDataComponent
+    RestoreDataComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,6 +59,9 @@ import { RestoreDataComponent } from './Components/restore-data/restore-data.com
     NgbModule,
     ReactiveFormsModule,
     CanvasJSAngularChartsModule,
+    BrowserAnimationsModule,
+    MatDialogModule,
+    MatButtonModule,
   ],
   providers: [AuthGuard],
 
