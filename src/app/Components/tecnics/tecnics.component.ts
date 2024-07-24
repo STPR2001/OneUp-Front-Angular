@@ -40,7 +40,7 @@ export class TecnicsComponent implements OnInit {
 
   getTecnicos(): void {
     this.tecnicsService
-      .getTecnicos(this.currentPage, this.pageSize, this.nombre)
+      .getTecnicosActivos(this.currentPage, this.pageSize, this.nombre)
       .subscribe(
         (data) => {
           this.tecnicos = data.content;

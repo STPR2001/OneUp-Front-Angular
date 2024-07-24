@@ -14,7 +14,7 @@ import { AuthService } from './auth/auth.service';
 })
 export class ShoppingService {
 
-    private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/compra';
+    private apiUrl = 'http://localhost:3000/oneup-backend/api/compra';
     constructor(private http: HttpClient, private authService: AuthService) { }
 
     private getHeaders(): HttpHeaders {
@@ -34,6 +34,34 @@ export class ShoppingService {
         }
         return this.http
             .get<any>(this.apiUrl, { headers, params })
+            .pipe(catchError(this.handleError));
+    }
+
+    getComprasActivas(page: number, size: number, startDate?: string, endDate?: string): Observable<any> {
+        const headers = this.getHeaders();
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        if (startDate) {
+            params = params.set('startDate', startDate);
+        }
+        if (endDate) {
+            params = params.set('endDate', endDate);
+        }
+        return this.http
+            .get<any>(`${this.apiUrl}/activas`, { headers, params })
+            .pipe(catchError(this.handleError));
+    }
+
+    getComprasInactivas(page: number, size: number, startDate?: string, endDate?: string): Observable<any> {
+        const headers = this.getHeaders();
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        if (startDate) {
+            params = params.set('startDate', startDate);
+        }
+        if (endDate) {
+            params = params.set('endDate', endDate);
+        }
+        return this.http
+            .get<any>(`${this.apiUrl}/inactivas`, { headers, params })
             .pipe(catchError(this.handleError));
     }
 

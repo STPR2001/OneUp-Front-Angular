@@ -13,7 +13,7 @@ import { AuthService } from './auth/auth.service';
     providedIn: 'root',
 })
 export class TecnicsService {
-    private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/tecnico';
+    private apiUrl = 'http://localhost:3000/oneup-backend/api/tecnico';
     constructor(private http: HttpClient, private authService: AuthService) { }
 
     private getHeaders(): HttpHeaders {
@@ -30,6 +30,28 @@ export class TecnicsService {
         }
         return this.http
             .get<any>(this.apiUrl, { headers, params })
+            .pipe(catchError(this.handleError));
+    }
+
+    getTecnicosActivos(page: number, size: number, nombre?: string): Observable<any> {
+        const headers = this.getHeaders();
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        if (nombre) {
+            params = params.set('nombre', nombre);
+        }
+        return this.http
+            .get<any>(`${this.apiUrl}/activos`, { headers, params })
+            .pipe(catchError(this.handleError));
+    }
+
+    getTecnicosInactivos(page: number, size: number, nombre?: string): Observable<any> {
+        const headers = this.getHeaders();
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        if (nombre) {
+            params = params.set('nombre', nombre);
+        }
+        return this.http
+            .get<any>(`${this.apiUrl}/inactivos`, { headers, params })
             .pipe(catchError(this.handleError));
     }
 

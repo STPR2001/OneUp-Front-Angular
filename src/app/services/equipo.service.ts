@@ -7,7 +7,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class EquipoService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/equipo';
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/equipo';
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getHeaders(): HttpHeaders {
@@ -25,6 +25,26 @@ export class EquipoService {
     }
     return this.http
       .get<any>(this.apiUrl, { headers, params });
+  }
+
+  getEquiposActivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombreMarca', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/activos`, { headers, params });
+  }
+
+  getEquiposInactivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombreMarca', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/inactivos`, { headers, params });
   }
 
   getAllEquipos(): Observable<any> {

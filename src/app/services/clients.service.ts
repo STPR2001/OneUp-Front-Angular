@@ -7,7 +7,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class ClientsService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/cliente';
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/cliente';
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getHeaders(): HttpHeaders {
@@ -24,6 +24,26 @@ export class ClientsService {
     }
     return this.http
       .get<any>(this.apiUrl, { headers, params });
+  }
+
+  getClientesActivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombre', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/activos`, { headers, params });
+  }
+
+  getClientesInactivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombre', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/inactivos`, { headers, params });
   }
 
   getAllClientes(): Observable<any> {

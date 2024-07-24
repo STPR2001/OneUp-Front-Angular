@@ -82,7 +82,7 @@ export class EquipmentsComponent implements OnInit {
   }
 
   getEquipos(): void {
-    this.EquipoService.getEquipos(
+    this.EquipoService.getEquiposActivos(
       this.currentPage,
       this.pageSize,
       this.nombre

@@ -7,7 +7,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class EquipmentTypeService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/tipoEquipo/';
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/tipoEquipo/';
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getHeaders(): HttpHeaders {

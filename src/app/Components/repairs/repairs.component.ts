@@ -113,7 +113,7 @@ export class RepairsComponent implements OnInit {
   obtenerReparaciones(): void {
     let estadoParam = this.estadoFiltro !== 'Todos' ? this.estadoFiltro : null;
     this.repairsService
-      .getReparaciones(
+      .getReparacionesActivas(
         this.currentPage,
         this.pageSize,
         this.nombreCliente,

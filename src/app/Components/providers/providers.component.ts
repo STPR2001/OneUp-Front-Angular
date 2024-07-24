@@ -41,7 +41,7 @@ export class ProvidersComponent implements OnInit {
 
   getProveedores(): void {
     this.providersService
-      .getProveedores(this.currentPage, this.pageSize, this.nombre)
+      .getProveedoresActivos(this.currentPage, this.pageSize, this.nombre)
       .subscribe(
         (data) => {
           this.proveedores = data.content;

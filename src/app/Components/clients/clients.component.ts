@@ -43,7 +43,7 @@ export class ClientsComponent implements OnInit {
 
   getClientes(): void {
     this.clientsService
-      .getClientes(this.currentPage, this.pageSize, this.nombre)
+      .getClientesActivos(this.currentPage, this.pageSize, this.nombre)
       .subscribe(
         (data) => {
           this.clientes = data.content;

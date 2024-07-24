@@ -41,7 +41,7 @@ export class ShoppingComponent implements OnInit {
 
   getCompras(): void {
     this.shoppingService
-      .getCompras(this.currentPage, this.pageSize, this.startDate, this.endDate)
+      .getComprasActivas(this.currentPage, this.pageSize, this.startDate, this.endDate)
       .subscribe(
         (data) => {
           this.compras = data.content;

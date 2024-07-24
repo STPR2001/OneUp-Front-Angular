@@ -13,7 +13,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class RepuestosService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/repuesto';
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/repuesto';
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getHeaders(): HttpHeaders {
@@ -32,6 +32,28 @@ export class RepuestosService {
     }
     return this.http
       .get<any>(this.apiUrl, { headers, params })
+      .pipe(catchError(this.handleError));
+  }
+
+  getRepuestosActivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('numero_de_parte', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/activos`, { headers, params })
+      .pipe(catchError(this.handleError));
+  }
+
+  getRepuestosInactivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('numero_de_parte', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/inactivos`, { headers, params })
       .pipe(catchError(this.handleError));
   }
 

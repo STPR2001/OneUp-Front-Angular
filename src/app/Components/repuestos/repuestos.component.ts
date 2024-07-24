@@ -41,7 +41,7 @@ export class RepuestosComponent implements OnInit {
 
   getRepuestos(): void {
     this.repuestosService
-      .getRepuestos(this.currentPage, this.pageSize, this.nombre)
+      .getRepuestosActivos(this.currentPage, this.pageSize, this.nombre)
       .subscribe(
         (data) => {
           this.repuestos = data.content;

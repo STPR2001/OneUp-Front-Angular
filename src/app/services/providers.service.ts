@@ -13,7 +13,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class ProvidersService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/proveedor';
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/proveedor';
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getHeaders(): HttpHeaders {
@@ -34,6 +34,28 @@ export class ProvidersService {
       .pipe(catchError(this.handleError));
   }
 
+  getProveedoresActivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombre', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/activos`, { headers, params })
+      .pipe(catchError(this.handleError));
+  }
+
+  getProveedoresInactivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombre', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/inactivos`, { headers, params })
+      .pipe(catchError(this.handleError));
+  }
+
   getAllProveedores(): Observable<any> {
     const headers = this.getHeaders();
     return this.http
@@ -43,7 +65,7 @@ export class ProvidersService {
 
   getRepuestos(): Observable<any[]> {
     const headers = this.getHeaders();
-    return this.http.get<any>(`http://216.238.102.160:3000/oneup-backend/api/repuesto/all`, { headers });
+    return this.http.get<any>(`http://localhost:3000/oneup-backend/api/repuesto/all`, { headers });
   }
   agregarProveedor(nuevoProveedor: any): Observable<any> {
     const headers = this.getHeaders();

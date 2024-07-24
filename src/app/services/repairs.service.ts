@@ -7,7 +7,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class RepairsService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/reparacion';
+  private apiUrl = 'http://localhost:3000/oneup-backend/api/reparacion';
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getHeaders(): HttpHeaders {
@@ -28,6 +28,32 @@ export class RepairsService {
     }
     return this.http
       .get<any>(this.apiUrl, { headers, params });
+  }
+
+  getReparacionesActivas(page: number, size: number, nombreCliente?: string, estado?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombreCliente) {
+      params = params.set('nombreCliente', nombreCliente);
+    }
+    if (estado) {
+      params = params.set('estado', estado);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/activas`, { headers, params });
+  }
+
+  getReparacionesInactivas(page: number, size: number, nombreCliente?: string, estado?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombreCliente) {
+      params = params.set('nombreCliente', nombreCliente);
+    }
+    if (estado) {
+      params = params.set('estado', estado);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/inactivas`, { headers, params });
   }
 
   getAllReparaciones(): Observable<any> {
