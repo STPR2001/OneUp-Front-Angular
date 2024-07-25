@@ -55,6 +55,22 @@ export class ClientsComponent implements OnInit {
       );
   }
 
+  desactivarCliente(cliente: any): void {
+    this.clientsService
+      .desactivarCliente(cliente)
+      .pipe(
+        tap(() => {
+          console.log('Cliente desactivado exitosamente');
+          this.getClientes();
+        }),
+        catchError((error) => {
+          console.error('Error al desactivar cliente:', error);
+          return of(error);
+        })
+      )
+      .subscribe();
+  }
+
   onPageChange(page: number): void {
     this.currentPage = page;
     this.getClientes();

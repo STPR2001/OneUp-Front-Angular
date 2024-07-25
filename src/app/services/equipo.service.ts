@@ -53,6 +53,18 @@ export class EquipoService {
       .get<any>(`${this.apiUrl}/all`, { headers });
   }
 
+  activarEquipo(equipo: any): Observable<any> {
+    const url = `${this.apiUrl}/${equipo.id}/activar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, equipo, { headers });
+  }
+
+  desactivarEquipo(equipo: any): Observable<any> {
+    const url = `${this.apiUrl}/${equipo.id}/desactivar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, equipo, { headers });
+  }
+
   agregarEquipos(nuevoEquipo: any): Observable<any> {
     const headers = this.getHeaders();
     return this.http.post(this.apiUrl, nuevoEquipo, { headers, responseType: 'text' });

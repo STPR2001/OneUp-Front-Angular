@@ -63,6 +63,18 @@ export class ProvidersService {
       .pipe(catchError(this.handleError));
   }
 
+  activarProveedor(proveedor: any): Observable<any> {
+    const url = `${this.apiUrl}/${proveedor.id}/activar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, proveedor, { headers });
+  }
+
+  desactivarProveedor(proveedor: any): Observable<any> {
+    const url = `${this.apiUrl}/${proveedor.id}/desactivar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, proveedor, { headers });
+  }
+
   getRepuestos(): Observable<any[]> {
     const headers = this.getHeaders();
     return this.http.get<any>(`http://localhost:3000/oneup-backend/api/repuesto/all`, { headers });

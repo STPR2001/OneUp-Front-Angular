@@ -65,6 +65,18 @@ export class ShoppingService {
             .pipe(catchError(this.handleError));
     }
 
+    activarCompra(compra: any): Observable<any> {
+        const url = `${this.apiUrl}/${compra.id}/activar`;
+        const headers = this.getHeaders();
+        return this.http.put<any>(url, compra, { headers });
+      }
+    
+    desactivarCompra(compra: any): Observable<any> {
+        const url = `${this.apiUrl}/${compra.id}/desactivar`;
+        const headers = this.getHeaders();
+        return this.http.put<any>(url, compra, { headers });
+      }
+
     getComprasPorMes(anio?: number): Observable<any> {
         const headers = this.getHeaders();
         let params = new HttpParams();

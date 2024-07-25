@@ -3,7 +3,7 @@
 
   <div class="restore-select">
     <label for="dataType">Seleccione el tipo de dato:</label>
-    <select id="dataType">
+    <select id="dataType" (change)="onDataTypeChange($event)">
       <option value="reparaciones">Reparaciones</option>
       <option value="clientes">Clientes</option>
       <option value="repuestos">Repuestos</option>
@@ -14,10 +14,268 @@
     </select>
   </div>
 
-  <div class="restore-list">
-    <h3>Datos Eliminados de</h3>
-    <ul>
-      <li></li>
-    </ul>
+  <div class="restore-list" *ngIf="selectedDataType === 'clientes'">
+    <h3>Datos eliminados de clientes</h3>
+    <div class="row">
+      <div class="col-md-12 table-container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Cédula</th>
+              <th>Observaciones</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cliente of clientes" class="hover-row">
+              <td>{{ cliente.nombre }}</td>
+              <td>{{ cliente.email }}</td>
+              <td>{{ cliente.telefono }}</td>
+              <td>{{ cliente.direccion }}</td>
+              <td>{{ cliente.cedula }}</td>
+              <td>{{ cliente.observacion }}</td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  (click)="activarCliente(cliente)"
+                  title="Restaurar"
+                >
+                  <span class="material-icons icon-small">restore_from_trash</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="restore-list" *ngIf="selectedDataType === 'proveedores'">
+    <h3>Datos eliminados de proveedores</h3>
+    <div class="row">
+      <div class="col-md-12 table-container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let proveedor of proveedores" class="hover-row">
+              <td>{{ proveedor.nombre }}</td>
+              <td>{{ proveedor.email }}</td>
+              <td>{{ proveedor.telefono }}</td>
+              <td>{{ proveedor.direccion }}</td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  (click)="activarProveedor(proveedor)"
+                  title="Restaurar"
+                >
+                  <span class="material-icons icon-small">restore_from_trash</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+    <div class="restore-list" *ngIf="selectedDataType === 'tecnicos'">
+    <h3>Datos eliminados de técnicos</h3>
+    <div class="row">
+      <div class="col-md-12 table-container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tecnico of tecnicos" class="hover-row">
+              <td>{{ tecnico.nombre }}</td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  (click)="activarTecnico(tecnico)"
+                  title="Restaurar"
+                >
+                  <span class="material-icons icon-small">restore_from_trash</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="restore-list" *ngIf="selectedDataType === 'reparaciones'">
+    <h3>Datos eliminados de reparaciónes</h3>
+    <div class="row">
+      <div class="col-md-12 table-container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Orden</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Falla</th>
+              <th>Técnico</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let repair of reparaciones" class="hover-row">
+              <td>{{ repair.id }}</td>
+          <td>{{ repair.fechaIngreso | date : "shortDate" : "UTC" }}</td>
+          <td>{{ repair.cliente.nombre }}</td>
+          <td>{{ repair.equipo.marca.nombre }}</td>
+          <td>{{ repair.equipo.modelo.nombre }}</td>
+          <td>{{ repair.falla }}</td>
+          <td>{{ repair.tecnico.nombre }}</td>
+          <td>{{ repair.estado }}</td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  (click)="activarReparacion(repair)"
+                  title="Restaurar"
+                >
+                  <span class="material-icons icon-small">restore_from_trash</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="restore-list" *ngIf="selectedDataType === 'compras'">
+    <h3>Datos eliminados de compras</h3>
+    <div class="row">
+      <div class="col-md-12 table-container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+          <th>Repuestos</th>
+          <th>Cantidad de repuestos</th>
+          <th>Monto</th>
+          <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let compra of compras" class="hover-row">
+              <td>{{(compra.fecha) | date : "shortDate" : "UTC" }}</td>
+              <td>
+                <p *ngFor="let repuesto of compra.compraRepuesto">
+                  {{ repuesto.repuesto.numeroDeParte }} -
+                  {{ repuesto.cant }} unidades
+                </p>
+              </td>
+              <td>{{ getTotalCantidad(compra) }}</td>
+              <td>{{ compra.total }}</td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  (click)="activarCompra(compra)"
+                  title="Restaurar"
+                >
+                  <span class="material-icons icon-small">restore_from_trash</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="restore-list" *ngIf="selectedDataType === 'equipos'">
+    <h3>Datos eliminados de equipos</h3>
+    <div class="row">
+      <div class="col-md-12 table-container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Tipo equipo</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Numero de serie</th>
+            <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let equipo of equipos" class="hover-row">
+              <td>{{ equipo.tipo_equipo.nombre }}</td>
+            <td>{{ equipo.marca.nombre }}</td>
+            <td>{{ equipo.modelo.nombre }}</td>
+            <td>{{ equipo.numeroSerie }}</td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  (click)="activarEquipo(equipo)"
+                  title="Restaurar"
+                >
+                  <span class="material-icons icon-small">restore_from_trash</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="restore-list" *ngIf="selectedDataType === 'repuestos'">
+    <h3>Datos eliminados de repuestos</h3>
+    <div class="row">
+      <div class="col-md-12 table-container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Repuesto</th>
+              <th>Número de parte</th>
+              <th>Precio costo</th>
+              <th>Precio venta</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let repuesto of repuestos" class="hover-row">
+              <td>{{ repuesto.descripcion }}</td>
+              <td>{{ repuesto.numeroDeParte }}</td>
+              <td>{{ repuesto.precioCosto }}</td>
+              <td>{{ repuesto.precioVenta }}</td>
+              <td>{{ repuesto.stock }}</td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  (click)="activarRepuesto(repuesto)"
+                  title="Restaurar"
+                >
+                  <span class="material-icons icon-small">restore_from_trash</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

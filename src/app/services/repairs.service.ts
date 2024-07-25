@@ -61,6 +61,19 @@ export class RepairsService {
     return this.http
       .get<any>(`${this.apiUrl}/all`, { headers });
   }
+
+  activarReparacion(reparacion: any): Observable<any> {
+    const url = `${this.apiUrl}/${reparacion.id}/activar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, reparacion, { headers });
+  }
+
+  desactivarReparacion(reparacion: any): Observable<any> {
+    const url = `${this.apiUrl}/${reparacion.id}/desactivar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, reparacion, { headers });
+  }
+
   getReparacion(codigo: any): Observable<any> {
     const headers = this.getHeaders();
     return this.http

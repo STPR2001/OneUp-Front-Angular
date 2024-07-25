@@ -57,6 +57,18 @@ export class ClientsService {
     return this.http.post(this.apiUrl, nuevoCliente, { headers, responseType: 'text' });
   }
 
+  activarCliente(cliente: any): Observable<any> {
+    const url = `${this.apiUrl}/${cliente.id}/activar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, cliente, { headers });
+  }
+
+  desactivarCliente(cliente: any): Observable<any> {
+    const url = `${this.apiUrl}/${cliente.id}/desactivar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, cliente, { headers });
+  }
+
   modificarCliente(cliente: any): Observable<any> {
     const url = `${this.apiUrl}/${cliente.id}`;
     const headers = this.getHeaders();

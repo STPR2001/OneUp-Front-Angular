@@ -64,6 +64,18 @@ export class RepuestosService {
       .pipe(catchError(this.handleError));
   }
 
+  activarRepuesto(repuesto: any): Observable<any> {
+    const url = `${this.apiUrl}/${repuesto.id}/activar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, repuesto, { headers });
+  }
+
+  desactivarRepuesto(repuesto: any): Observable<any> {
+    const url = `${this.apiUrl}/${repuesto.id}/desactivar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, repuesto, { headers });
+  }
+
   agregarRepuesto(nuevoRepuesto: any): Observable<any> {
     const headers = this.getHeaders();
     return this.http.post(this.apiUrl, nuevoRepuesto, {
