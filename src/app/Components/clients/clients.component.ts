@@ -56,19 +56,21 @@ export class ClientsComponent implements OnInit {
   }
 
   desactivarCliente(cliente: any): void {
-    this.clientsService
-      .desactivarCliente(cliente)
-      .pipe(
-        tap(() => {
-          console.log('Cliente desactivado exitosamente');
-          this.getClientes();
-        }),
-        catchError((error) => {
-          console.error('Error al desactivar cliente:', error);
-          return of(error);
-        })
-      )
-      .subscribe();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.clientsService.desactivarCliente(cliente).pipe(
+          tap(() => {
+            console.log('Cliente desactivado exitosamente');
+            this.getClientes();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar cliente:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
   }
 
   onPageChange(page: number): void {

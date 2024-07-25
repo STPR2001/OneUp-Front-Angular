@@ -53,6 +53,24 @@ export class ShoppingComponent implements OnInit {
       );
   }
 
+  desactivarCompra(compra: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.shoppingService.desactivarCompra(compra).pipe(
+          tap(() => {
+            console.log('Compra desactivado exitosamente');
+            this.getCompras();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar compra:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
+  }
+
   onPageChange(page: number): void {
     this.currentPage = page;
     this.getCompras();

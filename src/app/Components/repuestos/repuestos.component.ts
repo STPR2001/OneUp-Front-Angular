@@ -53,6 +53,24 @@ export class RepuestosComponent implements OnInit {
       );
   }
 
+  desactivarRepuesto(repuesto: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.repuestosService.desactivarRepuesto(repuesto).pipe(
+          tap(() => {
+            console.log('Repuesto desactivado exitosamente');
+            this.getRepuestos();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar repuesto:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
+  }
+
   onPageChange(page: number): void {
     this.currentPage = page;
     this.getRepuestos();

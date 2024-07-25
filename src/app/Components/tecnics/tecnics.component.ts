@@ -51,6 +51,25 @@ export class TecnicsComponent implements OnInit {
         }
       );
   }
+
+  desactivarTecnicos(tecnico: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.tecnicsService.desactivarTecnico(tecnico).pipe(
+          tap(() => {
+            console.log('Tecnico desactivado exitosamente');
+            this.getTecnicos();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar tecnico:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
+  }
+
   onPageChange(page: number): void {
     this.currentPage = page;
     this.getTecnicos();

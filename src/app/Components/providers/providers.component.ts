@@ -53,6 +53,24 @@ export class ProvidersComponent implements OnInit {
       );
   }
 
+  desactivarProveedor(proveedor: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.providersService.desactivarProveedor(proveedor).pipe(
+          tap(() => {
+            console.log('Proveedor desactivado exitosamente');
+            this.getProveedores();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar proveedor:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
+  }
+
   onPageChange(page: number): void {
     this.currentPage = page;
     this.getProveedores();

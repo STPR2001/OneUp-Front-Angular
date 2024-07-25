@@ -97,6 +97,24 @@ export class EquipmentsComponent implements OnInit {
     );
   }
 
+  desactivarEquipo(equipo: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.EquipoService.desactivarEquipo(equipo).pipe(
+          tap(() => {
+            console.log('Equipo desactivado exitosamente');
+            this.getEquipos();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar equipo:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
+  }
+
   onPageChange(page: number): void {
     this.currentPage = page;
     this.getEquipos();

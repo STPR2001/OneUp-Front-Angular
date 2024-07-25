@@ -109,6 +109,15 @@
         <div class="title">Estadísticas</div>
       </li>
       <li
+      *ngIf="isLogued()"
+      class="row"
+      routerLink="/restore"
+      [ngClass]="{ active: isActive('/restore') }"
+    >
+      <div class="icon"><span class="material-icons">restore_from_trash</span></div>
+      <div class="title">Restauración</div>
+    </li>
+      <li
         *ngIf="isLogued()"
         class="row"
         routerLink="/configuracion"
@@ -116,15 +125,6 @@
       >
         <div class="icon"><span class="material-icons">settings</span></div>
         <div class="title">Configuración</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/restore"
-        [ngClass]="{ active: isActive('/restore') }"
-      >
-        <div class="icon"><span class="material-icons">delete</span></div>
-        <div class="title">Restaurar</div>
       </li>
       <li
         *ngIf="isLogued()"

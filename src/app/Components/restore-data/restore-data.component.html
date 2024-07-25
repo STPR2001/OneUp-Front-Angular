@@ -1,9 +1,10 @@
-<div class="restore-container">
+<div class="container">
   <h2 class="h2-title">Restaurar datos eliminados</h2>
 
   <div class="restore-select">
     <label for="dataType">Seleccione el tipo de dato:</label>
     <select id="dataType" (change)="onDataTypeChange($event)">
+      <option value="">Elegir una opción</option>
       <option value="reparaciones">Reparaciones</option>
       <option value="clientes">Clientes</option>
       <option value="repuestos">Repuestos</option>
@@ -18,7 +19,8 @@
     <h3>Datos eliminados de clientes</h3>
     <div class="row">
       <div class="col-md-12 table-container">
-        <table class="table table-striped">
+        <div *ngIf="clientes.length > 0">
+        <table *ngIf="clientes.length > 0" class="table table-striped">
           <thead>
             <tr>
               <th>Nombre</th>
@@ -50,6 +52,67 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-primary me-1"
+            (click)="onPageChangeCliente(currentPage - 1)"
+            [disabled]="currentPage === 0"
+          >
+            Anterior
+          </button>
+          <ng-container *ngIf="totalPages > 0">
+            <button
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCliente(0)"
+              [disabled]="currentPage === 0"
+            >
+              1
+            </button>
+            <button
+              *ngIf="currentPage > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCliente(currentPage - 1)"
+              [disabled]="currentPage === 1"
+            >
+              {{ currentPage }}
+            </button>
+            <button
+              *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCliente(currentPage)"
+              [disabled]="true"
+            >
+              {{ currentPage + 1 }}
+            </button>
+    
+            <button
+              *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCliente(currentPage + 1)"
+            >
+              {{ currentPage + 2 }}
+            </button>
+            <button
+              *ngIf="totalPages > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCliente(totalPages - 1)"
+              [disabled]="currentPage === totalPages - 1"
+            >
+              {{ totalPages }}
+            </button>
+          </ng-container>
+          <button
+            class="btn btn-primary"
+            (click)="onPageChangeCliente(currentPage + 1)"
+            [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+        <div *ngIf="clientes.length === 0">
+          <p class="text-danger">No hay datos eliminados para mostrar</p>
+      </div>
       </div>
     </div>
   </div>
@@ -58,6 +121,7 @@
     <h3>Datos eliminados de proveedores</h3>
     <div class="row">
       <div class="col-md-12 table-container">
+        <div *ngIf="proveedores.length > 0">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -86,6 +150,67 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-primary me-1"
+            (click)="onPageChangeProveedor(currentPage - 1)"
+            [disabled]="currentPage === 0"
+          >
+            Anterior
+          </button>
+          <ng-container *ngIf="totalPages > 0">
+            <button
+              class="btn btn-primary me-1"
+              (click)="onPageChangeProveedor(0)"
+              [disabled]="currentPage === 0"
+            >
+              1
+            </button>
+            <button
+              *ngIf="currentPage > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeProveedor(currentPage - 1)"
+              [disabled]="currentPage === 1"
+            >
+              {{ currentPage }}
+            </button>
+            <button
+              *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeProveedor(currentPage)"
+              [disabled]="true"
+            >
+              {{ currentPage + 1 }}
+            </button>
+    
+            <button
+              *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeProveedor(currentPage + 1)"
+            >
+              {{ currentPage + 2 }}
+            </button>
+            <button
+              *ngIf="totalPages > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeProveedor(totalPages - 1)"
+              [disabled]="currentPage === totalPages - 1"
+            >
+              {{ totalPages }}
+            </button>
+          </ng-container>
+          <button
+            class="btn btn-primary"
+            (click)="onPageChangeProveedor(currentPage + 1)"
+            [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+        <div *ngIf="proveedores.length === 0">
+          <p class="text-danger">No hay datos eliminados para mostrar</p>
+      </div>
       </div>
     </div>
   </div>
@@ -94,6 +219,7 @@
     <h3>Datos eliminados de técnicos</h3>
     <div class="row">
       <div class="col-md-12 table-container">
+        <div *ngIf="tecnicos.length > 0">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -116,6 +242,67 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-primary me-1"
+            (click)="onPageChangeTecnico(currentPage - 1)"
+            [disabled]="currentPage === 0"
+          >
+            Anterior
+          </button>
+          <ng-container *ngIf="totalPages > 0">
+            <button
+              class="btn btn-primary me-1"
+              (click)="onPageChangeTecnico(0)"
+              [disabled]="currentPage === 0"
+            >
+              1
+            </button>
+            <button
+              *ngIf="currentPage > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeTecnico(currentPage - 1)"
+              [disabled]="currentPage === 1"
+            >
+              {{ currentPage }}
+            </button>
+            <button
+              *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeTecnico(currentPage)"
+              [disabled]="true"
+            >
+              {{ currentPage + 1 }}
+            </button>
+    
+            <button
+              *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeTecnico(currentPage + 1)"
+            >
+              {{ currentPage + 2 }}
+            </button>
+            <button
+              *ngIf="totalPages > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeTecnico(totalPages - 1)"
+              [disabled]="currentPage === totalPages - 1"
+            >
+              {{ totalPages }}
+            </button>
+          </ng-container>
+          <button
+            class="btn btn-primary"
+            (click)="onPageChangeTecnico(currentPage + 1)"
+            [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+        <div *ngIf="tecnicos.length === 0">
+          <p class="text-danger">No hay datos eliminados para mostrar</p>
+      </div>
       </div>
     </div>
   </div>
@@ -124,6 +311,7 @@
     <h3>Datos eliminados de reparaciónes</h3>
     <div class="row">
       <div class="col-md-12 table-container">
+        <div *ngIf="reparaciones.length > 0">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -160,6 +348,67 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-primary me-1"
+            (click)="onPageChangeReparacion(currentPage - 1)"
+            [disabled]="currentPage === 0"
+          >
+            Anterior
+          </button>
+          <ng-container *ngIf="totalPages > 0">
+            <button
+              class="btn btn-primary me-1"
+              (click)="onPageChangeReparacion(0)"
+              [disabled]="currentPage === 0"
+            >
+              1
+            </button>
+            <button
+              *ngIf="currentPage > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeReparacion(currentPage - 1)"
+              [disabled]="currentPage === 1"
+            >
+              {{ currentPage }}
+            </button>
+            <button
+              *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeReparacion(currentPage)"
+              [disabled]="true"
+            >
+              {{ currentPage + 1 }}
+            </button>
+    
+            <button
+              *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeReparacion(currentPage + 1)"
+            >
+              {{ currentPage + 2 }}
+            </button>
+            <button
+              *ngIf="totalPages > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeReparacion(totalPages - 1)"
+              [disabled]="currentPage === totalPages - 1"
+            >
+              {{ totalPages }}
+            </button>
+          </ng-container>
+          <button
+            class="btn btn-primary"
+            (click)="onPageChangeReparacion(currentPage + 1)"
+            [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+        <div *ngIf="reparaciones.length === 0">
+          <p class="text-danger">No hay datos eliminados para mostrar</p>
+      </div>
       </div>
     </div>
   </div>
@@ -168,6 +417,7 @@
     <h3>Datos eliminados de compras</h3>
     <div class="row">
       <div class="col-md-12 table-container">
+        <div *ngIf="compras.length > 0">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -201,6 +451,67 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-primary me-1"
+            (click)="onPageChangeCompra(currentPage - 1)"
+            [disabled]="currentPage === 0"
+          >
+            Anterior
+          </button>
+          <ng-container *ngIf="totalPages > 0">
+            <button
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCompra(0)"
+              [disabled]="currentPage === 0"
+            >
+              1
+            </button>
+            <button
+              *ngIf="currentPage > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCompra(currentPage - 1)"
+              [disabled]="currentPage === 1"
+            >
+              {{ currentPage }}
+            </button>
+            <button
+              *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCompra(currentPage)"
+              [disabled]="true"
+            >
+              {{ currentPage + 1 }}
+            </button>
+    
+            <button
+              *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCompra(currentPage + 1)"
+            >
+              {{ currentPage + 2 }}
+            </button>
+            <button
+              *ngIf="totalPages > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeCompra(totalPages - 1)"
+              [disabled]="currentPage === totalPages - 1"
+            >
+              {{ totalPages }}
+            </button>
+          </ng-container>
+          <button
+            class="btn btn-primary"
+            (click)="onPageChangeCompra(currentPage + 1)"
+            [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+        <div *ngIf="compras.length === 0">
+          <p class="text-danger">No hay datos eliminados para mostrar</p>
+      </div>
       </div>
     </div>
   </div>
@@ -209,6 +520,7 @@
     <h3>Datos eliminados de equipos</h3>
     <div class="row">
       <div class="col-md-12 table-container">
+        <div *ngIf="equipos.length > 0">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -237,6 +549,67 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-primary me-1"
+            (click)="onPageChangeEquipo(currentPage - 1)"
+            [disabled]="currentPage === 0"
+          >
+            Anterior
+          </button>
+          <ng-container *ngIf="totalPages > 0">
+            <button
+              class="btn btn-primary me-1"
+              (click)="onPageChangeEquipo(0)"
+              [disabled]="currentPage === 0"
+            >
+              1
+            </button>
+            <button
+              *ngIf="currentPage > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeEquipo(currentPage - 1)"
+              [disabled]="currentPage === 1"
+            >
+              {{ currentPage }}
+            </button>
+            <button
+              *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeEquipo(currentPage)"
+              [disabled]="true"
+            >
+              {{ currentPage + 1 }}
+            </button>
+    
+            <button
+              *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeEquipo(currentPage + 1)"
+            >
+              {{ currentPage + 2 }}
+            </button>
+            <button
+              *ngIf="totalPages > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeEquipo(totalPages - 1)"
+              [disabled]="currentPage === totalPages - 1"
+            >
+              {{ totalPages }}
+            </button>
+          </ng-container>
+          <button
+            class="btn btn-primary"
+            (click)="onPageChangeEquipo(currentPage + 1)"
+            [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+        <div *ngIf="equipos.length === 0">
+          <p class="text-danger">No hay datos eliminados para mostrar</p>
+      </div>
       </div>
     </div>
   </div>
@@ -245,6 +618,7 @@
     <h3>Datos eliminados de repuestos</h3>
     <div class="row">
       <div class="col-md-12 table-container">
+        <div *ngIf="repuestos.length > 0">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -275,6 +649,67 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-primary me-1"
+            (click)="onPageChangeRepuesto(currentPage - 1)"
+            [disabled]="currentPage === 0"
+          >
+            Anterior
+          </button>
+          <ng-container *ngIf="totalPages > 0">
+            <button
+              class="btn btn-primary me-1"
+              (click)="onPageChangeRepuesto(0)"
+              [disabled]="currentPage === 0"
+            >
+              1
+            </button>
+            <button
+              *ngIf="currentPage > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeRepuesto(currentPage - 1)"
+              [disabled]="currentPage === 1"
+            >
+              {{ currentPage }}
+            </button>
+            <button
+              *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeRepuesto(currentPage)"
+              [disabled]="true"
+            >
+              {{ currentPage + 1 }}
+            </button>
+    
+            <button
+              *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeRepuesto(currentPage + 1)"
+            >
+              {{ currentPage + 2 }}
+            </button>
+            <button
+              *ngIf="totalPages > 1"
+              class="btn btn-primary me-1"
+              (click)="onPageChangeRepuesto(totalPages - 1)"
+              [disabled]="currentPage === totalPages - 1"
+            >
+              {{ totalPages }}
+            </button>
+          </ng-container>
+          <button
+            class="btn btn-primary"
+            (click)="onPageChangeRepuesto(currentPage + 1)"
+            [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+        <div *ngIf="repuestos.length === 0">
+          <p class="text-danger">No hay datos eliminados para mostrar</p>
+      </div>
       </div>
     </div>
   </div>

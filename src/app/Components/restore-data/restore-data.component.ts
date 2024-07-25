@@ -295,4 +295,39 @@ export class RestoreDataComponent implements OnInit {
       .subscribe();
   }
 
+  onPageChangeTecnico(page: number): void {
+    this.currentPage = page;
+    this.getTecnicos();
+  }
+
+  onPageChangeProveedor(page: number): void {
+    this.currentPage = page;
+    this.getProveedores();
+  }
+
+  onPageChangeRepuesto(page: number): void {
+    this.currentPage = page;
+    this.getRepuestos();
+  }
+
+  onPageChangeCompra(page: number): void {
+    this.currentPage = page;
+    this.getCompras();
+  }
+
+  onPageChangeReparacion(page: number): void {
+    this.currentPage = page;
+    this.getReparaciones();
+  }
+
+  onPageChangeEquipo(page: number): void {
+    this.currentPage = page;
+    this.getEquipos();
+  }
+
+  onPageChangeCliente(page: number): void {
+    this.currentPage = page;
+    this.getClientes();
+  }
+
 }

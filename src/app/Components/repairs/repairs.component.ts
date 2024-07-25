@@ -130,6 +130,25 @@ export class RepairsComponent implements OnInit {
       );
   }
 
+  desactivarReparacion(reparacion: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+  
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.repairsService.desactivarReparacion(reparacion).pipe(
+          tap(() => {
+            console.log('Reparacion desactivada exitosamente');
+            this.obtenerReparaciones();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar reparacion:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
+  }
+
   onPageChange(page: number): void {
     this.currentPage = page;
     this.obtenerReparaciones();
