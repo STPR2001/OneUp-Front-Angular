@@ -9,7 +9,7 @@ import { User } from './user';
 }) 
 export class LoginService {
 
-    private apiUrl = 'http://localhost:3000/oneup-backend/api/seguridad/autenticacion';
+    private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/seguridad/autenticacion';
     currentUserLoginOn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     currentUserData: BehaviorSubject<User> = new BehaviorSubject<User>({ id: 0, email: '' });
 
