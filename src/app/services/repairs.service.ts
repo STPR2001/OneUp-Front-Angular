@@ -30,11 +30,50 @@ export class RepairsService {
       .get<any>(this.apiUrl, { headers, params });
   }
 
+  getReparacionesActivas(page: number, size: number, nombreCliente?: string, estado?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombreCliente) {
+      params = params.set('nombreCliente', nombreCliente);
+    }
+    if (estado) {
+      params = params.set('estado', estado);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/activas`, { headers, params });
+  }
+
+  getReparacionesInactivas(page: number, size: number, nombreCliente?: string, estado?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombreCliente) {
+      params = params.set('nombreCliente', nombreCliente);
+    }
+    if (estado) {
+      params = params.set('estado', estado);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/inactivas`, { headers, params });
+  }
+
   getAllReparaciones(): Observable<any> {
     const headers = this.getHeaders();
     return this.http
       .get<any>(`${this.apiUrl}/all`, { headers });
   }
+
+  activarReparacion(reparacion: any): Observable<any> {
+    const url = `${this.apiUrl}/${reparacion.id}/activar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, reparacion, { headers });
+  }
+
+  desactivarReparacion(reparacion: any): Observable<any> {
+    const url = `${this.apiUrl}/${reparacion.id}/desactivar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, reparacion, { headers });
+  }
+
   getReparacion(codigo: any): Observable<any> {
     const headers = this.getHeaders();
     return this.http

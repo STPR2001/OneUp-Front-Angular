@@ -33,12 +33,46 @@ export class TecnicsService {
             .pipe(catchError(this.handleError));
     }
 
+    getTecnicosActivos(page: number, size: number, nombre?: string): Observable<any> {
+        const headers = this.getHeaders();
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        if (nombre) {
+            params = params.set('nombre', nombre);
+        }
+        return this.http
+            .get<any>(`${this.apiUrl}/activos`, { headers, params })
+            .pipe(catchError(this.handleError));
+    }
+
+    getTecnicosInactivos(page: number, size: number, nombre?: string): Observable<any> {
+        const headers = this.getHeaders();
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        if (nombre) {
+            params = params.set('nombre', nombre);
+        }
+        return this.http
+            .get<any>(`${this.apiUrl}/inactivos`, { headers, params })
+            .pipe(catchError(this.handleError));
+    }
+
     getAllTecnicos(): Observable<any> {
         const headers = this.getHeaders();
         return this.http
             .get<any>(`${this.apiUrl}/all`, { headers })
             .pipe(catchError(this.handleError));
     }
+
+    activarTecnico(tecnico: any): Observable<any> {
+        const url = `${this.apiUrl}/${tecnico.id}/activar`;
+        const headers = this.getHeaders();
+        return this.http.put<any>(url, tecnico, { headers });
+      }
+    
+    desactivarTecnico(tecnico: any): Observable<any> {
+        const url = `${this.apiUrl}/${tecnico.id}/desactivar`;
+        const headers = this.getHeaders();
+        return this.http.put<any>(url, tecnico, { headers });
+      }
 
     agregarTecnico(nuevoTecnico: any): Observable<any> {
         const headers = this.getHeaders();

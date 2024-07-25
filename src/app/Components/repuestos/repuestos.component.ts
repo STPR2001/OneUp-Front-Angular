@@ -41,7 +41,7 @@ export class RepuestosComponent implements OnInit {
 
   getRepuestos(): void {
     this.repuestosService
-      .getRepuestos(this.currentPage, this.pageSize, this.nombre)
+      .getRepuestosActivos(this.currentPage, this.pageSize, this.nombre)
       .subscribe(
         (data) => {
           this.repuestos = data.content;
@@ -51,6 +51,24 @@ export class RepuestosComponent implements OnInit {
           console.error('Error al obtener la lista de repuestos:', error);
         }
       );
+  }
+
+  desactivarRepuesto(repuesto: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.repuestosService.desactivarRepuesto(repuesto).pipe(
+          tap(() => {
+            console.log('Repuesto desactivado exitosamente');
+            this.getRepuestos();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar repuesto:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
   }
 
   onPageChange(page: number): void {

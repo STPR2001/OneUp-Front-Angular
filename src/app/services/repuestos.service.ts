@@ -35,11 +35,45 @@ export class RepuestosService {
       .pipe(catchError(this.handleError));
   }
 
+  getRepuestosActivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('numero_de_parte', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/activos`, { headers, params })
+      .pipe(catchError(this.handleError));
+  }
+
+  getRepuestosInactivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('numero_de_parte', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/inactivos`, { headers, params })
+      .pipe(catchError(this.handleError));
+  }
+
   getAllRepuestos(): Observable<any> {
     const headers = this.getHeaders();
     return this.http
       .get<any>(`${this.apiUrl}/all`, { headers })
       .pipe(catchError(this.handleError));
+  }
+
+  activarRepuesto(repuesto: any): Observable<any> {
+    const url = `${this.apiUrl}/${repuesto.id}/activar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, repuesto, { headers });
+  }
+
+  desactivarRepuesto(repuesto: any): Observable<any> {
+    const url = `${this.apiUrl}/${repuesto.id}/desactivar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, repuesto, { headers });
   }
 
   agregarRepuesto(nuevoRepuesto: any): Observable<any> {

@@ -41,7 +41,7 @@ export class ShoppingComponent implements OnInit {
 
   getCompras(): void {
     this.shoppingService
-      .getCompras(this.currentPage, this.pageSize, this.startDate, this.endDate)
+      .getComprasActivas(this.currentPage, this.pageSize, this.startDate, this.endDate)
       .subscribe(
         (data) => {
           this.compras = data.content;
@@ -51,6 +51,24 @@ export class ShoppingComponent implements OnInit {
           console.error('Error al obtener la lista de compras:', error);
         }
       );
+  }
+
+  desactivarCompra(compra: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.shoppingService.desactivarCompra(compra).pipe(
+          tap(() => {
+            console.log('Compra desactivado exitosamente');
+            this.getCompras();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar compra:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
   }
 
   onPageChange(page: number): void {

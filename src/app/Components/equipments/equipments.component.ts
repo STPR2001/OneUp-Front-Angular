@@ -82,7 +82,7 @@ export class EquipmentsComponent implements OnInit {
   }
 
   getEquipos(): void {
-    this.EquipoService.getEquipos(
+    this.EquipoService.getEquiposActivos(
       this.currentPage,
       this.pageSize,
       this.nombre
@@ -95,6 +95,24 @@ export class EquipmentsComponent implements OnInit {
         console.error('Error al obtener la lista de equipos:', error);
       }
     );
+  }
+
+  desactivarEquipo(equipo: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.EquipoService.desactivarEquipo(equipo).pipe(
+          tap(() => {
+            console.log('Equipo desactivado exitosamente');
+            this.getEquipos();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar equipo:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
   }
 
   onPageChange(page: number): void {

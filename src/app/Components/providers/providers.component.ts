@@ -41,7 +41,7 @@ export class ProvidersComponent implements OnInit {
 
   getProveedores(): void {
     this.providersService
-      .getProveedores(this.currentPage, this.pageSize, this.nombre)
+      .getProveedoresActivos(this.currentPage, this.pageSize, this.nombre)
       .subscribe(
         (data) => {
           this.proveedores = data.content;
@@ -51,6 +51,24 @@ export class ProvidersComponent implements OnInit {
           console.error('Error al obtener la lista de proveedores:', error);
         }
       );
+  }
+
+  desactivarProveedor(proveedor: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.providersService.desactivarProveedor(proveedor).pipe(
+          tap(() => {
+            console.log('Proveedor desactivado exitosamente');
+            this.getProveedores();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar proveedor:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
   }
 
   onPageChange(page: number): void {

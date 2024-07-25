@@ -113,7 +113,7 @@ export class RepairsComponent implements OnInit {
   obtenerReparaciones(): void {
     let estadoParam = this.estadoFiltro !== 'Todos' ? this.estadoFiltro : null;
     this.repairsService
-      .getReparaciones(
+      .getReparacionesActivas(
         this.currentPage,
         this.pageSize,
         this.nombreCliente,
@@ -128,6 +128,25 @@ export class RepairsComponent implements OnInit {
           console.error('Error al obtener reparaciones:', error);
         }
       );
+  }
+
+  desactivarReparacion(reparacion: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+  
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.repairsService.desactivarReparacion(reparacion).pipe(
+          tap(() => {
+            console.log('Reparacion desactivada exitosamente');
+            this.obtenerReparaciones();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar reparacion:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
   }
 
   onPageChange(page: number): void {

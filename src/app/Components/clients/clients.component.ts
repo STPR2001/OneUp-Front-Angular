@@ -43,7 +43,7 @@ export class ClientsComponent implements OnInit {
 
   getClientes(): void {
     this.clientsService
-      .getClientes(this.currentPage, this.pageSize, this.nombre)
+      .getClientesActivos(this.currentPage, this.pageSize, this.nombre)
       .subscribe(
         (data) => {
           this.clientes = data.content;
@@ -53,6 +53,24 @@ export class ClientsComponent implements OnInit {
           console.error('Error al obtener la lista de clientes:', error);
         }
       );
+  }
+
+  desactivarCliente(cliente: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.clientsService.desactivarCliente(cliente).pipe(
+          tap(() => {
+            console.log('Cliente desactivado exitosamente');
+            this.getClientes();
+          }),
+          catchError((error) => {
+            console.error('Error al desactivar cliente:', error);
+            return of(error);
+          })
+        ).subscribe();
+      }
+    });
   }
 
   onPageChange(page: number): void {

@@ -34,11 +34,45 @@ export class ProvidersService {
       .pipe(catchError(this.handleError));
   }
 
+  getProveedoresActivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombre', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/activos`, { headers, params })
+      .pipe(catchError(this.handleError));
+  }
+
+  getProveedoresInactivos(page: number, size: number, nombre?: string): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    if (nombre) {
+      params = params.set('nombre', nombre);
+    }
+    return this.http
+      .get<any>(`${this.apiUrl}/inactivos`, { headers, params })
+      .pipe(catchError(this.handleError));
+  }
+
   getAllProveedores(): Observable<any> {
     const headers = this.getHeaders();
     return this.http
       .get<any>(`${this.apiUrl}/all`, { headers })
       .pipe(catchError(this.handleError));
+  }
+
+  activarProveedor(proveedor: any): Observable<any> {
+    const url = `${this.apiUrl}/${proveedor.id}/activar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, proveedor, { headers });
+  }
+
+  desactivarProveedor(proveedor: any): Observable<any> {
+    const url = `${this.apiUrl}/${proveedor.id}/desactivar`;
+    const headers = this.getHeaders();
+    return this.http.put<any>(url, proveedor, { headers });
   }
 
   getRepuestos(): Observable<any[]> {
