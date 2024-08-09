@@ -7,8 +7,8 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class RepairsService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/reparacion';
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  private apiUrl = 'http://64.176.2.135:3000/oneup-backend/api/reparacion';
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -17,49 +17,66 @@ export class RepairsService {
     });
   }
 
-  getReparaciones(page: number, size: number, nombreCliente?: string, estado?: string): Observable<any> {
+  getReparaciones(
+    page: number,
+    size: number,
+    nombreCliente?: string,
+    estado?: string
+  ): Observable<any> {
     const headers = this.getHeaders();
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
     if (nombreCliente) {
       params = params.set('nombreCliente', nombreCliente);
     }
     if (estado) {
       params = params.set('estado', estado);
     }
-    return this.http
-      .get<any>(this.apiUrl, { headers, params });
+    return this.http.get<any>(this.apiUrl, { headers, params });
   }
 
-  getReparacionesActivas(page: number, size: number, nombreCliente?: string, estado?: string): Observable<any> {
+  getReparacionesActivas(
+    page: number,
+    size: number,
+    nombreCliente?: string,
+    estado?: string
+  ): Observable<any> {
     const headers = this.getHeaders();
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
     if (nombreCliente) {
       params = params.set('nombreCliente', nombreCliente);
     }
     if (estado) {
       params = params.set('estado', estado);
     }
-    return this.http
-      .get<any>(`${this.apiUrl}/activas`, { headers, params });
+    return this.http.get<any>(`${this.apiUrl}/activas`, { headers, params });
   }
 
-  getReparacionesInactivas(page: number, size: number, nombreCliente?: string, estado?: string): Observable<any> {
+  getReparacionesInactivas(
+    page: number,
+    size: number,
+    nombreCliente?: string,
+    estado?: string
+  ): Observable<any> {
     const headers = this.getHeaders();
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
     if (nombreCliente) {
       params = params.set('nombreCliente', nombreCliente);
     }
     if (estado) {
       params = params.set('estado', estado);
     }
-    return this.http
-      .get<any>(`${this.apiUrl}/inactivas`, { headers, params });
+    return this.http.get<any>(`${this.apiUrl}/inactivas`, { headers, params });
   }
 
   getAllReparaciones(): Observable<any> {
     const headers = this.getHeaders();
-    return this.http
-      .get<any>(`${this.apiUrl}/all`, { headers });
+    return this.http.get<any>(`${this.apiUrl}/all`, { headers });
   }
 
   activarReparacion(reparacion: any): Observable<any> {
@@ -76,13 +93,15 @@ export class RepairsService {
 
   getReparacion(codigo: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http
-      .get<any>(`${this.apiUrl}/codigo/${codigo}`);
+    return this.http.get<any>(`${this.apiUrl}/codigo/${codigo}`);
   }
 
   agregarReparacion(nuevaReparacion: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(this.apiUrl, nuevaReparacion, { headers, responseType: 'text' });
+    return this.http.post(this.apiUrl, nuevaReparacion, {
+      headers,
+      responseType: 'text',
+    });
   }
 
   eliminarReparacion(id: number): Observable<any> {
@@ -109,8 +128,10 @@ export class RepairsService {
     if (anio) {
       params = params.append('anio', anio.toString());
     }
-    return this.http
-      .get<any>(`${this.apiUrl}/reparaciones-por-mes`, { headers, params });
+    return this.http.get<any>(`${this.apiUrl}/reparaciones-por-mes`, {
+      headers,
+      params,
+    });
   }
 
   getReparacionesPorTecnico(anio?: number): Observable<any> {
@@ -119,7 +140,9 @@ export class RepairsService {
     if (anio) {
       params = params.append('anio', anio.toString());
     }
-    return this.http
-      .get<any>(`${this.apiUrl}/reparaciones-por-tecnico`, { headers, params });
+    return this.http.get<any>(`${this.apiUrl}/reparaciones-por-tecnico`, {
+      headers,
+      params,
+    });
   }
 }
