@@ -13,8 +13,8 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class ProvidersService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/proveedor';
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  private apiUrl = 'http://64.176.2.135:3000/oneup-backend/api/proveedor';
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -25,7 +25,9 @@ export class ProvidersService {
 
   getProveedores(page: number, size: number, nombre?: string): Observable<any> {
     const headers = this.getHeaders();
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
     if (nombre) {
       params = params.set('nombre', nombre);
     }
@@ -34,9 +36,15 @@ export class ProvidersService {
       .pipe(catchError(this.handleError));
   }
 
-  getProveedoresActivos(page: number, size: number, nombre?: string): Observable<any> {
+  getProveedoresActivos(
+    page: number,
+    size: number,
+    nombre?: string
+  ): Observable<any> {
     const headers = this.getHeaders();
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
     if (nombre) {
       params = params.set('nombre', nombre);
     }
@@ -45,9 +53,15 @@ export class ProvidersService {
       .pipe(catchError(this.handleError));
   }
 
-  getProveedoresInactivos(page: number, size: number, nombre?: string): Observable<any> {
+  getProveedoresInactivos(
+    page: number,
+    size: number,
+    nombre?: string
+  ): Observable<any> {
     const headers = this.getHeaders();
-    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
     if (nombre) {
       params = params.set('nombre', nombre);
     }
@@ -77,7 +91,10 @@ export class ProvidersService {
 
   getRepuestos(): Observable<any[]> {
     const headers = this.getHeaders();
-    return this.http.get<any>(`http://216.238.102.160:3000/oneup-backend/api/repuesto/all`, { headers });
+    return this.http.get<any>(
+      `http://64.176.2.135:3000/oneup-backend/api/repuesto/all`,
+      { headers }
+    );
   }
   agregarProveedor(nuevoProveedor: any): Observable<any> {
     const headers = this.getHeaders();

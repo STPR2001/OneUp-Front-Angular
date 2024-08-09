@@ -7,8 +7,8 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class EquipmentTypeService {
-  private apiUrl = 'http://216.238.102.160:3000/oneup-backend/api/tipoEquipo/';
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  private apiUrl = 'http://64.176.2.135:3000/oneup-backend/api/tipoEquipo/';
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -23,7 +23,10 @@ export class EquipmentTypeService {
   }
   agregarTipoEquipo(nuevoTipoEquipo: any): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(this.apiUrl, nuevoTipoEquipo, { headers, responseType: 'text'  });
+    return this.http.post(this.apiUrl, nuevoTipoEquipo, {
+      headers,
+      responseType: 'text',
+    });
   }
 
   modificarTipoEquipo(tipoEquipo: any): Observable<any> {
