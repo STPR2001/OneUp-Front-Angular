@@ -13,7 +13,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class ShoppingService {
-  private apiUrl = 'https://64.176.2.135:3000/oneup-backend/api/compra';
+  private apiUrl = 'http://64.176.2.135:3000/oneup-backend/api/compra';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {

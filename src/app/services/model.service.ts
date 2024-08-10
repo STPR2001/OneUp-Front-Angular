@@ -7,7 +7,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class ModelService {
-  private apiUrl = 'https://64.176.2.135:3000/oneup-backend/api/modelo';
+  private apiUrl = 'http://64.176.2.135:3000/oneup-backend/api/modelo';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
