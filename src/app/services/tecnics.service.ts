@@ -52,6 +52,13 @@ export class TecnicsService {
       .pipe(catchError(this.handleError));
   }
 
+  getTecnicosActivosParaFormularios(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/activos`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
   getTecnicosInactivos(
     page: number,
     size: number,

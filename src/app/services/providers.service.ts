@@ -54,6 +54,13 @@ export class ProvidersService {
       .pipe(catchError(this.handleError));
   }
 
+  getProveedoresActivosParaFormularios(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/activos`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
   getProveedoresInactivos(
     page: number,
     size: number,

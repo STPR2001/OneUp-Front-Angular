@@ -1,5 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+  AbstractControl,
+} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ProvidersService } from 'src/app/services/providers.service';
@@ -10,7 +16,9 @@ import { RepuestosService } from 'src/app/services/repuestos.service';
 function minArrayLength(min: number) {
   return (control: AbstractControl) => {
     if (control instanceof FormArray) {
-      return control.length >= min ? null : { minArrayLength: { valid: false, min } };
+      return control.length >= min
+        ? null
+        : { minArrayLength: { valid: false, min } };
     }
     return null;
   };
@@ -19,7 +27,7 @@ function minArrayLength(min: number) {
 @Component({
   selector: 'app-new-shopping',
   templateUrl: './new-shopping.component.html',
-  styleUrls: ['./new-shopping.component.css']
+  styleUrls: ['./new-shopping.component.css'],
 })
 export class NewShoppingComponent implements OnInit {
   @ViewChild('agregarRepuestoModal') modalCloseAddRepuesto: any;
@@ -45,7 +53,7 @@ export class NewShoppingComponent implements OnInit {
       total: [0, [Validators.required, Validators.min(0)]],
       fecha: ['', [Validators.required]],
       repuestos: this.fb.array([], minArrayLength(1)),
-      id_proveedor: [0, [Validators.required, Validators.min(1)]]
+      id_proveedor: [0, [Validators.required, Validators.min(1)]],
     });
     this.maxFecha = this.formatDate(new Date());
   }
@@ -59,40 +67,45 @@ export class NewShoppingComponent implements OnInit {
     return this.compraForm.get('repuestos') as FormArray;
   }
   cargarProveedores(): void {
-    this.providersService.getAllProveedores().subscribe({
+    this.providersService.getProveedoresActivosParaFormularios().subscribe({
       next: (data) => {
-        this.proveedores = data;
+        this.proveedores = data.content;
       },
       error: (error) => {
         console.error('Error al cargar los proveedores:', error);
-      }
+      },
     });
   }
 
   onRepuestoChange(event: any, index: number): void {
     const repuestoId = event.target.value;
-    const repuestoSeleccionado = this.repuestosDisponibles.find(repuesto => repuesto.id == repuestoId);
+    const repuestoSeleccionado = this.repuestosDisponibles.find(
+      (repuesto) => repuesto.id == repuestoId
+    );
     if (repuestoSeleccionado) {
-      this.repuestos.at(index).get('precio')?.setValue(repuestoSeleccionado.precioCosto);
+      this.repuestos
+        .at(index)
+        .get('precio')
+        ?.setValue(repuestoSeleccionado.precioCosto);
     }
     this.calcularTotal();
   }
 
   cargarRepuestos(): void {
-    this.providersService.getRepuestos().subscribe({
+    this.repuestosService.getRepuestosActivosParaFormularios().subscribe({
       next: (data) => {
-        this.repuestosDisponibles = data;
+        this.repuestosDisponibles = data.content;
       },
       error: (error) => {
         console.error('Error al cargar los repuestos:', error);
-      }
+      },
     });
   }
   agregarRepuesto(): void {
     const repuestoGroup = this.fb.group({
       precio: [0, [Validators.required, Validators.min(0.01)]],
       cant: [0, [Validators.required, Validators.min(1)]],
-      id: [0, [Validators.required, Validators.min(1)]]
+      id: [0, [Validators.required, Validators.min(1)]],
     });
     this.repuestos.push(repuestoGroup);
     this.suscribirseACambiosEnRepuestos(repuestoGroup);
@@ -100,7 +113,7 @@ export class NewShoppingComponent implements OnInit {
 
   agregarNuevoRepuesto(): void {
     this.repuestosService.agregarRepuesto(this.nuevoRepuesto).subscribe({
-      next: () => { 
+      next: () => {
         this.nuevoRepuesto = {};
         this.cargarRepuestos();
         this.modalCloseAddRepuesto.nativeElement.click();
@@ -112,14 +125,15 @@ export class NewShoppingComponent implements OnInit {
           this.errorAgregarRepuesto = false;
         }, 5000);
         return of(error);
-      }
-    }
-    );
+      },
+    });
   }
 
   suscribirseACambiosEnRepuestos(repuestoGroup: FormGroup): void {
     repuestoGroup.get('id')?.valueChanges.subscribe(() => this.calcularTotal());
-    repuestoGroup.get('cant')?.valueChanges.subscribe(() => this.calcularTotal());
+    repuestoGroup
+      .get('cant')
+      ?.valueChanges.subscribe(() => this.calcularTotal());
   }
   eliminarRepuesto(index: number): void {
     this.repuestos.removeAt(index);
@@ -129,42 +143,48 @@ export class NewShoppingComponent implements OnInit {
     const total = this.repuestos.controls.reduce((acc, repuestoGroup) => {
       const precio = repuestoGroup.get('precio')?.value || 0;
       const cant = repuestoGroup.get('cant')?.value || 0;
-      return acc + (precio * cant);
+      return acc + precio * cant;
     }, 0);
     this.compraForm.get('total')?.setValue(total);
   }
   crearCompra(): void {
     if (this.compraForm.valid) {
       console.log(this.compraForm.value);
-      this.shoppingService.agregarCompra(this.compraForm.value).pipe(
-        tap(() => {
-          this.router.navigate(['/compras']);
-        }),
-        catchError((error) => {
-          console.error('Error al agregar proveedor:', error);
-          return of(error);
-        })
-      ).subscribe();
+      this.shoppingService
+        .agregarCompra(this.compraForm.value)
+        .pipe(
+          tap(() => {
+            this.router.navigate(['/compras']);
+          }),
+          catchError((error) => {
+            console.error('Error al agregar proveedor:', error);
+            return of(error);
+          })
+        )
+        .subscribe();
     } else {
       this.compraForm.markAllAsTouched();
     }
   }
   agregarProveedor(): void {
-    this.providersService.agregarProveedor(this.nuevoProveedor).pipe(
-      tap(() => {
-        this.nuevoProveedor = {};
-        this.modalCloseAdd.nativeElement.click();
-        this.cargarProveedores();
-      }),
-      catchError((error) => {
-        console.error('Error al agregar proveedor:', error);
-        this.errorAgregarProveedor = true;
-        setTimeout(() => {
-          this.errorAgregarProveedor = false;
-        }, 5000);
-        return of(error);
-      })
-    ).subscribe();
+    this.providersService
+      .agregarProveedor(this.nuevoProveedor)
+      .pipe(
+        tap(() => {
+          this.nuevoProveedor = {};
+          this.modalCloseAdd.nativeElement.click();
+          this.cargarProveedores();
+        }),
+        catchError((error) => {
+          console.error('Error al agregar proveedor:', error);
+          this.errorAgregarProveedor = true;
+          setTimeout(() => {
+            this.errorAgregarProveedor = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
   }
 
   formatDate(date: Date): string {

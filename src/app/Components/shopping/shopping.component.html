@@ -40,8 +40,8 @@
       <thead>
         <tr>
           <th>Fecha</th>
-          <th>Repuestos</th>
-          <th>Cantidad de repuestos</th>
+          <th>Repuesto</th>
+          <th>Cantidad</th>
           <th>Monto</th>
           <th>Acciones</th>
         </tr>
@@ -51,8 +51,7 @@
           <td>{{ formatDate(compra.fecha) }}</td>
           <td>
             <p *ngFor="let repuesto of compra.compraRepuesto">
-              {{ repuesto.repuesto.numeroDeParte }} -
-              {{ repuesto.cant }} unidades
+              {{ repuesto.repuesto.descripcion }}
             </p>
           </td>
           <td>{{ getTotalCantidad(compra) }}</td>

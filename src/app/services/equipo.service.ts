@@ -43,6 +43,11 @@ export class EquipoService {
     return this.http.get<any>(`${this.apiUrl}/activos`, { headers, params });
   }
 
+  getEquiposActivosParaFormularios(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`${this.apiUrl}/activos`, { headers });
+  }
+
   getEquiposInactivos(
     page: number,
     size: number,

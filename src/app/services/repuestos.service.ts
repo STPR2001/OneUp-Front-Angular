@@ -55,6 +55,13 @@ export class RepuestosService {
       .pipe(catchError(this.handleError));
   }
 
+  getRepuestosActivosParaFormularios(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(`${this.apiUrl}/activos`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
   getRepuestosInactivos(
     page: number,
     size: number,

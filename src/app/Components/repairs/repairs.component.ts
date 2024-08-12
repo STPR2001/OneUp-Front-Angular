@@ -132,19 +132,22 @@ export class RepairsComponent implements OnInit {
 
   desactivarReparacion(reparacion: any): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
-  
+
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.repairsService.desactivarReparacion(reparacion).pipe(
-          tap(() => {
-            console.log('Reparacion desactivada exitosamente');
-            this.obtenerReparaciones();
-          }),
-          catchError((error) => {
-            console.error('Error al desactivar reparacion:', error);
-            return of(error);
-          })
-        ).subscribe();
+        this.repairsService
+          .desactivarReparacion(reparacion)
+          .pipe(
+            tap(() => {
+              console.log('Reparacion desactivada exitosamente');
+              this.obtenerReparaciones();
+            }),
+            catchError((error) => {
+              console.error('Error al desactivar reparacion:', error);
+              return of(error);
+            })
+          )
+          .subscribe();
       }
     });
   }
@@ -203,9 +206,9 @@ export class RepairsComponent implements OnInit {
   }
 
   obtenerRepuestos(): void {
-    this.repuestosService.getAllRepuestos().subscribe(
+    this.repuestosService.getRepuestosActivosParaFormularios().subscribe(
       (data) => {
-        this.repuestos = data;
+        this.repuestos = data.content;
       },
       (error) => {
         console.error('Error al obtener los repuestos:', error);

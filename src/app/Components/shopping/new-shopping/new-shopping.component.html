@@ -88,7 +88,7 @@
                   *ngFor="let repuesto of repuestosDisponibles"
                   [value]="repuesto.id"
                 >
-                  {{ repuesto.numeroDeParte }}
+                  {{ repuesto.descripcion }}
                 </option>
               </select>
               <button
@@ -172,7 +172,7 @@
             class="btn btn-secondary"
             (click)="agregarRepuesto()"
           >
-            Agregar Repuesto
+            Agregar repuesto
           </button>
           <button
             type="button"
@@ -212,7 +212,7 @@
           </div>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">Crear Compra</button>
+      <button type="submit" class="btn btn-primary">Crear compra</button>
     </form>
   </div>
 </div>
