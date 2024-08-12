@@ -50,7 +50,7 @@
       <tbody>
         <tr *ngFor="let repair of reparaciones" class="hover-row">
           <td>{{ repair.id }}</td>
-          <td>{{ repair.fechaIngreso | date : "shortDate" : "UTC" }}</td>
+          <td>{{ formatDate(repair.fechaIngreso) }}</td>
           <td>{{ repair.cliente.nombre }}</td>
           <td>{{ repair.equipo.marca.nombre }}</td>
           <td>{{ repair.equipo.modelo.nombre }}</td>

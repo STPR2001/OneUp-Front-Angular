@@ -31,6 +31,7 @@
               required
               class="form-select fs-5"
             >
+              <option value="" disabled selected>Seleccione un estado</option>
               <option *ngFor="let estado of estados" [value]="estado">
                 {{ estado }}
               </option>
@@ -50,6 +51,9 @@
                 required
                 class="form-select fs-5"
               >
+                <option value="" disabled selected>
+                  Seleccione un técnico
+                </option>
                 <option *ngFor="let tecnico of tecnicos" [value]="tecnico.id">
                   {{ tecnico.nombre }}
                 </option>
@@ -77,6 +81,9 @@
                 required
                 class="form-select fs-5"
               >
+                <option value="" disabled selected>
+                  Seleccione un cliente
+                </option>
                 <option *ngFor="let cliente of clientes" [value]="cliente.id">
                   {{ cliente.nombre }}
                 </option>
@@ -106,6 +113,7 @@
                 required
                 class="form-select fs-5"
               >
+                <option value="" disabled selected>Seleccione un equipo</option>
                 <option *ngFor="let equipo of equipos" [value]="equipo.id">
                   {{
                     equipo.marca.nombre +

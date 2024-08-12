@@ -102,7 +102,7 @@ export class RepairsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.setFechaActual();
+    //this.setFechaActual();
     this.obtenerReparaciones();
     this.obtenerTecnicos();
     this.obtenerClientes();
@@ -312,10 +312,20 @@ export class RepairsComponent implements OnInit {
     );
   }
 
-  setFechaActual(): void {
-    const currentDate = new Date().toISOString().split('T')[0];
-    this.nuevaReparacion.fechaIngreso = currentDate;
-    this.reparacion.fechaIngreso = currentDate;
+  //  setFechaActual(): void {
+  //    const currentDate = new Date().toISOString().split('T')[0];
+  //    this.nuevaReparacion.fechaIngreso = currentDate;
+  //    this.reparacion.fechaIngreso = currentDate;
+  //  }
+
+  formatDate(isoDate: string): string {
+    const date = new Date(isoDate);
+    date.setDate(date.getDate() + 1); // Sumar un día
+    return date.toLocaleDateString('es-UY', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   }
 
   abrirModalAgregarNota(reparacion: any): void {

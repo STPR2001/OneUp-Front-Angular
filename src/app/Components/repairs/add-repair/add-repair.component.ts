@@ -110,6 +110,7 @@ export class AddRepairComponent implements OnInit {
       .pipe(
         tap(() => {
           console.log('Reparación agregada exitosamente');
+          console.log(this.nuevaReparacion);
           this.nuevaReparacion = {
             fechaIngreso: '',
             tecnico: { id: '' },
@@ -123,7 +124,7 @@ export class AddRepairComponent implements OnInit {
             entrega: 0,
             saldo: 0,
           };
-          this.setFechaActual();
+          //this.setFechaActual();
           this.router.navigate(['/reparaciones']);
         }),
         catchError((error) => {
@@ -153,7 +154,6 @@ export class AddRepairComponent implements OnInit {
     this.TecnicsService.getTecnicosActivosParaFormularios().subscribe(
       (data) => {
         this.tecnicos = data.content;
-        console.log(this.tecnicos);
       },
       (error) => {
         console.error('Error al obtener los tecnicos:', error);
@@ -224,9 +224,9 @@ export class AddRepairComponent implements OnInit {
   }
 
   getEquipos(): void {
-    this.EquipoService.getAllEquipos().subscribe(
+    this.EquipoService.getEquiposActivosParaFormularios().subscribe(
       (data) => {
-        this.equipos = data;
+        this.equipos = data.content;
       },
       (error) => {
         console.error('Error al obtener la lista de equipos:', error);
