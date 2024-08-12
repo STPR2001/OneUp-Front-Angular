@@ -13,7 +13,8 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class ProvidersService {
-  private apiUrl = 'https://oneupsoluciones.com/oneup-backend/api/proveedor';
+  private apiUrl =
+    'https://oneupsoluciones.com:8443/oneup-backend/api/proveedor';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
@@ -92,7 +93,7 @@ export class ProvidersService {
   getRepuestos(): Observable<any[]> {
     const headers = this.getHeaders();
     return this.http.get<any>(
-      `https://oneupsoluciones.com/oneup-backend/api/repuesto/all`,
+      `https://oneupsoluciones.com:8443/oneup-backend/api/repuesto/all`,
       { headers }
     );
   }

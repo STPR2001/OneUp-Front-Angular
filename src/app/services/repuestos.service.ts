@@ -13,7 +13,8 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class RepuestosService {
-  private apiUrl = 'https://oneupsoluciones.com/oneup-backend/api/repuesto';
+  private apiUrl =
+    'https://oneupsoluciones.com:8443/oneup-backend/api/repuesto';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {

@@ -7,7 +7,8 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class RepairsService {
-  private apiUrl = 'https://oneupsoluciones.com/oneup-backend/api/reparacion';
+  private apiUrl =
+    'https://oneupsoluciones.com:8443/oneup-backend/api/reparacion';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {

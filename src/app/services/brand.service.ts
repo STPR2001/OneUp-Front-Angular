@@ -7,7 +7,7 @@ import { AuthService } from './auth/auth.service';
   providedIn: 'root',
 })
 export class BrandService {
-  private apiUrl = 'https://oneupsoluciones.com/oneup-backend/api/marca';
+  private apiUrl = 'https://oneupsoluciones.com:8443/oneup-backend/api/marca';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
