@@ -53,7 +53,13 @@ export class ModifyRepairComponent implements OnInit {
   nuevoTecnico: any = {};
   errorAgregarTecnico = false;
 
-  nuevoCliente: any = {};
+  nuevoCliente: any = {
+    email: '',
+    cedula: '',
+    direccion: '',
+    observacion: '',
+    telefono: '',
+  };
   errorAgregarCliente = false;
 
   equipo: any = {};
@@ -213,7 +219,13 @@ export class ModifyRepairComponent implements OnInit {
       .pipe(
         tap(() => {
           console.log('Cliente agregado exitosamente');
-          this.nuevoCliente = {};
+          this.nuevoCliente = {
+            email: '',
+            cedula: '',
+            direccion: '',
+            observacion: '',
+            telefono: '',
+          };
           this.obtenerClientes();
           this.modalCloseAddCliente.nativeElement.click();
         }),

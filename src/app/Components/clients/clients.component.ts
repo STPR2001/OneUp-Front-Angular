@@ -17,7 +17,13 @@ export class ClientsComponent implements OnInit {
   @ViewChild('agregarClienteModal') modalCloseAdd: any;
   @ViewChild('ModificarClienteModal') modalCloseUpdate: any;
 
-  nuevoCliente: any = {};
+  nuevoCliente: any = {
+    email: '',
+    cedula: '',
+    direccion: '',
+    observacion: '',
+    telefono: '',
+  };
   clientes: any[] = [];
   clienteSeleccionado: any = {};
   searchTerm: string = '';
@@ -59,16 +65,19 @@ export class ClientsComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.clientsService.desactivarCliente(cliente).pipe(
-          tap(() => {
-            console.log('Cliente desactivado exitosamente');
-            this.getClientes();
-          }),
-          catchError((error) => {
-            console.error('Error al desactivar cliente:', error);
-            return of(error);
-          })
-        ).subscribe();
+        this.clientsService
+          .desactivarCliente(cliente)
+          .pipe(
+            tap(() => {
+              console.log('Cliente desactivado exitosamente');
+              this.getClientes();
+            }),
+            catchError((error) => {
+              console.error('Error al desactivar cliente:', error);
+              return of(error);
+            })
+          )
+          .subscribe();
       }
     });
   }
@@ -93,7 +102,13 @@ export class ClientsComponent implements OnInit {
       .pipe(
         tap(() => {
           console.log('Cliente agregado exitosamente');
-          this.nuevoCliente = {};
+          this.nuevoCliente = {
+            email: '',
+            cedula: '',
+            direccion: '',
+            observacion: '',
+            telefono: '',
+          };
           this.getClientes();
           this.modalCloseAdd.nativeElement.click();
         }),

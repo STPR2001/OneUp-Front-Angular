@@ -223,11 +223,13 @@
   aria-labelledby="agregarProveedorModalLabel"
   aria-hidden="true"
 >
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <form (ngSubmit)="agregarProveedor()">
         <div class="modal-header">
-          <h2 class="text-center fs-2 h2-title">Agregar proveedor</h2>
+          <h2 class="modal-title text-center fs-2 h2-title">
+            Agregar proveedor
+          </h2>
           <button
             type="button"
             class="btn-close"
@@ -237,49 +239,55 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3 d-grid gap-2">
-            <label for="nombre">Nombre <span class="requerido">*</span></label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoProveedor.nombre"
-            />
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="nombre"
+                >Nombre <span class="requerido">*</span></label
+              >
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                class="form-control fs-5"
+                required
+                [(ngModel)]="nuevoProveedor.nombre"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="direccion">Dirección</label>
+              <input
+                type="text"
+                id="direccion"
+                name="direccion"
+                class="form-control fs-5"
+                required
+                [(ngModel)]="nuevoProveedor.direccion"
+              />
+            </div>
           </div>
-          <div class="mb-3 d-grid gap-2">
-            <label for="direccion">Dirección</label>
-            <input
-              type="text"
-              id="direccion"
-              name="direccion"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoProveedor.direccion"
-            />
-          </div>
-          <div class="mb-3 d-grid gap-2">
-            <label for="telefono">Teléfono </label>
-            <input
-              type="text"
-              id="telefono"
-              name="telefono"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoProveedor.telefono"
-            />
-          </div>
-          <div class="mb-3 d-grid gap-2">
-            <label for="correo">Correo</label>
-            <input
-              type="text"
-              id="correo"
-              name="correo"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoProveedor.email"
-            />
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="telefono">Teléfono</label>
+              <input
+                type="text"
+                id="telefono"
+                name="telefono"
+                class="form-control fs-5"
+                required
+                [(ngModel)]="nuevoProveedor.telefono"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="correo">Correo</label>
+              <input
+                type="email"
+                id="correo"
+                name="correo"
+                class="form-control fs-5"
+                required
+                [(ngModel)]="nuevoProveedor.email"
+              />
+            </div>
           </div>
           <div *ngIf="errorAgregarProveedor" class="text-danger">
             Error al agregar el proveedor.
@@ -307,11 +315,13 @@
   aria-labelledby="agregarRepuestoModalLabel"
   aria-hidden="true"
 >
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <form (ngSubmit)="agregarNuevoRepuesto()">
         <div class="modal-header">
-          <h2 class="text-center fs-2 h2-title">Agregar repuesto</h2>
+          <h2 class="modal-title text-center fs-2 h2-title">
+            Agregar repuesto
+          </h2>
           <button
             type="button"
             class="btn-close"
@@ -321,62 +331,68 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3 d-grid gap-2">
-            <label for="descripcion"
-              >Repuesto <span class="requerido">*</span></label
-            >
-            <input
-              type="text"
-              id="descripcion"
-              name="descripcion"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoRepuesto.descripcion"
-            />
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="descripcion"
+                >Repuesto <span class="requerido">*</span></label
+              >
+              <input
+                type="text"
+                id="descripcion"
+                name="descripcion"
+                class="form-control fs-5"
+                required
+                [(ngModel)]="nuevoRepuesto.descripcion"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="numero_de_parte">Número de parte</label>
+              <input
+                type="text"
+                id="numero_de_parte"
+                name="numero_de_parte"
+                class="form-control fs-5"
+                required
+                [(ngModel)]="nuevoRepuesto.numeroDeParte"
+              />
+            </div>
           </div>
-          <div class="mb-3 d-grid gap-2">
-            <label for="numero_de_parte">Numero de parte </label>
-            <input
-              type="text"
-              id="numero_de_parte"
-              name="numero_de_parte"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoRepuesto.numeroDeParte"
-            />
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="precio_costo">Precio de costo</label>
+              <input
+                type="text"
+                id="precio_costo"
+                name="precio_costo"
+                class="form-control fs-5"
+                required
+                [(ngModel)]="nuevoRepuesto.precioCosto"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="precio_venta">Precio de venta</label>
+              <input
+                type="text"
+                id="precio_venta"
+                name="precio_venta"
+                class="form-control fs-5"
+                required
+                [(ngModel)]="nuevoRepuesto.precioVenta"
+              />
+            </div>
           </div>
-          <div class="mb-3 d-grid gap-2">
-            <label for="precio_costo">Precio de costo </label>
-            <input
-              type="text"
-              id="precio_costo"
-              name="precio_costo"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoRepuesto.precioCosto"
-            />
-          </div>
-          <div class="mb-3 d-grid gap-2">
-            <label for="precio_venta">Precio de Venta </label>
-            <input
-              type="text"
-              id="precio_venta"
-              name="precio_venta"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoRepuesto.precioVenta"
-            />
-          </div>
-          <div class="mb-3 d-grid gap-2">
-            <label for="stock">Stock <span class="requerido">*</span></label>
-            <input
-              type="text"
-              id="stock"
-              name="stock"
-              class="form-control fs-5"
-              required
-              [(ngModel)]="nuevoRepuesto.stock"
-            />
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="stock">Stock <span class="requerido">*</span></label>
+              <input
+                type="text"
+                id="stock"
+                name="stock"
+                class="form-control fs-5"
+                required
+                [(ngModel)]="nuevoRepuesto.stock"
+              />
+            </div>
           </div>
           <div *ngIf="errorAgregarRepuesto" class="text-danger">
             Error al agregar el repuesto.

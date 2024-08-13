@@ -18,7 +18,11 @@ export class ProvidersComponent implements OnInit {
 
   proveedor: any = {};
   errorModificarProveedor = false;
-  nuevoProveedor: any = {};
+  nuevoProveedor: any = {
+    direccion: '',
+    telefono: '',
+    email: '',
+  };
   proveedores: any[] = [];
   proveedorSeleccionado: any = {};
   searchTerm: string = '';
@@ -57,16 +61,19 @@ export class ProvidersComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.providersService.desactivarProveedor(proveedor).pipe(
-          tap(() => {
-            console.log('Proveedor desactivado exitosamente');
-            this.getProveedores();
-          }),
-          catchError((error) => {
-            console.error('Error al desactivar proveedor:', error);
-            return of(error);
-          })
-        ).subscribe();
+        this.providersService
+          .desactivarProveedor(proveedor)
+          .pipe(
+            tap(() => {
+              console.log('Proveedor desactivado exitosamente');
+              this.getProveedores();
+            }),
+            catchError((error) => {
+              console.error('Error al desactivar proveedor:', error);
+              return of(error);
+            })
+          )
+          .subscribe();
       }
     });
   }
@@ -112,7 +119,11 @@ export class ProvidersComponent implements OnInit {
       .pipe(
         tap(() => {
           this.router.navigate(['/proveedores']);
-          this.nuevoProveedor = {};
+          this.nuevoProveedor = {
+            direccion: '',
+            telefono: '',
+            email: '',
+          };
           this.getProveedores();
           this.modalCloseAdd.nativeElement.click();
         }),

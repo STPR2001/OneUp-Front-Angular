@@ -33,9 +33,17 @@ export class NewShoppingComponent implements OnInit {
   @ViewChild('agregarRepuestoModal') modalCloseAddRepuesto: any;
   @ViewChild('agregarProveedorModal') modalCloseAdd: any;
 
-  nuevoRepuesto: any = {};
+  nuevoRepuesto: any = {
+    numeroDeParte: '',
+    precioCosto: '',
+    precioVenta: '',
+  };
   errorAgregarRepuesto = false;
-  nuevoProveedor: any = {};
+  nuevoProveedor: any = {
+    direccion: '',
+    telefono: '',
+    email: '',
+  };
   errorAgregarProveedor = false;
   proveedores: any[] = [];
   compraForm: FormGroup;
@@ -114,7 +122,11 @@ export class NewShoppingComponent implements OnInit {
   agregarNuevoRepuesto(): void {
     this.repuestosService.agregarRepuesto(this.nuevoRepuesto).subscribe({
       next: () => {
-        this.nuevoRepuesto = {};
+        this.nuevoRepuesto = {
+          numeroDeParte: '',
+          precioCosto: '',
+          precioVenta: '',
+        };
         this.cargarRepuestos();
         this.modalCloseAddRepuesto.nativeElement.click();
       },
@@ -171,7 +183,11 @@ export class NewShoppingComponent implements OnInit {
       .agregarProveedor(this.nuevoProveedor)
       .pipe(
         tap(() => {
-          this.nuevoProveedor = {};
+          this.nuevoProveedor = {
+            direccion: '',
+            telefono: '',
+            email: '',
+          };
           this.modalCloseAdd.nativeElement.click();
           this.cargarProveedores();
         }),

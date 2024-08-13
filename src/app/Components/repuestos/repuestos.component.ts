@@ -18,7 +18,11 @@ export class RepuestosComponent implements OnInit {
 
   repuesto: any = {};
   errorModificarRepuesto = false;
-  nuevoRepuesto: any = {};
+  nuevoRepuesto: any = {
+    numeroDeParte: '',
+    precioCosto: '',
+    precioVenta: '',
+  };
   repuestos: any[] = [];
   repuestoSeleccionado: any = {};
   searchTerm: string = '';
@@ -57,16 +61,19 @@ export class RepuestosComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.repuestosService.desactivarRepuesto(repuesto).pipe(
-          tap(() => {
-            console.log('Repuesto desactivado exitosamente');
-            this.getRepuestos();
-          }),
-          catchError((error) => {
-            console.error('Error al desactivar repuesto:', error);
-            return of(error);
-          })
-        ).subscribe();
+        this.repuestosService
+          .desactivarRepuesto(repuesto)
+          .pipe(
+            tap(() => {
+              console.log('Repuesto desactivado exitosamente');
+              this.getRepuestos();
+            }),
+            catchError((error) => {
+              console.error('Error al desactivar repuesto:', error);
+              return of(error);
+            })
+          )
+          .subscribe();
       }
     });
   }
@@ -112,7 +119,11 @@ export class RepuestosComponent implements OnInit {
       next: (response) => {
         console.log(response);
         this.router.navigate(['/repuestos']);
-        this.nuevoRepuesto = {};
+        this.nuevoRepuesto = {
+          numeroDeParte: '',
+          precioCosto: '',
+          precioVenta: '',
+        };
         this.getRepuestos();
         this.modalCloseAdd.nativeElement.click();
       },
