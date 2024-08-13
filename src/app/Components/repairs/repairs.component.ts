@@ -328,6 +328,13 @@ export class RepairsComponent implements OnInit {
     });
   }
 
+  formatDate2(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexados
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   abrirModalAgregarNota(reparacion: any): void {
     this.reparacionSeleccionada = { ...reparacion };
     this.reparacion.fechaIngreso = new Date().toISOString().split('T')[0];
@@ -341,6 +348,8 @@ export class RepairsComponent implements OnInit {
   }
 
   //Imprimir / descargar pdf
+
+  /*
   generarPDF(reparacion: any): void {
     const formatFecha = (fecha: string) => {
       const options: Intl.DateTimeFormatOptions = {
@@ -395,6 +404,75 @@ export class RepairsComponent implements OnInit {
       );
 
       document.body.removeChild(pdfElement);
+    });
+  }
+    */
+
+  generarPDF(reparacion: any): void {
+    const pdfContent = `
+    <div style="font-size: 10px; width: 58mm; padding: 10px;">
+      <h2 style="font-size: 12px; text-align:center; margin: 0;"><strong>Oneup Soluciones</strong></h2>
+      <p style="text-align: center; margin: 0;"><strong>Leandro Gómez 1540, Paysandú</strong></p>
+      <p style="text-align: center; margin: 0;"><strong>29992 - 091896948</strong></p>
+      <hr/>
+      <p><strong>Orden:</strong> ${reparacion.id}</p>
+      <p><strong>Fecha:</strong> ${this.formatDate(reparacion.fechaIngreso)}</p>
+      <hr/>
+      <p><strong>Cliente:</strong></p>
+      <p><strong>Nom:</strong> ${reparacion.cliente.nombre}</p>
+      <p><strong>Dir:</strong> ${reparacion.cliente.direccion || '---'}</p>
+      <p><strong>Cel:</strong> ${reparacion.cliente.telefono}</p>
+      <hr/>
+      <p><strong>Equipo:</strong></p>
+      <p><strong>NS:</strong> ${reparacion.equipo.numeroSerie}</p>
+      <p><strong>Tipo eq:</strong> ${reparacion.equipo.tipo_equipo.nombre}</p>
+      <p><strong>Marca:</strong> ${reparacion.equipo.marca.nombre}</p>
+      <p><strong>Modelo:</strong> ${reparacion.equipo.modelo.nombre}</p>
+      <p><strong>Falla:</strong> ${reparacion.falla}</p>
+      <hr/>
+      <p><strong>Informe:</strong></p>
+      <p>${reparacion.informe || '---'}</p>
+      <hr/>
+      <p><strong>Fecha entrega:</strong> ${this.formatDate2(new Date())}</p>
+      <hr/>
+      <p><strong>Costos:</strong></p>
+      <p><strong>Costo MO:</strong> ${
+        reparacion.costoMO?.toFixed(2) || '0.00'
+      }</p>
+      <p><strong>Costo reps.: </strong>${
+        reparacion.costoRepuestos?.toFixed(2) || '0.00'
+      }</p>
+      <p><strong>Costo total:</strong> ${
+        (reparacion.costoMO + reparacion.costoRepuestos).toFixed(2) || '0.00'
+      }</p>
+      <hr/>
+      <p><strong>Firma:</strong> _________________________</p>
+    </div>
+  `;
+
+    const pdfElement = document.createElement('div');
+    pdfElement.innerHTML = pdfContent;
+    document.body.appendChild(pdfElement);
+
+    html2canvas(pdfElement, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+
+      // Calculamos la altura real del contenido
+      const pdfWidth = 48; // Ancho de 48 mm para impresora de 58 mm
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [58, 100], // Formato de la página basado en la altura real
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(
+        `${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre} ${reparacion.cliente.nombre}.pdf`
+      );
+
+      document.body.removeChild(pdfElement); // Remover el elemento del DOM
     });
   }
 }
