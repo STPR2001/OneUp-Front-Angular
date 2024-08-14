@@ -408,76 +408,6 @@ export class RepairsComponent implements OnInit {
   }
     */
 
-  /* FUNCIONA BIEN EN MI PC 
-
-  generarPDF(reparacion: any): void {
-    const pdfContent = `
-  <div style="font-size: 12px; width: 100mm; padding: 10px";>
-    <h2 style="font-size: 12px; text-align:center; margin: 0;"><strong>Oneup Soluciones</strong></h2>
-    <p style="text-align: center; margin: 0;"><strong>Leandro Gómez 1540, Paysandú</strong></p>
-    <p style="text-align: center; margin: 0;"><strong>29992 - 091896948</strong></p>
-    <hr/>
-    <p><strong>Orden:</strong> ${reparacion.id}</p>
-    <p><strong>Fecha:</strong> ${this.formatDate(reparacion.fechaIngreso)}</p>
-    <hr/>
-    <p><strong>Cliente:</strong></p>
-    <p><strong>Nom:</strong> ${reparacion.cliente.nombre}</p>
-    <p><strong>Dir:</strong> ${reparacion.cliente.direccion || '---'}</p>
-    <p><strong>Cel:</strong> ${reparacion.cliente.telefono}</p>
-    <hr/>
-    <p><strong>Equipo:</strong></p>
-    <p><strong>NS:</strong> ${reparacion.equipo.numeroSerie}</p>
-    <p><strong>Tipo eq:</strong> ${reparacion.equipo.tipo_equipo.nombre}</p>
-    <p><strong>Marca:</strong> ${reparacion.equipo.marca.nombre}</p>
-    <p><strong>Modelo:</strong> ${reparacion.equipo.modelo.nombre}</p>
-    <p><strong>Falla:</strong> ${reparacion.falla}</p>
-    <hr/>
-    <p><strong>Informe:</strong></p>
-    <p>${reparacion.informe || '---'}</p>
-    <hr/>
-   <p><strong>Fecha entrega:</strong> ${this.formatDate2(new Date())}</p>
-    <hr/>
-    <p><strong>Costos:</strong></p>
-    <p><strong>Costo MO:</strong> ${
-      reparacion.costoMO?.toFixed(2) || '0.00'
-    }</p>
-    <p><strong>Costo reps.:</strong> ${
-      reparacion.costoRepuestos?.toFixed(2) || '0.00'
-    }</p>
-    <p><strong>Costo total:</strong> ${
-      (reparacion.costoMO + reparacion.costoRepuestos).toFixed(2) || '0.00'
-    }</p>
-    <hr/>
-    <p><strong>Firma:</strong> _________________________</p>
-  </div>
-  `;
-
-    const pdfElement = document.createElement('div');
-    pdfElement.innerHTML = pdfContent;
-    document.body.appendChild(pdfElement);
-
-    html2canvas(pdfElement, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [163, 460],
-        //format: [58, (canvas.height * 200) / canvas.width], //cambiar la altura aqui
-      });
-
-      const pdfWidth = 300;
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(
-        `${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre} ${reparacion.cliente.nombre}.pdf`
-      );
-
-      document.body.removeChild(pdfElement);
-    });
-  }
-    */
-
   generarPDF(reparacion: any): void {
     const pdfContent = `
   <div style="font-size: 12px; width: 100mm; padding: 10px";>
@@ -542,5 +472,109 @@ export class RepairsComponent implements OnInit {
 
       document.body.removeChild(pdfElement);
     });
+  }
+
+  generarPDFPrueba2(reparacion: any): void {
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [163, 460], // Ajusta el tamaño según sea necesario
+    });
+
+    const lineHeight = 6; // Ajusta el interlineado según sea necesario
+    let y = 10;
+
+    pdf.setFontSize(10); // Tamaño de la fuente
+
+    // Encabezado
+    pdf.text('Oneup Soluciones', 29, y, { align: 'center' });
+    y += lineHeight;
+    pdf.text('Leandro Gómez 1540, Paysandú', 29, y, { align: 'center' });
+    y += lineHeight;
+    pdf.text('29992 - 091896948', 29, y, { align: 'center' });
+    y += lineHeight;
+    //pdf.line(0, y, 58, y); // Línea divisoria
+    y += 2;
+
+    // Información de la reparación
+    pdf.text(`Orden: ${reparacion.id}`, 2, y);
+    y += lineHeight;
+    pdf.text(`Fecha: ${this.formatDate(reparacion.fechaIngreso)}`, 2, y);
+    y += lineHeight;
+    //pdf.line(0, y, 58, y); // Línea divisoria
+    y += 2;
+
+    // Información del cliente
+    pdf.text('Cliente:', 2, y);
+    y += lineHeight;
+    pdf.text(`Nom: ${reparacion.cliente.nombre}`, 2, y);
+    y += lineHeight;
+    pdf.text(`Dir: ${reparacion.cliente.direccion || '---'}`, 2, y);
+    y += lineHeight;
+    pdf.text(`Cel: ${reparacion.cliente.telefono}`, 2, y);
+    y += lineHeight;
+    //pdf.line(0, y, 58, y); // Línea divisoria
+    y += 2;
+
+    // Información del equipo
+    pdf.text('Equipo:', 2, y);
+    y += lineHeight;
+    pdf.text(`NS: ${reparacion.equipo.numeroSerie}`, 2, y);
+    y += lineHeight;
+    pdf.text(`Tipo eq: ${reparacion.equipo.tipo_equipo.nombre}`, 2, y);
+    y += lineHeight;
+    pdf.text(`Marca: ${reparacion.equipo.marca.nombre}`, 2, y);
+    y += lineHeight;
+    pdf.text(`Modelo: ${reparacion.equipo.modelo.nombre}`, 2, y);
+    y += lineHeight;
+    pdf.text(`Falla: ${reparacion.falla}`, 2, y);
+    y += lineHeight;
+    //pdf.line(0, y, 58, y); // Línea divisoria
+    y += 2;
+
+    // Informe
+    pdf.text('Informe:', 2, y);
+    y += lineHeight;
+    pdf.text(`${reparacion.informe || '---'}`, 2, y);
+    y += lineHeight;
+    //pdf.line(0, y, 58, y); // Línea divisoria
+    y += 2;
+
+    // Fecha de entrega
+    pdf.text(`Fecha entrega: ${this.formatDate2(new Date())}`, 2, y);
+    y += lineHeight;
+    //pdf.line(0, y, 58, y); // Línea divisoria
+    y += 2;
+
+    // Costos
+    pdf.text('Costos:', 2, y);
+    y += lineHeight;
+    pdf.text(`Costo MO: ${reparacion.costoMO?.toFixed(2) || '0.00'}`, 2, y);
+    y += lineHeight;
+    pdf.text(
+      `Costo reps.: ${reparacion.costoRepuestos?.toFixed(2) || '0.00'}`,
+      2,
+      y
+    );
+    y += lineHeight;
+    pdf.text(
+      `Costo total: ${
+        (reparacion.costoMO + reparacion.costoRepuestos).toFixed(2) || '0.00'
+      }`,
+      2,
+      y
+    );
+    y += lineHeight;
+    //pdf.line(0, y, 58, y); // Línea divisoria
+    y += 2;
+
+    // Firma
+    pdf.text('Firma: _________________________', 2, y);
+    y += lineHeight;
+
+    // Guardar PDF
+    pdf.save(
+      `${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre} ${reparacion.cliente.nombre}.pdf`
+    );
   }
 }
