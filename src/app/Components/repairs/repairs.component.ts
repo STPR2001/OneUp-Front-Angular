@@ -409,23 +409,14 @@ export class RepairsComponent implements OnInit {
     */
 
   generarPDF(reparacion: any): void {
-    const formatFecha = (fecha: string) => {
-      const options: Intl.DateTimeFormatOptions = {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-      };
-      return new Date(fecha).toLocaleDateString('es-ES', options);
-    };
-
     const pdfContent = `
-  <div style="font-size: 9px; width: 48mm; padding: 10px";>
+  <div style="font-size: 12px; width: 100mm; padding: 10px";>
     <h2 style="font-size: 12px; text-align:center; margin: 0;"><strong>Oneup Soluciones</strong></h2>
     <p style="text-align: center; margin: 0;"><strong>Leandro Gómez 1540, Paysandú</strong></p>
     <p style="text-align: center; margin: 0;"><strong>29992 - 091896948</strong></p>
     <hr/>
     <p><strong>Orden:</strong> ${reparacion.id}</p>
-    <p><strong>Fecha:</strong> ${formatFecha(reparacion.fechaIngreso)}</p>
+    <p><strong>Fecha:</strong> ${this.formatDate(reparacion.fechaIngreso)}</p>
     <hr/>
     <p><strong>Cliente:</strong></p>
     <p><strong>Nom:</strong> ${reparacion.cliente.nombre}</p>
@@ -468,10 +459,11 @@ export class RepairsComponent implements OnInit {
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: [58, (canvas.height * 48) / canvas.width],
+        format: [163, 460],
+        //format: [58, (canvas.height * 200) / canvas.width], //cambiar la altura aqui
       });
 
-      const pdfWidth = 48; // Ancho de 48 mm
+      const pdfWidth = 300;
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
