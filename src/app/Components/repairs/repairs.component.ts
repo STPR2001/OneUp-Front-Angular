@@ -524,25 +524,23 @@ export class RepairsComponent implements OnInit {
     pdfElement.innerHTML = pdfContent;
     document.body.appendChild(pdfElement);
 
-    html2canvas(pdfElement, { scale: window.devicePixelRatio }).then(
-      (canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: [163, 460],
-        });
+    html2canvas(pdfElement, { scale: 3 }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [163, 460],
+      });
 
-        const pdfWidth = 250;
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfWidth = 250;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save(
-          `${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre} ${reparacion.cliente.nombre}.pdf`
-        );
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(
+        `${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre} ${reparacion.cliente.nombre}.pdf`
+      );
 
-        document.body.removeChild(pdfElement);
-      }
-    );
+      document.body.removeChild(pdfElement);
+    });
   }
 }
