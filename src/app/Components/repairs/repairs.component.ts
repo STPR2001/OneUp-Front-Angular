@@ -533,7 +533,7 @@ export class RepairsComponent implements OnInit {
           format: [163, 460],
         });
 
-        const pdfWidth = 300;
+        const pdfWidth = 250;
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
