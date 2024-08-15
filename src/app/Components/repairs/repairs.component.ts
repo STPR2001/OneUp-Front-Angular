@@ -475,16 +475,16 @@ export class RepairsComponent implements OnInit {
   }
 
   generarPDFPrueba2(reparacion: any): void {
-    let y = 10;
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [58, y + 20], // Ajusta la altura según el contenido
+      format: [163, 460], // Ajusta el tamaño según sea necesario
     });
 
-    const lineHeight = 7;
+    const lineHeight = 5; // Ajusta el interlineado según sea necesario
+    let y = 10;
 
-    pdf.setFontSize(8);
+    pdf.setFontSize(5); // Tamaño de la fuente
 
     // Encabezado
     pdf.text('Oneup Soluciones', 29, y, { align: 'center' });
