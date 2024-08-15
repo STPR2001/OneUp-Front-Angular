@@ -481,7 +481,7 @@ export class RepairsComponent implements OnInit {
       format: [163, 460], // Ajusta el tamaño según sea necesario
     });
 
-    const lineHeight = 8; // Ajusta el interlineado según sea necesario
+    const lineHeight = 7; // Ajusta el interlineado según sea necesario
     let y = 10;
 
     pdf.setFontSize(10); // Tamaño de la fuente
@@ -570,9 +570,10 @@ export class RepairsComponent implements OnInit {
 
     // Firma
     pdf.text('Firma: _________________________', 2, y);
-    pdf.text('Firma: _________________________', 2, y);
-    pdf.text('Firma: _________________________', 2, y);
-    pdf.text('Firma: _________________________', 2, y);
+    y += 2;
+    y += 2;
+    y += 2;
+    y += 2;
     y += lineHeight;
 
     // Guardar PDF
