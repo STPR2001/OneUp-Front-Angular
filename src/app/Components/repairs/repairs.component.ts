@@ -489,7 +489,7 @@ export class RepairsComponent implements OnInit {
     // Encabezado
     pdf.text('Oneup Soluciones', 29, y, { align: 'center' });
     y += lineHeight;
-    pdf.text('Leandro Gómez 1540, Paysandú', 29, y, { align: 'center' });
+    pdf.text('Leandro Gomez 1540, Paysandu', 29, y, { align: 'center' });
     y += lineHeight;
     pdf.text('29992 - 091896948', 29, y, { align: 'center' });
     y += lineHeight;
