@@ -491,6 +491,8 @@ export class RepairsComponent implements OnInit {
     y += lineHeight;
     pdf.text('Leandro Gomez 1540, Paysandu', 29, y, { align: 'center' });
     y += lineHeight;
+    pdf.text('Paysandu', 29, y, { align: 'center' });
+    y += lineHeight;   
     pdf.text('29992 - 091896948', 29, y, { align: 'center' });
     y += lineHeight;
     //pdf.line(0, y, 58, y); // Línea divisoria
