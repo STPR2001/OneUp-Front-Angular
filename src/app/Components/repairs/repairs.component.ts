@@ -484,7 +484,7 @@ export class RepairsComponent implements OnInit {
     const lineHeight = 5; // Ajusta el interlineado según sea necesario
     let y = 10;
 
-    pdf.setFontSize(10); // Tamaño de la fuente
+    pdf.setFontSize(8); // Tamaño de la fuente
 
     // Encabezado
     pdf.text('Oneup Soluciones', 29, y, { align: 'center' });
