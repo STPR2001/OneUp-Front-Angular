@@ -482,100 +482,155 @@ export class RepairsComponent implements OnInit {
     });
 
     const lineHeight = 5; // Ajusta el interlineado según sea necesario
+    const maxWidth = 54; // Ajusta el ancho máximo del texto
     let y = 10;
 
     pdf.setFontSize(8); // Tamaño de la fuente
 
     // Encabezado
+    pdf.setFont('Helvetica', 'bold');
     pdf.text('Oneup Soluciones', 29, y, { align: 'center' });
     y += lineHeight;
     pdf.text('Leandro Gomez 1540', 29, y, { align: 'center' });
     y += lineHeight;
     pdf.text('Paysandu', 29, y, { align: 'center' });
-    y += lineHeight;   
+    y += lineHeight;
     pdf.text('29992 - 091896948', 29, y, { align: 'center' });
     y += lineHeight;
-    //pdf.line(0, y, 58, y); // Línea divisoria
     y += 2;
 
+    pdf.setFont('Helvetica', 'normal'); // Restablecer a normal
+
     // Información de la reparación
-    pdf.text(`Orden: ${reparacion.id}`, 2, y);
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Orden:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.id}`, 15, y);
     y += lineHeight;
-    pdf.text(`Fecha: ${this.formatDate(reparacion.fechaIngreso)}`, 2, y);
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Fecha:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${this.formatDate(reparacion.fechaIngreso)}`, 15, y);
     y += lineHeight;
-    //pdf.line(0, y, 58, y); // Línea divisoria
     y += 2;
 
     // Información del cliente
+    pdf.setFont('Helvetica', 'bold');
     pdf.text('Cliente:', 2, y);
     y += lineHeight;
-    pdf.text(`Nom: ${reparacion.cliente.nombre}`, 2, y);
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Nom:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.cliente.nombre}`, 15, y);
     y += lineHeight;
-    pdf.text(`Dir: ${reparacion.cliente.direccion || '---'}`, 2, y);
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Dir:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.cliente.direccion || '---'}`, 15, y);
     y += lineHeight;
-    pdf.text(`Cel: ${reparacion.cliente.telefono}`, 2, y);
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Cel:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.cliente.telefono}`, 15, y);
     y += lineHeight;
-    //pdf.line(0, y, 58, y); // Línea divisoria
     y += 2;
 
     // Información del equipo
+    pdf.setFont('Helvetica', 'bold');
     pdf.text('Equipo:', 2, y);
     y += lineHeight;
-    pdf.text(`NS: ${reparacion.equipo.numeroSerie}`, 2, y);
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('NS:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.equipo.numeroSerie}`, 15, y);
     y += lineHeight;
-    pdf.text(`Tipo eq: ${reparacion.equipo.tipo_equipo.nombre}`, 2, y);
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Tipo eq:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.equipo.tipo_equipo.nombre}`, 15, y);
     y += lineHeight;
-    pdf.text(`Marca: ${reparacion.equipo.marca.nombre}`, 2, y);
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Marca:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.equipo.marca.nombre}`, 15, y);
     y += lineHeight;
-    pdf.text(`Modelo: ${reparacion.equipo.modelo.nombre}`, 2, y);
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Modelo:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.equipo.modelo.nombre}`, 15, y);
     y += lineHeight;
-    pdf.text(`Falla: ${reparacion.falla}`, 2, y);
-    y += lineHeight;
-    //pdf.line(0, y, 58, y); // Línea divisoria
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Falla:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    const fallaLines = pdf.splitTextToSize(reparacion.falla, maxWidth);
+    pdf.text(fallaLines, 15, y);
+    y += fallaLines.length * lineHeight;
     y += 2;
 
     // Informe
+    pdf.setFont('Helvetica', 'bold');
     pdf.text('Informe:', 2, y);
-    y += lineHeight;
-    pdf.text(`${reparacion.informe || '---'}`, 2, y);
-    y += lineHeight;
-    //pdf.line(0, y, 58, y); // Línea divisoria
+    pdf.setFont('Helvetica', 'normal');
+    const informeLines = pdf.splitTextToSize(
+      reparacion.informe || '---',
+      maxWidth
+    );
+    pdf.text(informeLines, 15, y);
+    y += informeLines.length * lineHeight;
     y += 2;
 
     // Fecha de entrega
-    pdf.text(`Fecha entrega: ${this.formatDate2(new Date())}`, 2, y);
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Fecha entrega:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${this.formatDate2(new Date())}`, 30, y);
     y += lineHeight;
-    //pdf.line(0, y, 58, y); // Línea divisoria
     y += 2;
 
     // Costos
+    pdf.setFont('Helvetica', 'bold');
     pdf.text('Costos:', 2, y);
     y += lineHeight;
-    pdf.text(`Costo MO: ${reparacion.costoMO?.toFixed(2) || '0.00'}`, 2, y);
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Costo MO:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.costoMO?.toFixed(2) || '0.00'}`, 25, y);
     y += lineHeight;
-    pdf.text(
-      `Costo reps.: ${reparacion.costoRepuestos?.toFixed(2) || '0.00'}`,
-      2,
-      y
-    );
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Costo reps.:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.costoRepuestos?.toFixed(2) || '0.00'}`, 25, y);
     y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Costo total:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
     pdf.text(
-      `Costo total: ${
+      `${
         (reparacion.costoMO + reparacion.costoRepuestos)?.toFixed(2) || '0.00'
       }`,
-      2,
+      25,
       y
     );
     y += lineHeight;
-    //pdf.line(0, y, 58, y); // Línea divisoria
     y += 2;
 
     // Firma
-    pdf.text('Firma: _________________________', 2, y);
-    y += 2;
-    y += 2;
-    y += 2;
-    y += 2;
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Firma:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text('_________________________', 20, y);
     y += lineHeight;
 
     // Guardar PDF
