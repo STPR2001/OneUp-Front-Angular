@@ -478,7 +478,7 @@ export class RepairsComponent implements OnInit {
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [163, 460], // Ajusta el tamaño según sea necesario
+      format: [58, 460], // Ajusta el tamaño según sea necesario
     });
 
     const lineHeight = 5; // Ajusta el interlineado según sea necesario
@@ -561,7 +561,7 @@ export class RepairsComponent implements OnInit {
     y += lineHeight;
     pdf.text(
       `Costo total: ${
-        (reparacion.costoMO + reparacion.costoRepuestos).toFixed(2) || '0.00'
+        (reparacion.costoMO + reparacion.costoRepuestos)?.toFixed(2) || '0.00'
       }`,
       2,
       y
