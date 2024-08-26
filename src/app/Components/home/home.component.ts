@@ -138,7 +138,8 @@ export class HomeComponent implements OnInit {
         .includes(this.searchTerm.toLowerCase());
       const matchesEstado =
         this.estadoFiltro === '' || reparacion.estado === 'En taller';
-      return matchesCliente && matchesEstado;
+      const matchesActivo = reparacion.activo === true;
+      return matchesCliente && matchesEstado && matchesActivo;
     });
   }
 

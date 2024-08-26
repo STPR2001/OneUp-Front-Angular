@@ -33,14 +33,32 @@
   <div *ngIf="reparacionBuscada" class="mt-4 detalles-reparacion">
     <div class="text-center">
       <h3>Detalles de la Reparación</h3>
-      <p><strong>Código:</strong> {{ reparacionBuscada.codigoSeguimiento }}</p>
-      <p><strong>Descripción:</strong> {{ ultimaNota }}</p>
       <p>
-        <strong>Fecha de entrega:</strong>
-        {{ reparacionBuscada.fechaEntrega ?? "Aún no se entregó" }}
+        <strong>Equipo:</strong>
+        {{
+          reparacionBuscada.equipo.marca.nombre +
+            " " +
+            reparacionBuscada.equipo.modelo.nombre
+        }}
       </p>
-      <p><strong>Cliente:</strong> {{ reparacionBuscada.cliente.nombre }}</p>
-      <p><strong>Estado:</strong> {{ reparacionBuscada.estado }}</p>
+
+      <p><strong>Falla:</strong> {{ reparacionBuscada.falla }}</p>
+      <p>
+        <strong>Informe:</strong>
+        {{ ultimaNota ?? "Aún no se realizó un informe" }}
+      </p>
+      <p>
+        <strong>Costo reparación:</strong>
+        {{ "$" + (reparacionBuscada.manoDeObra + reparacionBuscada.entrega) }}
+      </p>
+      <p>
+        <strong>Estado:</strong>
+        {{
+          reparacionBuscada.estado === "Finalizada"
+            ? "Equipo listo para retirar"
+            : reparacionBuscada.estado
+        }}
+      </p>
     </div>
   </div>
 

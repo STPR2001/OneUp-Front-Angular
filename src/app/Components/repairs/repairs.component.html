@@ -51,10 +51,10 @@
         <tr *ngFor="let repair of reparaciones" class="hover-row">
           <td>{{ repair.id }}</td>
           <td>{{ formatDate(repair.fechaIngreso) }}</td>
-          <td>{{ repair.cliente.nombre }}</td>
+          <td class="truncate">{{ repair.cliente.nombre }}</td>
           <td>{{ repair.equipo.marca.nombre }}</td>
           <td>{{ repair.equipo.modelo.nombre }}</td>
-          <td>{{ repair.falla }}</td>
+          <td class="truncate">{{ repair.falla }}</td>
           <td>{{ repair.tecnico.nombre }}</td>
           <td>{{ repair.estado }}</td>
           <td>
@@ -71,6 +71,13 @@
               title="Eliminar"
             >
               <span class="material-icons icon-small">delete</span>
+            </button>
+            <button
+              class="btn btn-success me-2"
+              (click)="abrirFinalizarReparacionModal(repair)"
+              title="Finalizar"
+            >
+              <span class="material-icons icon-small">done</span>
             </button>
             <div class="btn-group">
               <button
@@ -401,6 +408,93 @@
           <button type="submit" class="btn btn-success col-3">Agregar</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal terminar reparación -->
+
+<div
+  class="modal fade"
+  id="finalizarReparacionModal"
+  tabindex="-1"
+  aria-labelledby="finalizarReparacionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="text-center fs-2 h2-title">Finalizar reparación</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          #finalizarReparacionModal
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="terminarReparacion()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="manoDeObra" class="form-label">
+                Costo mano de obra <span class="requerido">*</span>
+              </label>
+              <input
+                type="number"
+                id="manoDeObra"
+                name="manoDeObra"
+                [(ngModel)]="reparacionSeleccionada.manoDeObra"
+                (input)="getTotal()"
+                required
+                class="form-control fs-5"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="repuestos" class="form-label">
+                Costo repuestos <span class="requerido">*</span>
+              </label>
+              <input
+                type="number"
+                id="repuestos"
+                name="repuestos"
+                [(ngModel)]="reparacionSeleccionada.entrega"
+                (input)="getTotal()"
+                required
+                class="form-control fs-5"
+              />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="informe" class="form-label">
+              Informe <span class="requerido">*</span>
+            </label>
+            <textarea
+              id="informe"
+              name="informe"
+              [(ngModel)]="reparacionSeleccionada.notasreparacion.informe"
+              required
+              class="form-control fs-5"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <h5>Total: {{ getTotal() | currency }}</h5>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-danger col-3"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+            <button type="submit" class="btn btn-success col-3">
+              Finalizar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>

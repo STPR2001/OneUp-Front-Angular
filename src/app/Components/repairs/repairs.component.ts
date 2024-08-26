@@ -21,6 +21,7 @@ import { MatDialog } from '@angular/material/dialog';
 export class RepairsComponent implements OnInit {
   @ViewChild('modalCloseUpdate', { static: false })
   modalCloseUpdate!: ElementRef;
+  @ViewChild('finalizarReparacionModal') modalCloseAdd: any;
   reparaciones: any[] = [];
   tecnicos: any[] = [];
   repuestos: any[] = [];
@@ -90,6 +91,7 @@ export class RepairsComponent implements OnInit {
 
   errorAgregarReparacion = false;
   errorAgregarNotaReparacion = false;
+  errorModificarReparacion = false;
 
   constructor(
     private repairsService: RepairsService,
@@ -322,7 +324,7 @@ export class RepairsComponent implements OnInit {
     const date = new Date(isoDate);
     date.setDate(date.getDate() + 1); // Sumar un día
     return date.toLocaleDateString('es-UY', {
-      year: 'numeric',
+      //year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
@@ -341,6 +343,16 @@ export class RepairsComponent implements OnInit {
     this.reparacion.notasreparacion.informe = '';
 
     const modalElement = document.getElementById('agregarNotaModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  abrirFinalizarReparacionModal(reparacion: any): void {
+    this.reparacionSeleccionada = { ...reparacion };
+
+    const modalElement = document.getElementById('finalizarReparacionModal');
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
@@ -408,6 +420,7 @@ export class RepairsComponent implements OnInit {
   }
     */
 
+  /*
   generarPDF(reparacion: any): void {
     const pdfContent = `
   <div style="font-size: 12px; width: 100mm; padding: 10px";>
@@ -473,7 +486,7 @@ export class RepairsComponent implements OnInit {
       document.body.removeChild(pdfElement);
     });
   }
-
+*/
   generarPDFPrueba2(reparacion: any): void {
     const lineHeight = 5;
     const maxWidth = 25;
@@ -494,7 +507,10 @@ export class RepairsComponent implements OnInit {
     const fallaLines = pdf.splitTextToSize(reparacion.falla, maxWidth);
     totalHeight += fallaLines.length * lineHeight + 2; // Altura para la falla
     const informeLines = pdf.splitTextToSize(
-      reparacion.informe || '---',
+      (reparacion.notasreparacion?.length
+        ? reparacion.notasreparacion[reparacion.notasreparacion.length - 1]
+            .informe
+        : '---') || '---',
       maxWidth
     );
     totalHeight += informeLines.length * lineHeight + 2; // Altura para el informe
@@ -522,9 +538,15 @@ export class RepairsComponent implements OnInit {
     y += lineHeight;
 
     pdf.setFont('Helvetica', 'bold');
-    pdf.text('Fecha:', 2, y);
+    pdf.text('Ingreso:', 2, y);
     pdf.setFont('Helvetica', 'normal');
     pdf.text(`${this.formatDate(reparacion.fechaIngreso)}`, 15, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('CS:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.codigoSeguimiento}`, 15, y);
     y += lineHeight;
     y += 2;
 
@@ -588,7 +610,7 @@ export class RepairsComponent implements OnInit {
     y += fallaLines.length * lineHeight;
     y += 2;
 
-    // Informe
+    // Informe   AQUI DEEBE ACCEDER A LA ULTIMA NOTA DE REAPRACION
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Informe:', 2, y);
     pdf.setFont('Helvetica', 'normal');
@@ -612,25 +634,19 @@ export class RepairsComponent implements OnInit {
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo MO:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.costoMO?.toFixed(2) || '0.00'}`, 25, y);
+    pdf.text(`${reparacion.manoDeObra}`, 25, y);
     y += lineHeight;
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo reps.:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.costoRepuestos?.toFixed(2) || '0.00'}`, 25, y);
+    pdf.text(`${reparacion.entrega}`, 25, y);
     y += lineHeight;
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo total:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(
-      `${
-        (reparacion.costoMO + reparacion.costoRepuestos)?.toFixed(2) || '0.00'
-      }`,
-      25,
-      y
-    );
+    pdf.text(`${reparacion.manoDeObra + reparacion.entrega}`, 25, y);
     y += lineHeight;
     y += 2;
 
@@ -645,5 +661,41 @@ export class RepairsComponent implements OnInit {
     pdf.save(
       `${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre} ${reparacion.cliente.nombre}.pdf`
     );
+  }
+
+  // reparacion.component.ts
+
+  getTotal(): number {
+    const manoDeObra = this.reparacionSeleccionada.manoDeObra || 0;
+    const entrega = this.reparacionSeleccionada.entrega || 0;
+    return manoDeObra + entrega;
+  }
+
+  terminarReparacion(): void {
+    const nuevaNota = {
+      fecha: this.reparacionSeleccionada.fechaIngreso,
+      informe: this.reparacionSeleccionada.notasreparacion.informe,
+    };
+    this.reparacionSeleccionada.notasreparacion.push(nuevaNota);
+    this.reparacionSeleccionada.estado = 'Finalizada';
+    this.repairsService
+      .modificarReparacion(this.reparacionSeleccionada)
+      .pipe(
+        tap(() => {
+          console.log('Reparación modificada exitosamente');
+          this.obtenerReparaciones();
+          this.generarPDFPrueba2(this.reparacionSeleccionada);
+          this.modalCloseAdd.nativeElement.click();
+        }),
+        catchError((error) => {
+          console.error('Error al finalizar reparación:', error);
+          this.errorModificarReparacion = true;
+          setTimeout(() => {
+            this.errorModificarReparacion = false;
+          }, 5000);
+          return of(error);
+        })
+      )
+      .subscribe();
   }
 }

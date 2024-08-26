@@ -102,3 +102,11 @@ td {
 .card-body {
   padding: 15px;
 }
+
+/*Asigna un ancho maximo para la columna */
+.truncate {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
