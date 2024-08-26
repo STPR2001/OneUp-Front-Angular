@@ -483,7 +483,7 @@ export class RepairsComponent implements OnInit {
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [163, totalHeight > 460 ? totalHeight : 460], // Altura dinámica o mínima
+      format: [163, totalHeight > 600 ? totalHeight : 600], // Altura dinámica o mínima
     });
 
     pdf.setFontSize(8);
@@ -494,7 +494,8 @@ export class RepairsComponent implements OnInit {
     const fallaLines = pdf.splitTextToSize(reparacion.falla, maxWidth);
     totalHeight += fallaLines.length * lineHeight + 2; // Altura para la falla
     const informeLines = pdf.splitTextToSize(
-      reparacion.informe || '',
+      reparacion.informe ||
+        'sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss',
       maxWidth
     );
     totalHeight += informeLines.length * lineHeight + 2; // Altura para el informe
