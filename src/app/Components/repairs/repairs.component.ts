@@ -482,7 +482,7 @@ export class RepairsComponent implements OnInit {
     });
 
     const lineHeight = 5; // Ajusta el interlineado según sea necesario
-    const maxWidth = 35; // Ajusta el ancho máximo del texto (reduciendo un poco para evitar corte)
+    const maxWidth = 20; // Ajusta el ancho máximo del texto (reduciendo un poco para evitar corte)
     let y = 10;
 
     pdf.setFontSize(8); // Tamaño de la fuente
