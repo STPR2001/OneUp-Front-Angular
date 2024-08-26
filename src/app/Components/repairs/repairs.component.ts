@@ -475,17 +475,31 @@ export class RepairsComponent implements OnInit {
   }
 
   generarPDFPrueba2(reparacion: any): void {
+    const lineHeight = 5;
+    const maxWidth = 25;
+    let y = 10;
+    let totalHeight = 0;
+
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [163, 460], // Ajusta el tamaño según sea necesario
+      format: [163, totalHeight > 460 ? totalHeight : 460], // Altura dinámica o mínima
     });
 
-    const lineHeight = 5; // Ajusta el interlineado según sea necesario
-    const maxWidth = 20; // Ajusta el ancho máximo del texto (reduciendo un poco para evitar corte)
-    let y = 10;
+    pdf.setFontSize(8);
 
-    pdf.setFontSize(8); // Tamaño de la fuente
+    // Calcular la altura necesaria antes de crear el PDF
+    totalHeight += 4 * lineHeight + 2; // Altura para el encabezado
+    totalHeight += 8 * lineHeight + 4; // Altura para la información del cliente y equipo
+    const fallaLines = pdf.splitTextToSize(reparacion.falla, maxWidth);
+    totalHeight += fallaLines.length * lineHeight + 2; // Altura para la falla
+    const informeLines = pdf.splitTextToSize(
+      reparacion.informe ||
+        'ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss',
+      maxWidth
+    );
+    totalHeight += informeLines.length * lineHeight + 2; // Altura para el informe
+    totalHeight += 4 * lineHeight + 2; // Altura para la fecha de entrega, costos y firma
 
     // Encabezado
     pdf.setFont('Helvetica', 'bold');
@@ -499,7 +513,7 @@ export class RepairsComponent implements OnInit {
     y += lineHeight;
     y += 2;
 
-    pdf.setFont('Helvetica', 'normal'); // Restablecer a normal
+    pdf.setFont('Helvetica', 'normal');
 
     // Información de la reparación
     pdf.setFont('Helvetica', 'bold');
@@ -571,7 +585,6 @@ export class RepairsComponent implements OnInit {
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Falla:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    const fallaLines = pdf.splitTextToSize(reparacion.falla, maxWidth);
     pdf.text(fallaLines, 15, y);
     y += fallaLines.length * lineHeight;
     y += 2;
@@ -580,10 +593,6 @@ export class RepairsComponent implements OnInit {
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Informe:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    const informeLines = pdf.splitTextToSize(
-      reparacion.informe || '---',
-      maxWidth
-    );
     pdf.text(informeLines, 15, y);
     y += informeLines.length * lineHeight;
     y += 2;
