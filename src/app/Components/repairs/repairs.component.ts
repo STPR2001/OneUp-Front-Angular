@@ -494,8 +494,7 @@ export class RepairsComponent implements OnInit {
     const fallaLines = pdf.splitTextToSize(reparacion.falla, maxWidth);
     totalHeight += fallaLines.length * lineHeight + 2; // Altura para la falla
     const informeLines = pdf.splitTextToSize(
-      reparacion.informe ||
-        'ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss',
+      reparacion.informe || '',
       maxWidth
     );
     totalHeight += informeLines.length * lineHeight + 2; // Altura para el informe
