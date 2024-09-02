@@ -677,7 +677,7 @@ export class RepairsComponent implements OnInit {
       informe: this.reparacionSeleccionada.notasreparacion.informe,
     };
     this.reparacionSeleccionada.notasreparacion.push(nuevaNota);
-    this.reparacionSeleccionada.estado = 'Finalizada';
+    this.reparacionSeleccionada.estado = 'Entregada';
     this.repairsService
       .modificarReparacion(this.reparacionSeleccionada)
       .pipe(

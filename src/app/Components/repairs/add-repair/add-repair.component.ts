@@ -10,6 +10,7 @@ import { EquipmentTypeService } from 'src/app/services/equipment-type.service';
 import { ModelService } from 'src/app/services/model.service';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-add-repair',
@@ -132,6 +133,7 @@ export class AddRepairComponent implements OnInit {
           };
           //this.setFechaActual();
           this.router.navigate(['/reparaciones']);
+          this.generarPDFPrueba2(this.nuevaReparacion);
         }),
         catchError((error) => {
           console.error('Error al agregar reparación:', error);
@@ -427,4 +429,200 @@ export class AddRepairComponent implements OnInit {
       }
     );
   }
+
+
+
+  generarPDFPrueba2(reparacion: any): void {
+    const lineHeight = 5;
+    const maxWidth = 25;
+    let y = 10;
+    let totalHeight = 0;
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [163, totalHeight > 600 ? totalHeight : 600], // Altura dinámica o mínima
+    });
+
+    pdf.setFontSize(8);
+
+    // Calcular la altura necesaria antes de crear el PDF
+    totalHeight += 4 * lineHeight + 2; // Altura para el encabezado
+    totalHeight += 8 * lineHeight + 4; // Altura para la información del cliente y equipo
+    const fallaLines = pdf.splitTextToSize(reparacion.falla, maxWidth);
+    totalHeight += fallaLines.length * lineHeight + 2; // Altura para la falla
+    const informeLines = pdf.splitTextToSize(
+      (reparacion.notasreparacion?.length
+        ? reparacion.notasreparacion[reparacion.notasreparacion.length - 1]
+            .informe
+        : '---') || '---',
+      maxWidth
+    );
+    totalHeight += informeLines.length * lineHeight + 2; // Altura para el informe
+    totalHeight += 4 * lineHeight + 2; // Altura para la fecha de entrega, costos y firma
+
+    // Encabezado
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Oneup Soluciones', 29, y, { align: 'center' });
+    y += lineHeight;
+    pdf.text('Leandro Gomez 1540', 29, y, { align: 'center' });
+    y += lineHeight;
+    pdf.text('Paysandu', 29, y, { align: 'center' });
+    y += lineHeight;
+    pdf.text('29992 - 091896948', 29, y, { align: 'center' });
+    y += lineHeight;
+    y += 2;
+
+    pdf.setFont('Helvetica', 'normal');
+
+    // Información de la reparación
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Orden:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.id}`, 15, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Ingreso:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${this.formatDate(reparacion.fechaIngreso)}`, 15, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('CS:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.codigoSeguimiento}`, 15, y);
+    y += lineHeight;
+    y += 2;
+
+    // Información del cliente
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Cliente:', 2, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Nom:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.cliente.nombre}`, 15, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Dir:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.cliente.direccion || '---'}`, 15, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Cel:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.cliente.telefono}`, 15, y);
+    y += lineHeight;
+    y += 2;
+
+    // Información del equipo
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Equipo:', 2, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('NS:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.equipo.numeroSerie}`, 15, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Tipo eq:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.equipo.tipo_equipo.nombre}`, 15, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Marca:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.equipo.marca.nombre}`, 15, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Modelo:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.equipo.modelo.nombre}`, 15, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Falla:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(fallaLines, 15, y);
+    y += fallaLines.length * lineHeight;
+    y += 2;
+
+    // Informe   AQUI DEEBE ACCEDER A LA ULTIMA NOTA DE REAPRACION
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Informe:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(informeLines, 15, y);
+    y += informeLines.length * lineHeight;
+    y += 2;
+
+    // Fecha de entrega
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Fecha entrega:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${this.formatDate2(new Date())}`, 30, y);
+    y += lineHeight;
+    y += 2;
+
+    // Costos
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Costos:', 2, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Costo MO:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.manoDeObra}`, 25, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Costo reps.:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.entrega}`, 25, y);
+    y += lineHeight;
+
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Costo total:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(`${reparacion.manoDeObra + reparacion.entrega}`, 25, y);
+    y += lineHeight;
+    y += 2;
+
+    // Firma
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Firma:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text('_________________________', 20, y);
+    y += lineHeight;
+
+    // Guardar PDF
+    pdf.save(
+      `${reparacion.equipo.marca.nombre} ${reparacion.equipo.modelo.nombre} ${reparacion.cliente.nombre}.pdf`
+    );
+  }
+
+  formatDate(isoDate: string): string {
+    const date = new Date(isoDate);
+    date.setDate(date.getDate() + 1); // Sumar un día
+    return date.toLocaleDateString('es-UY', {
+      //year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  formatDate2(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexados
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
 }
