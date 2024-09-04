@@ -331,10 +331,12 @@ export class RepairsComponent implements OnInit {
   }
 
   formatDate2(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexados
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    const adjustedDate = new Date(date);
+    adjustedDate.setDate(adjustedDate.getDate());
+    return adjustedDate.toLocaleDateString('es-UY', {
+      month: 'long',
+      day: 'numeric',
+    });
   }
 
   abrirModalAgregarNota(reparacion: any): void {
@@ -496,7 +498,7 @@ export class RepairsComponent implements OnInit {
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [163, totalHeight > 600 ? totalHeight : 600], // Altura dinámica o mínima
+      format: [163, totalHeight > 800 ? totalHeight : 800], // Altura dinámica o mínima
     });
 
     pdf.setFontSize(8);
@@ -513,6 +515,10 @@ export class RepairsComponent implements OnInit {
         : '---') || '---',
       maxWidth
     );
+    const notaFinal = pdf.splitTextToSize(
+      'Conserve este comprobante y preséntelo al recoger su equipo. No nos hacemos responsables después de 60 días, ni por chips o tarjetas de memoria. Los teléfonos mojados no tienen garantía.',
+      maxWidth
+    );
     totalHeight += informeLines.length * lineHeight + 2; // Altura para el informe
     totalHeight += 4 * lineHeight + 2; // Altura para la fecha de entrega, costos y firma
 
@@ -525,6 +531,8 @@ export class RepairsComponent implements OnInit {
     pdf.text('Paysandu', 29, y, { align: 'center' });
     y += lineHeight;
     pdf.text('29992 - 091896948', 29, y, { align: 'center' });
+    y += lineHeight;
+    pdf.text('¡Gracias por elegirnos!', 29, y, { align: 'center' });
     y += lineHeight;
     y += 2;
 
@@ -610,7 +618,7 @@ export class RepairsComponent implements OnInit {
     y += fallaLines.length * lineHeight;
     y += 2;
 
-    // Informe   AQUI DEEBE ACCEDER A LA ULTIMA NOTA DE REAPRACION
+    // Informe   AQUI ACCEDE A LA ULTIMA NOTA DE REAPRACION
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Informe:', 2, y);
     pdf.setFont('Helvetica', 'normal');
@@ -656,6 +664,15 @@ export class RepairsComponent implements OnInit {
     pdf.setFont('Helvetica', 'normal');
     pdf.text('_________________________', 20, y);
     y += lineHeight;
+    y += 2;
+
+    // Aviso
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Nota:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(notaFinal, 20, y);
+    y += lineHeight;
+    y += 2;
 
     // Guardar PDF
     pdf.save(
