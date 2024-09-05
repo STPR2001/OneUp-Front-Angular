@@ -219,7 +219,7 @@
             <div class="detalle-item">
               <p>
                 <strong>Fecha Ingreso:</strong>
-                {{ reparacionSeleccionada.fechaIngreso | date }}
+                {{ formatDate(reparacionSeleccionada.fechaIngreso) }}
               </p>
             </div>
             <div class="detalle-item">
@@ -292,7 +292,7 @@
             *ngFor="let nota of reparacionSeleccionada.notasreparacion"
           >
             <div class="card-body">
-              <p><strong>Fecha:</strong> {{ nota.fecha | date }}</p>
+              <p><strong>Fecha:</strong> {{ formatDate(nota.fecha) }}</p>
               <p><strong>Nota:</strong> {{ nota.informe }}</p>
             </div>
           </div>
