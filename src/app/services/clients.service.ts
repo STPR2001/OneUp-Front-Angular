@@ -47,6 +47,13 @@ export class ClientsService {
     return this.http.get<any>(`${this.apiUrl}/activos`, { headers });
   }
 
+  getClientesActivosSinPaginacionParaFormularios(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`${this.apiUrl}/activosSinPaginacion`, {
+      headers,
+    });
+  }
+
   getClientesInactivos(
     page: number,
     size: number,

@@ -48,6 +48,13 @@ export class EquipoService {
     return this.http.get<any>(`${this.apiUrl}/activos`, { headers });
   }
 
+  getEquiposActivosSinPaginacionParaFormularios(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`${this.apiUrl}/activosSinPaginacion`, {
+      headers,
+    });
+  }
+
   getEquiposInactivos(
     page: number,
     size: number,

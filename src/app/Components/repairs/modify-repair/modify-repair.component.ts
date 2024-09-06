@@ -152,9 +152,9 @@ export class ModifyRepairComponent implements OnInit {
   }
 
   obtenerClientes(): void {
-    this.ClientsService.getClientesActivosParaFormularios().subscribe(
+    this.ClientsService.getClientesActivosSinPaginacionParaFormularios().subscribe(
       (data) => {
-        this.clientes = data.content;
+        this.clientes = data;
       },
       (error) => {
         console.error('Error al obtener clientes:', error);
@@ -174,9 +174,9 @@ export class ModifyRepairComponent implements OnInit {
   }
 
   obtenerEquipos(): void {
-    this.EquipoService.getEquiposActivosParaFormularios().subscribe(
+    this.EquipoService.getEquiposActivosSinPaginacionParaFormularios().subscribe(
       (data) => {
-        this.equipos = data.content;
+        this.equipos = data;
       },
       (error) => {
         console.error('Error al obtener los equipos:', error);
@@ -241,7 +241,7 @@ export class ModifyRepairComponent implements OnInit {
       .subscribe();
   }
   getEquipos(): void {
-    this.EquipoService.getAllEquipos().subscribe(
+    this.EquipoService.getEquiposActivosSinPaginacionParaFormularios().subscribe(
       (data) => {
         this.equipos = data;
       },
