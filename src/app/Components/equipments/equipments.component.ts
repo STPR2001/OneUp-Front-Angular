@@ -12,6 +12,7 @@ import { AfterViewInit, Renderer2 } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Observable, debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 @Component({
   selector: 'app-equipments',
@@ -101,16 +102,18 @@ export class EquipmentsComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.EquipoService.desactivarEquipo(equipo).pipe(
-          tap(() => {
-            console.log('Equipo desactivado exitosamente');
-            this.getEquipos();
-          }),
-          catchError((error) => {
-            console.error('Error al desactivar equipo:', error);
-            return of(error);
-          })
-        ).subscribe();
+        this.EquipoService.desactivarEquipo(equipo)
+          .pipe(
+            tap(() => {
+              console.log('Equipo desactivado exitosamente');
+              this.getEquipos();
+            }),
+            catchError((error) => {
+              console.error('Error al desactivar equipo:', error);
+              return of(error);
+            })
+          )
+          .subscribe();
       }
     });
   }
@@ -347,5 +350,115 @@ export class EquipmentsComponent implements OnInit {
     this.modalService.open(this.modificarEquipoModal, {
       ariaLabelledBy: 'modal-basic-title',
     });
+  }
+
+  tipoEquipoSeleccionado = false;
+
+  // Función de búsqueda para Typeahead
+  buscarTiposEquipo = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((term) =>
+        term.length < 1
+          ? []
+          : this.tiposEquipo.filter((tipo) =>
+              tipo.nombre.toLowerCase().includes(term.toLowerCase())
+            )
+      )
+    );
+
+  // Formatear la visualización en la lista de sugerencias
+  resultEquipoFormatter = (tipo: any) => tipo.nombre;
+
+  // Formatear la visualización en el input cuando se selecciona un tipo de equipo
+  inputEquipoFormatter = (tipo: any) => (tipo ? tipo.nombre : '');
+
+  // Se ejecuta cuando el usuario selecciona un tipo de equipo de la lista
+  onTipoEquipoSeleccionado(event: any) {
+    if (event && event.item) {
+      this.nuevoEquipo.tipo_equipo = event.item;
+      this.tipoEquipoSeleccionado = true;
+    }
+  }
+
+  // Permite limpiar la selección y volver a escribir
+  borrarTipoEquipoSeleccionado() {
+    this.nuevoEquipo.tipo_equipo = null;
+    this.tipoEquipoSeleccionado = false;
+  }
+
+  marcaSeleccionada = false;
+
+  // Función de búsqueda para Typeahead
+  buscarMarcas = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((term) =>
+        term.length < 1
+          ? []
+          : this.marcas.filter((marca) =>
+              marca.nombre.toLowerCase().includes(term.toLowerCase())
+            )
+      )
+    );
+
+  // Formatear la visualización en la lista de sugerencias
+  resultMarcaFormatter = (marca: any) => marca.nombre;
+
+  // Formatear la visualización en el input cuando se selecciona una marca
+  inputMarcaFormatter = (marca: any) => (marca ? marca.nombre : '');
+
+  // Se ejecuta cuando el usuario selecciona una marca de la lista
+  onMarcaSeleccionada(event: any) {
+    if (event && event.item) {
+      this.nuevoEquipo.marca = event.item;
+      this.marcaSeleccionada = true;
+
+      this.getModelosPorMarca(event.item.id);
+    }
+  }
+
+  // Permite limpiar la selección y volver a escribir
+  borrarMarcaSeleccionada() {
+    this.nuevoEquipo.marca = null;
+    this.marcaSeleccionada = false;
+  }
+
+  modeloSeleccionado = false; // Indica si se ha seleccionado un modelo
+
+  // Función de búsqueda para Typeahead
+  buscarModelos = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((term) =>
+        term.length < 1
+          ? []
+          : this.modelos.filter((modelo) =>
+              modelo.nombre.toLowerCase().includes(term.toLowerCase())
+            )
+      )
+    );
+
+  // Formatear la visualización en la lista de sugerencias
+  resultFormatterModelo = (modelo: any) => modelo.nombre;
+
+  // Formatear la visualización en el input cuando se selecciona un modelo
+  inputFormatterModelo = (modelo: any) => (modelo ? modelo.nombre : '');
+
+  // Se ejecuta cuando el usuario selecciona un modelo de la lista
+  onModeloSeleccionado(event: any) {
+    if (event && event.item) {
+      this.nuevoEquipo.modelo = event.item;
+      this.modeloSeleccionado = true;
+    }
+  }
+
+  // Permite limpiar la selección y volver a escribir
+  borrarModeloSeleccionado() {
+    this.nuevoEquipo.modelo = null;
+    this.modeloSeleccionado = false;
   }
 }

@@ -66,21 +66,28 @@
             </div>
           </div>
           <div class="col-md-6 mb-3">
-            <label for="cliente" class="form-label"
-              >Cliente <span class="requerido">*</span></label
-            >
+            <label for="cliente" class="form-label">
+              Cliente <span class="requerido">*</span>
+            </label>
+
             <div class="input-group">
-              <select
+              <!-- Input con autocompletado -->
+              <input
                 id="cliente"
                 name="cliente"
-                [(ngModel)]="reparacion.cliente.id"
+                type="text"
+                class="form-control fs-5"
+                placeholder="Buscar cliente..."
+                [(ngModel)]="reparacion.cliente"
+                (selectItem)="onClienteSeleccionado($event)"
+                [ngbTypeahead]="buscarClientes"
+                [resultFormatter]="resultFormatter"
+                [inputFormatter]="inputFormatter"
+                [readonly]="clienteSeleccionado"
                 required
-                class="form-select fs-5"
-              >
-                <option *ngFor="let cliente of clientes" [value]="cliente.id">
-                  {{ cliente.nombre }}
-                </option>
-              </select>
+              />
+
+              <!-- Botón para agregar cliente -->
               <button
                 type="button"
                 class="btn btn-success ms-2"
@@ -90,32 +97,42 @@
               >
                 <span class="material-icons icon-small">add</span>
               </button>
+
+              <!-- Botón para limpiar selección -->
+              <button
+                type="button"
+                class="btn btn-danger ms-2"
+                (click)="borrarClienteSeleccionado()"
+                *ngIf="clienteSeleccionado"
+                title="Borrar selección"
+              >
+                <span class="material-icons icon-small">clear</span>
+              </button>
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label for="equipo" class="form-label"
-              >Equipo <span class="requerido">*</span></label
-            >
+            <label for="equipo" class="form-label">
+              Equipo <span class="requerido">*</span>
+            </label>
             <div class="input-group">
-              <select
+              <!-- Input con búsqueda de equipos -->
+              <input
                 id="equipo"
                 name="equipo"
-                [(ngModel)]="reparacion.equipo.id"
-                required
-                class="form-select fs-5"
-              >
-                <option *ngFor="let equipo of equipos" [value]="equipo.id">
-                  {{
-                    equipo.marca.nombre +
-                      " " +
-                      equipo.modelo.nombre +
-                      " - " +
-                      equipo.numeroSerie
-                  }}
-                </option>
-              </select>
+                type="text"
+                class="form-control fs-5"
+                placeholder="Buscar equipo..."
+                [(ngModel)]="reparacion.equipo"
+                (selectItem)="onEquipoSeleccionado($event)"
+                [ngbTypeahead]="buscarEquipos"
+                [resultFormatter]="equipoResultFormatter"
+                [inputFormatter]="equipoInputFormatter"
+                [readonly]="equipoSeleccionado2"
+              />
+
+              <!-- Botón para agregar nuevo equipo -->
               <button
                 type="button"
                 class="btn btn-success ms-2"
@@ -123,6 +140,17 @@
                 title="Agregar equipo"
               >
                 <span class="material-icons icon-small">add</span>
+              </button>
+
+              <!-- Botón para limpiar selección -->
+              <button
+                type="button"
+                class="btn btn-danger ms-2"
+                (click)="borrarEquipoSeleccionado()"
+                *ngIf="equipoSeleccionado2"
+                title="Borrar selección"
+              >
+                <span class="material-icons icon-small">clear</span>
               </button>
             </div>
           </div>
@@ -355,23 +383,38 @@
       <div class="modal-body">
         <div class="mb-3 d-flex align-items-center">
           <div class="flex-grow-1">
-            <label for="tipoEquipo"
-              >Tipo equipo <span class="requerido">*</span></label
-            >
-            <select
-              id="tipoEquipo"
-              name="tipoEquipo"
-              [(ngModel)]="nuevoEquipo.tipo_equipo.id"
-              required
-              class="form-select fs-5"
-            >
-              <option
-                *ngFor="let tipoEquipo of tiposEquipo"
-                [value]="tipoEquipo.id"
+            <label for="tipoEquipo" class="form-label">
+              Tipo de equipo <span class="requerido">*</span>
+            </label>
+
+            <div class="input-group">
+              <!-- Input con autocompletado -->
+              <input
+                id="tipoEquipo"
+                name="tipoEquipo"
+                type="text"
+                class="form-control fs-5"
+                placeholder="Buscar tipo de equipo..."
+                [(ngModel)]="nuevoEquipo.tipo_equipo"
+                (selectItem)="onTipoEquipoSeleccionado($event)"
+                [ngbTypeahead]="buscarTiposEquipo"
+                [resultFormatter]="resultEquipoFormatter"
+                [inputFormatter]="inputEquipoFormatter"
+                [readonly]="tipoEquipoSeleccionado"
+                required
+              />
+
+              <!-- Botón para limpiar selección -->
+              <button
+                type="button"
+                class="btn btn-danger ms-2"
+                (click)="borrarTipoEquipoSeleccionado()"
+                *ngIf="tipoEquipoSeleccionado"
+                title="Borrar selección"
               >
-                {{ tipoEquipo.nombre }}
-              </option>
-            </select>
+                <span class="material-icons icon-small">clear</span>
+              </button>
+            </div>
           </div>
           <button
             type="button"
@@ -383,19 +426,38 @@
         </div>
         <div class="mb-3 d-flex align-items-center">
           <div class="flex-grow-1">
-            <label for="marca">Marca <span class="requerido">*</span></label>
-            <select
-              id="marca"
-              name="marca"
-              [(ngModel)]="nuevoEquipo.marca.id"
-              required
-              class="form-select fs-5"
-              (change)="onMarcaChange($event)"
-            >
-              <option *ngFor="let marca of marcas" [value]="marca.id">
-                {{ marca.nombre }}
-              </option>
-            </select>
+            <label for="marca" class="form-label">
+              Marca <span class="requerido">*</span>
+            </label>
+
+            <div class="input-group">
+              <!-- Input con autocompletado -->
+              <input
+                id="marca"
+                name="marca"
+                type="text"
+                class="form-control fs-5"
+                placeholder="Buscar marca..."
+                [(ngModel)]="nuevoEquipo.marca"
+                (selectItem)="onMarcaSeleccionada($event)"
+                [ngbTypeahead]="buscarMarcas"
+                [resultFormatter]="resultMarcaFormatter"
+                [inputFormatter]="inputMarcaFormatter"
+                [readonly]="marcaSeleccionada"
+                required
+              />
+
+              <!-- Botón para limpiar selección -->
+              <button
+                type="button"
+                class="btn btn-danger ms-2"
+                (click)="borrarMarcaSeleccionada()"
+                *ngIf="marcaSeleccionada"
+                title="Borrar selección"
+              >
+                <span class="material-icons icon-small">clear</span>
+              </button>
+            </div>
           </div>
           <button
             type="button"
@@ -408,17 +470,34 @@
         <div class="mb-3 d-flex align-items-center">
           <div class="flex-grow-1">
             <label for="modelo">Modelo <span class="requerido">*</span></label>
-            <select
-              id="modelo"
-              name="modelo"
-              [(ngModel)]="nuevoEquipo.modelo.id"
-              required
-              class="form-select fs-5"
-            >
-              <option *ngFor="let modelo of modelos" [value]="modelo.id">
-                {{ modelo.nombre }}
-              </option>
-            </select>
+            <div class="input-group">
+              <!-- Input con autocompletado -->
+              <input
+                id="modelo"
+                name="modelo"
+                type="text"
+                class="form-control fs-5"
+                placeholder="Buscar modelo..."
+                [(ngModel)]="nuevoEquipo.modelo"
+                (selectItem)="onModeloSeleccionado($event)"
+                [ngbTypeahead]="buscarModelos"
+                [resultFormatter]="resultFormatterModelo"
+                [inputFormatter]="inputFormatterModelo"
+                [readonly]="modeloSeleccionado"
+                required
+              />
+
+              <!-- Botón para limpiar selección -->
+              <button
+                type="button"
+                class="btn btn-danger ms-2"
+                (click)="borrarModeloSeleccionado()"
+                *ngIf="modeloSeleccionado"
+                title="Borrar selección"
+              >
+                <span class="material-icons icon-small">clear</span>
+              </button>
+            </div>
           </div>
           <button
             type="button"
@@ -565,18 +644,38 @@
       <div class="modal-body">
         <div class="mb-3 d-flex align-items-center">
           <div class="flex-grow-1">
-            <label for="marca">Marca <span class="requerido">*</span></label>
-            <select
-              id="marca"
-              name="marca"
-              [(ngModel)]="nuevoModelo.marca.id"
-              required
-              class="form-select fs-5"
-            >
-              <option *ngFor="let marca of marcas" [value]="marca.id">
-                {{ marca.nombre }}
-              </option>
-            </select>
+            <label for="marca" class="form-label">
+              Marca <span class="requerido">*</span>
+            </label>
+
+            <div class="input-group">
+              <!-- Input con autocompletado -->
+              <input
+                id="marca"
+                name="marca"
+                type="text"
+                class="form-control fs-5"
+                placeholder="Buscar marca..."
+                [(ngModel)]="nuevoEquipo.marca"
+                (selectItem)="onMarcaSeleccionada($event)"
+                [ngbTypeahead]="buscarMarcas"
+                [resultFormatter]="resultMarcaFormatter"
+                [inputFormatter]="inputMarcaFormatter"
+                [readonly]="marcaSeleccionada"
+                required
+              />
+
+              <!-- Botón para limpiar selección -->
+              <button
+                type="button"
+                class="btn btn-danger ms-2"
+                (click)="borrarMarcaSeleccionada()"
+                *ngIf="marcaSeleccionada"
+                title="Borrar selección"
+              >
+                <span class="material-icons icon-small">clear</span>
+              </button>
+            </div>
           </div>
         </div>
         <div class="mb-3">
