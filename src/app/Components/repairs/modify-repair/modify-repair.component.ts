@@ -11,6 +11,7 @@ import { ModelService } from 'src/app/services/model.service';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { Observable, debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 @Component({
   selector: 'app-modify-repair',
@@ -431,5 +432,198 @@ export class ModifyRepairComponent implements OnInit {
         windowClass: 'second-modal',
       }
     );
+  }
+  clienteSeleccionado = true; // Indica si se ha seleccionado un cliente
+
+  // Función de búsqueda para Typeahead
+  buscarClientes = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((term) =>
+        term.length < 1
+          ? []
+          : this.clientes.filter((cliente) =>
+              cliente.nombre.toLowerCase().includes(term.toLowerCase())
+            )
+      )
+    );
+
+  // Formatear la visualización en la lista de sugerencias
+  resultFormatter = (cliente: any) => cliente.nombre;
+
+  // Formatear la visualización en el input cuando se selecciona un cliente
+  inputFormatter = (cliente: any) => (cliente ? cliente.nombre : '');
+
+  // Se ejecuta cuando el usuario selecciona un cliente de la lista
+  onClienteSeleccionado(event: any) {
+    if (event && event.item) {
+      this.reparacion.cliente = event.item;
+      this.clienteSeleccionado = true;
+    }
+  }
+
+  // Permite limpiar la selección y volver a escribir
+  borrarClienteSeleccionado() {
+    this.reparacion.cliente = null;
+    this.clienteSeleccionado = false;
+  }
+
+  equipoSeleccionado2 = true; // Indica si se ha seleccionado un equipo
+
+  // Función de búsqueda para Typeahead
+  buscarEquipos = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((term) =>
+        term.length < 1
+          ? []
+          : this.equipos.filter((equipo) =>
+              (
+                equipo.marca.nombre +
+                ' ' +
+                equipo.modelo.nombre +
+                ' - ' +
+                equipo.numeroSerie
+              )
+                .toLowerCase()
+                .includes(term.toLowerCase())
+            )
+      )
+    );
+
+  // Formatear la visualización en la lista de sugerencias
+  equipoResultFormatter = (equipo: any) =>
+    `${equipo.marca.nombre} ${equipo.modelo.nombre} - ${equipo.numeroSerie}`;
+
+  // Formatear la visualización en el input cuando se selecciona un equipo
+  equipoInputFormatter = (equipo: any) =>
+    equipo
+      ? `${equipo.marca.nombre} ${equipo.modelo.nombre} - ${equipo.numeroSerie}`
+      : '';
+
+  // Se ejecuta cuando el usuario selecciona un equipo de la lista
+  onEquipoSeleccionado(event: any) {
+    if (event && event.item) {
+      this.reparacion.equipo = event.item;
+      this.equipoSeleccionado2 = true;
+    }
+  }
+
+  // Permite limpiar la selección y volver a escribir
+  borrarEquipoSeleccionado() {
+    this.reparacion.equipo = null;
+    this.equipoSeleccionado2 = false;
+  }
+
+  tipoEquipoSeleccionado = false;
+
+  // Función de búsqueda para Typeahead
+  buscarTiposEquipo = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((term) =>
+        term.length < 1
+          ? []
+          : this.tiposEquipo.filter((tipo) =>
+              tipo.nombre.toLowerCase().includes(term.toLowerCase())
+            )
+      )
+    );
+
+  // Formatear la visualización en la lista de sugerencias
+  resultEquipoFormatter = (tipo: any) => tipo.nombre;
+
+  // Formatear la visualización en el input cuando se selecciona un tipo de equipo
+  inputEquipoFormatter = (tipo: any) => (tipo ? tipo.nombre : '');
+
+  // Se ejecuta cuando el usuario selecciona un tipo de equipo de la lista
+  onTipoEquipoSeleccionado(event: any) {
+    if (event && event.item) {
+      this.nuevoEquipo.tipo_equipo = event.item;
+      this.tipoEquipoSeleccionado = true;
+    }
+  }
+
+  // Permite limpiar la selección y volver a escribir
+  borrarTipoEquipoSeleccionado() {
+    this.nuevoEquipo.tipo_equipo = null;
+    this.tipoEquipoSeleccionado = false;
+  }
+
+  marcaSeleccionada = false;
+
+  // Función de búsqueda para Typeahead
+  buscarMarcas = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((term) =>
+        term.length < 1
+          ? []
+          : this.marcas.filter((marca) =>
+              marca.nombre.toLowerCase().includes(term.toLowerCase())
+            )
+      )
+    );
+
+  // Formatear la visualización en la lista de sugerencias
+  resultMarcaFormatter = (marca: any) => marca.nombre;
+
+  // Formatear la visualización en el input cuando se selecciona una marca
+  inputMarcaFormatter = (marca: any) => (marca ? marca.nombre : '');
+
+  // Se ejecuta cuando el usuario selecciona una marca de la lista
+  onMarcaSeleccionada(event: any) {
+    if (event && event.item) {
+      this.nuevoEquipo.marca = event.item;
+      this.marcaSeleccionada = true;
+
+      this.getModelosPorMarca(event.item.id);
+    }
+  }
+
+  // Permite limpiar la selección y volver a escribir
+  borrarMarcaSeleccionada() {
+    this.nuevoEquipo.marca = null;
+    this.marcaSeleccionada = false;
+  }
+
+  modeloSeleccionado = false; // Indica si se ha seleccionado un modelo
+
+  // Función de búsqueda para Typeahead
+  buscarModelos = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map((term) =>
+        term.length < 1
+          ? []
+          : this.modelos.filter((modelo) =>
+              modelo.nombre.toLowerCase().includes(term.toLowerCase())
+            )
+      )
+    );
+
+  // Formatear la visualización en la lista de sugerencias
+  resultFormatterModelo = (modelo: any) => modelo.nombre;
+
+  // Formatear la visualización en el input cuando se selecciona un modelo
+  inputFormatterModelo = (modelo: any) => (modelo ? modelo.nombre : '');
+
+  // Se ejecuta cuando el usuario selecciona un modelo de la lista
+  onModeloSeleccionado(event: any) {
+    if (event && event.item) {
+      this.nuevoEquipo.modelo = event.item;
+      this.modeloSeleccionado = true;
+    }
+  }
+
+  // Permite limpiar la selección y volver a escribir
+  borrarModeloSeleccionado() {
+    this.nuevoEquipo.modelo = null;
+    this.modeloSeleccionado = false;
   }
 }
