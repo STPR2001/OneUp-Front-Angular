@@ -366,6 +366,7 @@ export class AddRepairComponent implements OnInit {
   }
 
   agregarModelo(): void {
+    console.log('Nuevo modelo:', this.nuevoModelo);
     this.ModelService.agregarModelo(this.nuevoModelo)
       .pipe(
         tap(() => {
