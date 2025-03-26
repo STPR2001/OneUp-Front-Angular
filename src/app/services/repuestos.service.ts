@@ -14,7 +14,7 @@ import { AuthService } from './auth/auth.service';
 })
 export class RepuestosService {
   private apiUrl =
-    'https://oneupsoluciones.com:8443/oneup-backend/api/repuesto';
+    'https://app.oneupsoluciones.com:8443/oneup-backend/api/repuesto';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {

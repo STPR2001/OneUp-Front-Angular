@@ -13,7 +13,7 @@ import { User } from './user';
 })
 export class LoginService {
   private apiUrl =
-    'https://oneupsoluciones.com:8443/oneup-backend/api/seguridad/autenticacion';
+    'https://app.oneupsoluciones.com:8443/oneup-backend/api/seguridad/autenticacion';
   currentUserLoginOn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false
   );

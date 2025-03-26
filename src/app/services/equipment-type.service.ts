@@ -8,7 +8,7 @@ import { AuthService } from './auth/auth.service';
 })
 export class EquipmentTypeService {
   private apiUrl =
-    'https://oneupsoluciones.com:8443/oneup-backend/api/tipoEquipo/';
+    'https://app.oneupsoluciones.com:8443/oneup-backend/api/tipoEquipo/';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
