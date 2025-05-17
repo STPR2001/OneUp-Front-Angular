@@ -6,7 +6,7 @@ import {
   HttpParams,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { AuthService } from './auth/auth.service';
 
 @Injectable({
@@ -104,9 +104,20 @@ export class ShoppingService {
     if (anio) {
       params = params.append('anio', anio.toString());
     }
+    console.log(
+      'Solicitando compras por mes:',
+      `${this.apiUrl}/compras-por-mes`,
+      { anio }
+    );
     return this.http
       .get<any>(`${this.apiUrl}/compras-por-mes`, { headers, params })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        tap((response) => console.log('Respuesta compras por mes:', response)),
+        catchError((error) => {
+          console.error('Error en compras por mes:', error);
+          throw error;
+        })
+      );
   }
 
   getComprasPorProveedor(anio?: number): Observable<any> {
@@ -115,9 +126,22 @@ export class ShoppingService {
     if (anio) {
       params = params.append('anio', anio.toString());
     }
+    console.log(
+      'Solicitando compras por proveedor:',
+      `${this.apiUrl}/compras-por-proveedor`,
+      { anio }
+    );
     return this.http
       .get<any>(`${this.apiUrl}/compras-por-proveedor`, { headers, params })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        tap((response) =>
+          console.log('Respuesta compras por proveedor:', response)
+        ),
+        catchError((error) => {
+          console.error('Error en compras por proveedor:', error);
+          throw error;
+        })
+      );
   }
 
   agregarCompra(nuevoCompra: any): Observable<any> {

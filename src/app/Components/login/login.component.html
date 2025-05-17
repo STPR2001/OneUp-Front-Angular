@@ -1,62 +1,102 @@
-<div class="container">
-  <div class="row justify-content-center mt-5">
-    <div class="col-md-6">
-      <div class="card shadow-lg">
-        <div class="card-body p-5">
-          <h2 class="card-title text-center mb-4 h2-title">Iniciar sesión</h2>
-          <form [formGroup]="loginForm">
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Usuario</label>
-              <input
-                formControlName="usuario"
-                type="text"
-                class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="nameHelp"
-              />
-              <div
-                *ngIf="usuario.invalid && (usuario.dirty || usuario.touched)"
-                class="text-danger"
-              >
-                <div *ngIf="usuario.errors?.['required']">
-                  El nombre de usuario es requerido.
-                </div>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label"
-                >Contraseña</label
-              >
-              <input
-                formControlName="password"
-                type="password"
-                class="form-control"
-                id="exampleInputPassword1"
-              />
-              <div
-                *ngIf="password.invalid && (password.dirty || password.touched)"
-                class="text-danger"
-              >
-                <div *ngIf="password.errors?.['required']">
-                  El password es requerido.
-                </div>
-              </div>
-            </div>
-            <p class="text-danger text-center mb-4">
-              {{ loginError ? "Credenciales inválidas" : "" }}
-            </p>
-            <div class="text-center">
-              <button
-                type="submit"
-                (click)="login()"
-                class="btn btn-primary mt-3"
-              >
-                Iniciar sesión
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+<div class="login-container">
+  <div class="login-content">
+    <!-- Título -->
+    <div class="brand-section">
+      <h1>OneUp Soluciones</h1>
+      <p class="subtitle">Sistema de Gestión</p>
     </div>
+
+    <!-- Formulario de Login -->
+    <div class="login-form-container">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Campo de Usuario -->
+        <div class="form-group">
+          <label for="username">
+            <i class="material-icons">person</i>
+            Usuario
+          </label>
+          <div class="input-container">
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              placeholder="Ingrese su usuario"
+              [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+            >
+            <div class="invalid-feedback" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+              <span *ngIf="loginForm.get('username')?.errors?.['required']">El usuario es requerido</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campo de Contraseña -->
+        <div class="form-group">
+          <label for="password">
+            <i class="material-icons">lock</i>
+            Contraseña
+          </label>
+          <div class="input-container">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="Ingrese su contraseña"
+              [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            >
+            <button 
+              type="button" 
+              class="toggle-password"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              <i class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</i>
+            </button>
+            <div class="invalid-feedback" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              <span *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es requerida</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recordar usuario -->
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" formControlName="rememberMe">
+            <span>Recordar usuario</span>
+          </label>
+        </div>
+
+        <!-- Mensaje de error de login -->
+        <div class="error-message" *ngIf="loginError">
+          <i class="material-icons">error_outline</i>
+          <span>Usuario o contraseña incorrectos</span>
+        </div>
+
+        <!-- Botón de Login -->
+        <button 
+          type="submit" 
+          class="login-button" 
+          [disabled]="loginForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">Iniciar Sesión</span>
+          <div class="spinner" *ngIf="isLoading">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+          </div>
+        </button>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <p>© {{ currentYear }} OneUp Soluciones. Todos los derechos reservados.</p>
+    </div>
+  </div>
+
+  <!-- Decoración de fondo -->
+  <div class="background-decoration">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
   </div>
 </div>

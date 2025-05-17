@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth/auth.service';
-import { LoginService } from 'src/app/services/auth/login.service';
-import { LoginRequest } from 'src/app/services/auth/loginRequest';
+import { AuthService } from '../../services/auth/auth.service';
+import { LoginService } from '../../services/auth/login.service';
+import { LoginRequest } from '../../services/auth/loginRequest';
 
 @Component({
   selector: 'app-login',
@@ -11,46 +11,80 @@ import { LoginRequest } from 'src/app/services/auth/loginRequest';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  loginError: boolean = false;
-  loginForm = this.formBuilder.group({
-    usuario: ['', [Validators.required]],
-    password: ['', Validators.required],
-  })
+  loginForm: FormGroup;
+  isLoading = false;
+  showPassword = false;
+  currentYear = new Date().getFullYear();
+  loginError = false;
 
-  constructor(private formBuilder: FormBuilder, private router: Router, private loginService: LoginService, private authService: AuthService) { }
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private loginService: LoginService,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+      rememberMe: [false]
+    });
+  }
 
   ngOnInit(): void {
+    // Recuperar usuario guardado si existe
+    const savedUsername = localStorage.getItem('rememberedUser');
+    if (savedUsername) {
+      this.loginForm.patchValue({
+        username: savedUsername,
+        rememberMe: true
+      });
+    }
   }
 
-  get usuario() {
-    return this.loginForm.controls.usuario;
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
-  get password() {
-    return this.loginForm.controls.password;
-  }
-
-  login() {
+  async onSubmit(): Promise<void> {
     if (this.loginForm.valid) {
+      this.isLoading = true;
       this.loginError = false;
-      this.loginService.login(this.loginForm.value as LoginRequest).subscribe({
+      const { username, password, rememberMe } = this.loginForm.value;
+
+      const credentials: LoginRequest = {
+        usuario: username,
+        password: password
+      };
+
+      this.loginService.login(credentials).subscribe({
         next: (userData) => {
-          this.authService.login(userData.token)
+          this.authService.login(userData.token);
+          
+          // Manejar "Recordar usuario"
+          if (rememberMe) {
+            localStorage.setItem('rememberedUser', username);
+          } else {
+            localStorage.removeItem('rememberedUser');
+          }
+
+          this.router.navigate(['/home']);
         },
-        error: () => {
+        error: (error) => {
+          console.error('Error de login:', error);
           this.loginError = true;
+          this.loginForm.setErrors({ invalidLogin: true });
         },
         complete: () => {
-          this.router.navigateByUrl('');
-          this.loginForm.reset();
+          this.isLoading = false;
         }
-      })
-
-    }
-    else {
-      this.loginForm.markAllAsTouched();
-      alert("Error al ingresar los datos.");
+      });
+    } else {
+      Object.keys(this.loginForm.controls).forEach(key => {
+        const control = this.loginForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
+        }
+      });
     }
   }
-
 }

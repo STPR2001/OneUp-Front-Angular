@@ -19,89 +19,143 @@
 }
 
 .toggle-sidebar {
-  top: 10px;
+  top: 20px;
   position: fixed;
   z-index: 1000;
   border: none;
   background-color: transparent;
   cursor: pointer;
-  transition: color 0.7s ease, left 0.7s;
+  transition: all 0.3s ease;
   color: #000;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .toggle-sidebar.menu {
-  left: 10px;
+  left: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .toggle-sidebar.close {
   left: 200px;
-  color: #fff;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+}
+
+.toggle-sidebar:hover {
+  transform: scale(1.1);
 }
 
 .sidebar.closed {
   transform: translateX(-100%);
+  box-shadow: none;
 }
 
 .logo-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 15px 20px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 10px;
 }
 
 .logo {
-  max-width: 65%;
+  max-width: 70%;
   height: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .SidebarList {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   list-style: none;
-  padding: 0;
+  padding: 0 15px;
   margin: 0;
 }
 
 .SidebarList .row {
   display: flex;
   align-items: center;
-  padding: 15px;
+  padding: 12px 15px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
   font-family: "Roboto", sans-serif;
-  border-radius: 5px;
-  margin: 5px 10px;
+  border-radius: 12px;
+  margin: 4px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.SidebarList .row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(254, 155, 1, 0.1) 0%, rgba(254, 155, 1, 0) 100%);
+  transition: width 0.3s ease;
+}
+
+.SidebarList .row:hover::before {
   width: 100%;
 }
 
-.SidebarList {
-  margin-top: 20px;
-}
-
 .SidebarList .row:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
+  transform: translateX(5px);
 }
 
 .icon {
   margin-right: 15px;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.7);
   flex: 0 0 24px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.5em;
+  font-size: 1.4em;
+  transition: all 0.3s ease;
 }
 
 .row:hover .icon {
   color: #fe9b01;
+  transform: scale(1.1);
 }
 
 .title {
-  color: #fff;
-  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  font-weight: 500;
   flex: 1;
+  transition: all 0.3s ease;
+}
+
+.row:hover .title {
+  color: #ffffff;
+}
+
+.row.active {
+  background: rgba(254, 155, 1, 0.1);
+}
+
+.row.active .icon {
+  color: #fe9b01;
+}
+
+.row.active .title {
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .sidebar {
@@ -111,17 +165,30 @@
   left: 0;
   width: 250px;
   height: 100%;
-  background-color: #242529;
+  background: linear-gradient(180deg, #1a1c23 0%, #242529 100%);
   background-size: cover;
   background-position: center;
-  transition: transform 0.7s ease;
+  transition: all 0.7s ease;
   overflow-y: auto;
   overflow-x: hidden;
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
 }
 
-.row.active .icon {
-  color: #fe9b01;
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .btnPeronalizado {
@@ -148,4 +215,34 @@
   .modal-footer .btn + .btn {
     margin-left: 0;
   }
+  .sidebar {
+    width: 240px;
+  }
+  
+  .toggle-sidebar.close {
+    left: 190px;
+  }
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(0deg, rgba(26, 28, 35, 0.95) 0%, rgba(36, 37, 41, 0.8) 100%);
+}
+
+.sidebar-footer a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar-footer a:hover {
+  color: #fe9b01;
+  text-decoration: none;
 }

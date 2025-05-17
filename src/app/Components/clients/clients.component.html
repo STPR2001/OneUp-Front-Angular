@@ -32,6 +32,7 @@
             <th>Dirección</th>
             <th>Cédula</th>
             <th>Observaciones</th>
+            <th>Puntos</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -43,6 +44,7 @@
             <td>{{ cliente.direccion }}</td>
             <td>{{ cliente.cedula }}</td>
             <td>{{ cliente.observacion }}</td>
+            <td>{{ cliente.puntos || 0 }}</td>
             <td>
               <button
                 class="btn btn-primary me-2"

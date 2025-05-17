@@ -1,78 +1,311 @@
-<div class="container">
-  <h2 class="text-center h2-title">Seguimiento de reparación</h2>
-  <p class="text-center descripcion">
-    Ingresa el código de seguimiento de tu ticket de reparación para verificar
-    el estado y los detalles de tu reparación.
-  </p>
-  <form [formGroup]="form" (ngSubmit)="buscarReparacion()" class="mt-4">
-    <div class="mb-3 row">
-      <div class="col-9">
-        <label for="idBusqueda" class="form-label">Código de rastreo</label>
-        <input
-          type="text"
-          class="form-control"
-          id="idBusqueda"
-          formControlName="codigo"
-          required
-        />
+<div class="tracking-container">
+  <div class="tracking-content">
+    <!-- Sección de título -->
+    <div class="header-section">
+      <h1>Estado de tu Reparación</h1>
+      <p class="subtitle">Consulta el estado actual de tu equipo, accede a tu historial completo de reparaciones y conoce tus puntos acumulados por ser cliente OneUp</p>
+      <div class="features-list">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="material-icons">search</i>
+          </div>
+          <h3>Consulta el estado</h3>
+          <p>Mantente informado sobre tu equipo en reparación</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="material-icons">history</i>
+          </div>
+          <h3>Historial</h3>
+          <p>Accede a todas tus reparaciones anteriores</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="material-icons">stars</i>
+          </div>
+          <h3>Puntos OneUp</h3>
+          <p>Acumula puntos por cada reparación</p>
+        </div>
       </div>
-      <div class="col-3 p-2 mt-4">
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
-          Buscar
+    </div>
+
+    <!-- Formulario de búsqueda -->
+    <div class="search-section">
+      <form [formGroup]="form" class="search-form">
+        <!-- Búsqueda por código -->
+        <div class="search-card">
+          <h3>Buscar por código</h3>
+          <div class="input-group">
+            <div class="input-container">
+              <i class="material-icons">search</i>
+              <input
+                type="text"
+                formControlName="codigo"
+                placeholder="Ingresa el código de seguimiento de tu equipo"
+                [class.is-invalid]="form.get('codigo')?.invalid && form.get('codigo')?.touched"
+              >
+            </div>
+            <button type="button" (click)="buscarReparacion()" [disabled]="!form.get('codigo')?.valid || isLoading" class="search-button">
+              <span *ngIf="!isLoading">Buscar</span>
+              <div class="spinner" *ngIf="isLoading">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Separador -->
+        <div class="separator">
+          <span>o</span>
+        </div>
+
+        <!-- Búsqueda por cédula -->
+        <div class="search-card">
+          <h3>Buscar por cédula</h3>
+          <div class="input-group">
+            <div class="input-container">
+              <i class="material-icons">person</i>
+              <input
+                type="text"
+                formControlName="dni"
+                placeholder="Ingresa tu número de cédula para ver tu historial"
+                [class.is-invalid]="form.get('dni')?.invalid && form.get('dni')?.touched"
+              >
+            </div>
+            <button type="button" (click)="buscarPorDNI()" [disabled]="!form.get('dni')?.valid || isLoading" class="search-button">
+              <span *ngIf="!isLoading">Ver historial</span>
+              <div class="spinner" *ngIf="isLoading">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Resultados de la búsqueda por código -->
+    <div class="results-section" *ngIf="reparacionBuscada">
+      <div class="status-card">
+        <div class="status-header">
+          <h2>Estado de tu Reparación</h2>
+          <div class="status-badge" [ngClass]="reparacionBuscada.estado.toLowerCase()">
+            {{ reparacionBuscada.estado }}
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="material-icons">devices</i>
+            <div class="info-content">
+              <label>Equipo</label>
+              <p>{{ reparacionBuscada.equipo.marca.nombre + ' ' + reparacionBuscada.equipo.modelo.nombre }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <i class="material-icons">build</i>
+            <div class="info-content">
+              <label>Falla Reportada</label>
+              <p>{{ reparacionBuscada.falla }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <i class="material-icons">engineering</i>
+            <div class="info-content">
+              <label>Diagnóstico Técnico</label>
+              <p>{{ ultimaNota ?? 'Pendiente de diagnóstico' }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <i class="material-icons">payments</i>
+            <div class="info-content">
+              <label>Costo Total</label>
+              <p class="price">{{ formatCurrency(reparacionBuscada.manoDeObra + reparacionBuscada.entrega) }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline" *ngIf="reparacionBuscada.notasreparacion && reparacionBuscada.notasreparacion.length > 0">
+          <h3>Historial de la Reparación</h3>
+          <div class="timeline-items">
+            <div class="timeline-item" *ngFor="let nota of reparacionBuscada.notasreparacion">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <div class="timeline-date">{{ formatDate(nota.fecha) }}</div>
+                <p>{{ nota.informe }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Historial del cliente -->
+    <div class="historial-section" *ngIf="mostrarHistorial && estadisticasCliente">
+      <div class="status-card mt-4">
+        <h3 class="stats-title">Tu Historial de Reparaciones</h3>
+        
+        <!-- Estadísticas del cliente -->
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon">
+              <i class="material-icons">stars</i>
+            </div>
+            <div class="stat-content">
+              <h4>{{ estadisticasCliente.puntosAcumulados }}</h4>
+              <p>Puntos Disponibles</p>
+              <span class="discount-value">Equivale a ${{ estadisticasCliente.puntosAcumulados * 10 | number:'1.0-0' }} en descuentos</span>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <i class="material-icons">build</i>
+            </div>
+            <div class="stat-content">
+              <h4>{{ estadisticasCliente.totalReparaciones }}</h4>
+              <p>Reparaciones Totales</p>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-icon">
+              <i class="material-icons">pending</i>
+            </div>
+            <div class="stat-content">
+              <h4>{{ estadisticasCliente.reparacionesEnProceso }}</h4>
+              <p>En Proceso</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de reparaciones -->
+        <div class="table-responsive mt-4">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Equipo</th>
+                <th>Estado</th>
+                <th>Costo</th>
+                <th>Puntos</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let reparacion of historialCliente">
+                <td>{{ formatDate(reparacion.fechaIngreso) }}</td>
+                <td>{{ reparacion.equipo.marca.nombre + ' ' + reparacion.equipo.modelo.nombre }}</td>
+                <td>
+                  <span class="status-badge" [ngClass]="reparacion.estado.toLowerCase()">
+                    {{ reparacion.estado }}
+                  </span>
+                </td>
+                <td>{{ formatCurrency(reparacion.manoDeObra + reparacion.entrega) }}</td>
+                <td>
+                  <span [class.puntos-pendientes]="reparacion.estado?.toLowerCase() !== 'entregada'">
+                    {{ reparacion.estado?.toLowerCase() === 'en taller' ? '-' : calcularPuntosReparacion(reparacion) }}
+                  </span>
+                </td>
+                <td class="acciones-column">
+                  <button class="ver-detalles-btn" (click)="verDetallesReparacion(reparacion)">
+                    <i class="material-icons">visibility</i>
+                    <span class="btn-text">Detalles</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div class="error-container" *ngIf="busquedaRealizada && errorMessage" [@fadeInOut]>
+      <div class="error-card">
+        <div class="error-icon">
+          <i class="material-icons">error_outline</i>
+        </div>
+        <div class="error-content">
+          <h3>{{ errorMessage }}</h3>
+          <p>Por favor, verifica los datos ingresados e intenta nuevamente.</p>
+        </div>
+        <button (click)="limpiarBusqueda()" class="retry-button">
+          <i class="material-icons">refresh</i>
+          <span>Realizar nueva búsqueda</span>
         </button>
       </div>
-      <div
-        *ngIf="form.get('codigo')?.invalid && form.get('codigo')?.touched"
-        class="text-danger"
-      >
-        El código de rastreo es obligatorio.
-      </div>
-    </div>
-  </form>
-
-  <div *ngIf="reparacionBuscada" class="mt-4 detalles-reparacion">
-    <div class="text-center">
-      <h3>Detalles de la Reparación</h3>
-      <p>
-        <strong>Equipo:</strong>
-        {{
-          reparacionBuscada.equipo.marca.nombre +
-            " " +
-            reparacionBuscada.equipo.modelo.nombre
-        }}
-      </p>
-
-      <p><strong>Falla:</strong> {{ reparacionBuscada.falla }}</p>
-      <p>
-        <strong>Informe:</strong>
-        {{ ultimaNota ?? "Aún no se realizó un informe" }}
-      </p>
-      <p>
-        <strong>Costo reparación:</strong>
-        {{ "$" + (reparacionBuscada.manoDeObra + reparacionBuscada.entrega) }}
-      </p>
-      <p>
-        <strong>Estado:</strong>
-        {{
-          reparacionBuscada.estado === "Finalizada"
-            ? "Equipo listo para retirar"
-            : reparacionBuscada.estado
-        }}
-      </p>
     </div>
   </div>
+</div>
 
-  <div
-    *ngIf="
-      !reparacionBuscada &&
-      form.get('codigo')?.valid &&
-      form.get('codigo')?.touched &&
-      !noseEncontro
-    "
-    class="mt-4"
-  >
-    <p class="text-danger">
-      No se encontró la reparación con el código {{ form.get("codigo")?.value }}
-    </p>
+<!-- Modal de detalles -->
+<div class="modal-overlay" *ngIf="reparacionSeleccionada" (click)="cerrarModal($event)">
+  <div class="modal-content" [@fadeInOut]>
+    <button class="cerrar-modal" (click)="cerrarModal($event)">
+      <i class="material-icons">close</i>
+    </button>
+
+    <div class="status-card">
+      <div class="status-header">
+        <h2>Estado de tu Reparación</h2>
+        <div class="status-badge" [ngClass]="reparacionSeleccionada.estado.toLowerCase()">
+          {{ reparacionSeleccionada.estado }}
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <i class="material-icons">devices</i>
+          <div class="info-content">
+            <label>Equipo</label>
+            <p>{{ reparacionSeleccionada.equipo.marca.nombre + ' ' + reparacionSeleccionada.equipo.modelo.nombre }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <i class="material-icons">build</i>
+          <div class="info-content">
+            <label>Falla Reportada</label>
+            <p>{{ reparacionSeleccionada.falla }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <i class="material-icons">engineering</i>
+          <div class="info-content">
+            <label>Diagnóstico Técnico</label>
+            <p>{{ obtenerUltimaNota(reparacionSeleccionada) }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <i class="material-icons">payments</i>
+          <div class="info-content">
+            <label>Costo Total</label>
+            <p class="price">{{ formatCurrency(reparacionSeleccionada.manoDeObra + reparacionSeleccionada.entrega) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline" *ngIf="reparacionSeleccionada.notasreparacion && reparacionSeleccionada.notasreparacion.length > 0">
+        <h3>Historial de la Reparación</h3>
+        <div class="timeline-items">
+          <div class="timeline-item" *ngFor="let nota of reparacionSeleccionada.notasreparacion">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">{{ formatDate(nota.fecha) }}</div>
+              <p>{{ nota.informe }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

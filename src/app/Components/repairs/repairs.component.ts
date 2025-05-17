@@ -12,6 +12,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import * as QRCode from 'qrcode';
+import { PointsService } from '../../services/points.service';
 
 @Component({
   selector: 'app-repairs',
@@ -31,6 +33,9 @@ export class RepairsComponent implements OnInit {
   pageSize: number = 10;
   totalPages: number = 0;
   nombreCliente?: string;
+  usarPuntos: boolean = false;
+  puntosAUsar: number = 0;
+  valorPunto: number = 10; // Mantener esta propiedad para la vista
 
   reparacionSeleccionada: any = {
     id: '',
@@ -48,8 +53,8 @@ export class RepairsComponent implements OnInit {
     repuesto: [],
   };
   searchTerm: string = '';
-  estadoFiltro: string = 'Todos';
-  estados: string[] = ['En taller', 'Finalizada', 'Entregada'];
+  estadoFiltro: string = 'En taller';
+  estados: string[] = ['En taller', 'Finalizada', 'Entregada', 'Todos'];
   nuevaReparacion: any = {
     fechaIngreso: '',
     tecnico: { id: '' },
@@ -100,7 +105,8 @@ export class RepairsComponent implements OnInit {
     private equipoService: EquipoService,
     private repuestosService: RepuestosService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private pointsService: PointsService
   ) {}
 
   ngOnInit(): void {
@@ -353,7 +359,10 @@ export class RepairsComponent implements OnInit {
 
   abrirFinalizarReparacionModal(reparacion: any): void {
     this.reparacionSeleccionada = { ...reparacion };
-
+    // Deshabilitar la opción de usar puntos si el cliente no tiene puntos
+    if (!this.reparacionSeleccionada.cliente.puntos || this.reparacionSeleccionada.cliente.puntos <= 0) {
+      this.usarPuntos = false;
+    }
     const modalElement = document.getElementById('finalizarReparacionModal');
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
@@ -489,7 +498,56 @@ export class RepairsComponent implements OnInit {
     });
   }
 */
-  generarPDFPrueba2(reparacion: any): void {
+  async agregarQRAlPDF(pdf: any, y: number): Promise<number> {
+    try {
+      const qrUrl = 'https://app.oneupsoluciones.com/seguimiento';
+      const qrDataUrl = await QRCode.toDataURL(qrUrl, {
+        width: 100,
+        margin: 1,
+      });
+
+      // Agregar el código QR centrado
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const qrWidth = 30; // ancho en mm
+      const qrHeight = 30; // alto en mm
+      const qrX = (pageWidth - qrWidth) / 2; // centrar horizontalmente
+      pdf.addImage(qrDataUrl, 'PNG', qrX, y, qrWidth, qrHeight);
+
+      // Agregar texto explicativo debajo del QR
+      y += qrHeight + 2; // Espacio entre QR y texto
+      pdf.setFontSize(6);
+      pdf.setFont('Helvetica', 'normal');
+      const textoExplicativo = [
+        'Escanea este código QR para acceder a',
+        'nuestro portal de seguimiento donde',
+        'podrás ver el estado de tu reparación,',
+        'tus puntos acumulados y más.'
+      ];
+
+      // Centrar cada línea de texto
+      textoExplicativo.forEach((linea, index) => {
+        const textWidth = pdf.getStringUnitWidth(linea) * 6 / pdf.internal.scaleFactor;
+        const textX = (pageWidth - textWidth) / 2;
+        pdf.text(linea, textX, y + (index * 3));
+      });
+
+      // Agregar la URL directa
+      y += (textoExplicativo.length * 3) + 2; // Espacio después del texto explicativo
+      pdf.setFontSize(5);
+      pdf.setFont('Helvetica', 'bold');
+      const urlText = 'URL: ' + qrUrl;
+      const urlWidth = pdf.getStringUnitWidth(urlText) * 5 / pdf.internal.scaleFactor;
+      const urlX = (pageWidth - urlWidth) / 2;
+      pdf.text(urlText, urlX, y);
+
+      return y + 3; // Retorna la nueva posición Y después de la URL
+    } catch (err) {
+      console.error('Error al generar el código QR:', err);
+      return y;
+    }
+  }
+
+  async generarPDFPrueba2(reparacion: any): Promise<void> {
     const lineHeight = 5;
     const maxWidth = 25;
     let y = 10;
@@ -498,7 +556,7 @@ export class RepairsComponent implements OnInit {
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [163, totalHeight > 800 ? totalHeight : 800], // Altura dinámica o mínima
+      format: [163, totalHeight > 800 ? totalHeight : 800],
     });
 
     pdf.setFontSize(8);
@@ -513,10 +571,6 @@ export class RepairsComponent implements OnInit {
         ? reparacion.notasreparacion[reparacion.notasreparacion.length - 1]
             .informe
         : '---') || '---',
-      maxWidth
-    );
-    const notaFinal = pdf.splitTextToSize(
-      'Conserve este comprobante y preséntelo al recoger su equipo. No nos hacemos responsables después de 60 días, ni por chips o tarjetas de memoria. Los teléfonos mojados no tienen garantía.',
       maxWidth
     );
     totalHeight += informeLines.length * lineHeight + 2; // Altura para el informe
@@ -642,20 +696,64 @@ export class RepairsComponent implements OnInit {
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo MO:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.manoDeObra}`, 25, y);
+    pdf.text(`$ ${reparacion.manoDeObra}`, 25, y);
     y += lineHeight;
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo reps.:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.entrega}`, 25, y);
+    pdf.text(this.formatMoney(reparacion.entrega || 0), 25, y);
     y += lineHeight;
+
+    // Información de puntos usados
+    if (this.usarPuntos && this.puntosAUsar > 0) {
+      pdf.setFont('Helvetica', 'bold');
+      pdf.text('Puntos usados:', 2, y);
+      pdf.setFont('Helvetica', 'normal');
+      pdf.text(`${this.puntosAUsar}`, 25, y);
+      y += lineHeight;
+
+      pdf.setFont('Helvetica', 'bold');
+      pdf.text('Descuento:', 2, y);
+      pdf.setFont('Helvetica', 'normal');
+      pdf.text(this.formatMoney(this.puntosAUsar * this.valorPunto), 25, y);
+      y += lineHeight;
+    }
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo total:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.manoDeObra + reparacion.entrega}`, 25, y);
+    pdf.text(`$ ${this.getTotal()}`, 25, y);
     y += lineHeight;
+
+    // Puntos generados en esta reparación
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Puntos gen:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    const puntosGenerados = reparacion.estado === 'Entregada' ? 
+      this.calcularPuntosDesdePesos(reparacion.manoDeObra + reparacion.entrega) : 0;
+    pdf.text(`${puntosGenerados}`, 25, y);
+    y += lineHeight;
+
+    // Total de puntos
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Total puntos:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    const totalPuntos = reparacion.cliente.puntos || 0;
+    pdf.text(`${totalPuntos} ($${totalPuntos * 10})`, 25, y);
+    y += lineHeight;
+
+    // Mensaje informativo sobre puntos
+    pdf.setFontSize(6);
+    pdf.setFont('Helvetica', 'italic');
+    const mensajePuntos = '¡Tus puntos tienen valor! Descuentos de hasta 50%';
+    const mensajePuntos2 = 'en tu próxima reparación o accesorios seleccionados.';
+    pdf.text(mensajePuntos, 2, y);
+    y += lineHeight - 1;
+    pdf.text(mensajePuntos2, 2, y);
+    y += lineHeight;
+    pdf.setFontSize(8); // Restaurar tamaño de fuente original
+    pdf.setFont('Helvetica', 'normal');
     y += 2;
 
     // Firma
@@ -666,13 +764,8 @@ export class RepairsComponent implements OnInit {
     y += lineHeight;
     y += 2;
 
-    // Aviso
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Nota:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(notaFinal, 20, y);
-    y += lineHeight;
-    y += 2;
+    // Antes de guardar el PDF, agregar el código QR
+    y = await this.agregarQRAlPDF(pdf, y);
 
     // Guardar PDF
     pdf.save(
@@ -680,16 +773,20 @@ export class RepairsComponent implements OnInit {
     );
   }
 
-  generarPDFPrueba2SinNotaFinal(reparacion: any): void {
+  async generarPDFPrueba2SinNotaFinal(reparacion: any): Promise<void> {
     const lineHeight = 5;
     const maxWidth = 25;
     let y = 10;
     let totalHeight = 0;
 
+    const formatMoney = (amount: number): string => {
+      return `$ ${amount.toFixed(2)}`;
+    };
+
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [163, totalHeight > 800 ? totalHeight : 800], // Altura dinámica o mínima
+      format: [163, totalHeight > 800 ? totalHeight : 800],
     });
 
     pdf.setFontSize(8);
@@ -829,20 +926,65 @@ export class RepairsComponent implements OnInit {
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo MO:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.manoDeObra}`, 25, y);
+    pdf.text(formatMoney(reparacion.manoDeObra || 0), 25, y);
     y += lineHeight;
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo reps.:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.entrega}`, 25, y);
+    pdf.text(formatMoney(reparacion.entrega || 0), 25, y);
     y += lineHeight;
+
+    // Información de puntos usados
+    if (this.usarPuntos && this.puntosAUsar > 0) {
+      pdf.setFont('Helvetica', 'bold');
+      pdf.text('Puntos usados:', 2, y);
+      pdf.setFont('Helvetica', 'normal');
+      pdf.text(`${this.puntosAUsar}`, 25, y);
+      y += lineHeight;
+
+      pdf.setFont('Helvetica', 'bold');
+      pdf.text('Descuento:', 2, y);
+      pdf.setFont('Helvetica', 'normal');
+      pdf.text(formatMoney(this.puntosAUsar * this.valorPunto), 25, y);
+      y += lineHeight;
+    }
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo total:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.manoDeObra + reparacion.entrega}`, 25, y);
+    pdf.text(`$ ${this.getTotal()}`, 25, y);
     y += lineHeight;
+    y += 2;
+
+    // Puntos generados en esta reparación
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Puntos gen:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    const puntosGenerados = reparacion.estado === 'Entregada' ? 
+      this.calcularPuntosDesdePesos(reparacion.manoDeObra + reparacion.entrega) : 0;
+    pdf.text(`${puntosGenerados}`, 25, y);
+    y += lineHeight;
+
+    // Total de puntos
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('Total puntos:', 2, y);
+    pdf.setFont('Helvetica', 'normal');
+    const totalPuntos = reparacion.cliente.puntos || 0;
+    pdf.text(`${totalPuntos} ($${totalPuntos * 10})`, 25, y);
+    y += lineHeight;
+
+    // Mensaje informativo sobre puntos
+    pdf.setFontSize(6);
+    pdf.setFont('Helvetica', 'italic');
+    const mensajePuntos = '¡Tus puntos tienen valor! Descuentos de hasta 50%';
+    const mensajePuntos2 = 'en tu próxima reparación o accesorios seleccionados.';
+    pdf.text(mensajePuntos, 2, y);
+    y += lineHeight - 1;
+    pdf.text(mensajePuntos2, 2, y);
+    y += lineHeight;
+    pdf.setFontSize(8); // Restaurar tamaño de fuente original
+    pdf.setFont('Helvetica', 'normal');
     y += 2;
 
     // Firma
@@ -852,6 +994,9 @@ export class RepairsComponent implements OnInit {
     pdf.text('_________________________', 20, y);
     y += lineHeight;
     y += 2;
+
+    // Antes de guardar el PDF, agregar el código QR
+    y = await this.agregarQRAlPDF(pdf, y);
 
     // Guardar PDF
     pdf.save(
@@ -864,34 +1009,112 @@ export class RepairsComponent implements OnInit {
   getTotal(): number {
     const manoDeObra = this.reparacionSeleccionada.manoDeObra || 0;
     const entrega = this.reparacionSeleccionada.entrega || 0;
-    return manoDeObra + entrega;
+    const descuentoPuntos = this.usarPuntos ? this.pointsService.calculatePointsValue(this.puntosAUsar) : 0;
+    return manoDeObra + entrega - descuentoPuntos;
+  }
+
+  getPuntosDisponibles(): number {
+    return this.reparacionSeleccionada.cliente?.puntos || 0;
+  }
+
+  calcularMaximoPuntosAUsar(): number {
+    const total = (this.reparacionSeleccionada.manoDeObra || 0) + (this.reparacionSeleccionada.entrega || 0);
+    return this.pointsService.calculateMaxPointsToUse(total, this.getPuntosDisponibles());
+  }
+
+  superaMaximoDescuento(): boolean {
+    const total = (this.reparacionSeleccionada.manoDeObra || 0) + (this.reparacionSeleccionada.entrega || 0);
+    return this.pointsService.exceedsMaxDiscount(total, this.puntosAUsar);
+  }
+
+  onUsarPuntosChange(): void {
+    if (!this.usarPuntos) {
+      this.puntosAUsar = 0;
+    } else {
+      this.puntosAUsar = this.calcularMaximoPuntosAUsar();
+    }
+  }
+
+  onPuntosAUsarChange(): void {
+    const maximoPuntos = this.calcularMaximoPuntosAUsar();
+    if (this.puntosAUsar > maximoPuntos) {
+      this.puntosAUsar = maximoPuntos;
+    }
+    if (this.puntosAUsar < 0) {
+      this.puntosAUsar = 0;
+    }
   }
 
   terminarReparacion(): void {
+    // Validar que el informe no esté vacío
+    if (!this.reparacionSeleccionada.notasreparacion.informe || 
+        this.reparacionSeleccionada.notasreparacion.informe.trim() === '') {
+      return; // No ejecutar si no hay informe
+    }
+
     const nuevaNota = {
       fecha: this.reparacionSeleccionada.fechaIngreso,
       informe: this.reparacionSeleccionada.notasreparacion.informe,
     };
     this.reparacionSeleccionada.notasreparacion.push(nuevaNota);
     this.reparacionSeleccionada.estado = 'Entregada';
-    this.repairsService
-      .modificarReparacion(this.reparacionSeleccionada)
-      .pipe(
-        tap(() => {
-          console.log('Reparación modificada exitosamente');
-          this.obtenerReparaciones();
-          this.generarPDFPrueba2SinNotaFinal(this.reparacionSeleccionada);
-          this.modalCloseAdd.nativeElement.click();
-        }),
-        catchError((error) => {
-          console.error('Error al finalizar reparación:', error);
-          this.errorModificarReparacion = true;
-          setTimeout(() => {
-            this.errorModificarReparacion = false;
-          }, 5000);
-          return of(error);
-        })
-      )
-      .subscribe();
+
+    // Guardar el descuento por puntos si se usaron
+    if (this.usarPuntos && this.puntosAUsar > 0) {
+      this.reparacionSeleccionada.descuentoPuntos = this.pointsService.calculatePointsValue(this.puntosAUsar);
+    }
+
+    //Obtenemos los puntos en base al total gastado
+    const totalPesos = this.reparacionSeleccionada.manoDeObra + this.reparacionSeleccionada.entrega;
+    const puntosGanados = this.calcularPuntosDesdePesos(totalPesos);
+
+    // Actualizar puntos del cliente
+    const clienteActualizado = { ...this.reparacionSeleccionada.cliente };
+    // Restar los puntos usados y sumar los nuevos puntos ganados
+    clienteActualizado.puntos = (clienteActualizado.puntos || 0) - (this.usarPuntos ? this.puntosAUsar : 0) + puntosGanados;
+
+    // Actualizar los puntos en la reparación seleccionada para que el PDF los muestre correctamente
+    this.reparacionSeleccionada.cliente.puntos = clienteActualizado.puntos;
+
+    // Primero actualizamos el cliente
+    this.clientsService.modificarCliente(clienteActualizado).pipe(
+      tap(() => {
+        console.log('Cliente actualizado con nuevos puntos:', clienteActualizado.puntos);
+        
+        // Después actualizamos la reparación
+        this.repairsService.modificarReparacion(this.reparacionSeleccionada).pipe(
+          tap(() => {
+            console.log('Reparación finalizada exitosamente');
+            this.obtenerReparaciones();
+            // Generar el PDF después de que todo se haya actualizado
+            setTimeout(() => {
+              this.generarPDFPrueba2SinNotaFinal(this.reparacionSeleccionada);
+              this.modalCloseAdd.nativeElement.click();
+            }, 500);
+          }),
+          catchError((error) => {
+            console.error('Error al finalizar reparación:', error);
+            this.errorModificarReparacion = true;
+            setTimeout(() => {
+              this.errorModificarReparacion = false;
+            }, 5000);
+            return of(error);
+          })
+        ).subscribe();
+      }),
+      catchError((error) => {
+        console.error('Error al actualizar puntos del cliente:', error);
+        return of(error);
+      })
+    ).subscribe();
+  }
+
+  // Función para calcular los puntos en base al precio de la reparación
+  calcularPuntosDesdePesos(pesos: number): number {
+    return this.pointsService.calculatePointsFromAmount(pesos);
+  }
+
+  formatMoney(amount: number): string {
+    return `$ ${amount.toFixed(2)}`;
   }
 }

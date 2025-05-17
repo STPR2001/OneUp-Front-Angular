@@ -1,42 +1,171 @@
-<header>
-  <h1 class="h2-title">Bienvenido</h1>
-  <hr />
-  <h2>Reparaciones pendientes</h2>
-</header>
-<main class="main-content">
-  <div class="search-container">
-    <div class="search m-3">
-      <input
-        type="text"
-        placeholder="Buscar reparación..."
-        [(ngModel)]="searchTerm"
-        class="form-control"
-      />
+<!-- Contenedor Principal -->
+<div class="dashboard-container">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="welcome-section">
+      <h1 class="h2-title">
+        <i class="material-icons">dashboard</i>
+        Bienvenido al Panel de Control
+      </h1>
+      <p class="text-muted">Sistema de Gestión - OneUp Soluciones</p>
     </div>
   </div>
 
-  <div class="card-container">
-    <div *ngFor="let reparacion of filteredReparacionesForStatus" class="card">
-      <div class="card-header">
-        <h2>Orden: {{ reparacion.id }}</h2>
+  <!-- Sección de Estadísticas -->
+  <div class="stats-overview-section">
+    <div class="section-header">
+      <h2><i class="material-icons">insights</i> Resumen de Estadísticas</h2>
+    </div>
+
+    <!-- Estadísticas de Estado -->
+    <div class="stats-section basic-stats">
+      <div class="stat-card">
+        <i class="material-icons">build</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getReparacionesEnTaller() }}</span>
+          <span class="stat-label">En Taller</span>
+          <span class="stat-percentage">{{ (getReparacionesEnTaller() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
+        </div>
       </div>
-      <div class="card-body">
-        <p>
-          <strong>Fecha Ingreso:</strong> {{ reparacion.fechaIngreso | date }}
-        </p>
-        <p><strong>Cliente:</strong> {{ reparacion.cliente.nombre }}</p>
-        <p><strong>Marca:</strong> {{ reparacion.equipo.marca.nombre }}</p>
-        <p><strong>Modelo:</strong> {{ reparacion.equipo.modelo.nombre }}</p>
-        <p><strong>Falla:</strong> {{ reparacion.falla }}</p>
+      <div class="stat-card">
+        <i class="material-icons">done_all</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getReparacionesFinalizadas() }}</span>
+          <span class="stat-label">Finalizadas</span>
+          <span class="stat-percentage">{{ (getReparacionesFinalizadas() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
+        </div>
       </div>
-      <div class="card-footer">
-        <button
-          class="btn btn-success me-2"
-          [routerLink]="['/modificarReparacion', reparacion.id]"
-        >
-          Modificar
-        </button>
+      <div class="stat-card">
+        <i class="material-icons">handshake</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getReparacionesEntregadas() }}</span>
+          <span class="stat-label">Entregadas</span>
+          <span class="stat-percentage">{{ (getReparacionesEntregadas() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas Detalladas -->
+    <div class="stats-grid">
+      <!-- KPIs Principales -->
+      <div class="stat-card highlight warning" *ngIf="getEstadisticasGenerales().reparacionesUrgentes > 0">
+        <i class="material-icons">warning</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().reparacionesUrgentes }}</span>
+          <span class="stat-label">Reparaciones Urgentes</span>
+          <span class="stat-description">Más de 7 días en taller</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight success">
+        <i class="material-icons">payments</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().ingresosMensuales | currency }}</span>
+          <span class="stat-label">Ingresos del Mes</span>
+          <span class="stat-description">De reparaciones entregadas</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight info">
+        <i class="material-icons">schedule</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().promedioTiempoReparacion }}</span>
+          <span class="stat-label">Días Promedio</span>
+          <span class="stat-description">Tiempo promedio de reparación</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight primary">
+        <i class="material-icons">people</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().clientesRecurrentes }}</span>
+          <span class="stat-label">Clientes Recurrentes</span>
+          <span class="stat-description">Con más de una reparación</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight success">
+        <i class="material-icons">engineering</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().tecnicoMasProductivo }}</span>
+          <span class="stat-label">Técnico más Productivo</span>
+          <span class="stat-description">Mayor número de reparaciones completadas</span>
+        </div>
       </div>
     </div>
   </div>
-</main>
+
+  <!-- Reparaciones Pendientes Section -->
+  <div class="pending-repairs-section">
+    <div class="section-header">
+      <h2><i class="material-icons">pending_actions</i> Reparaciones Pendientes</h2>
+      <div class="search-container">
+        <div class="search-box">
+          <input
+            type="text"
+            placeholder="Buscar por cliente, equipo o falla..."
+            [(ngModel)]="searchTerm"
+            class="search-input"
+          />
+          <i class="material-icons">search</i>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-container">
+      <div *ngFor="let reparacion of filteredReparacionesForStatus" class="repair-card">
+        <div class="card-header">
+          <div class="order-number">
+            <span class="label">Orden:</span>
+            <span class="value">#{{ reparacion.id }}</span>
+          </div>
+          <div class="date">{{ reparacion.fechaIngreso | date:'dd/MM/yyyy' }}</div>
+        </div>
+        
+        <div class="card-body">
+          <div class="client-info">
+            <i class="material-icons">person</i>
+            <span>{{ reparacion.cliente.nombre }}</span>
+          </div>
+          
+          <div class="device-info">
+            <i class="material-icons">devices</i>
+            <div>
+              <span class="brand">{{ reparacion.equipo.marca.nombre }}</span>
+              <span class="model">{{ reparacion.equipo.modelo.nombre }}</span>
+            </div>
+          </div>
+
+          <div class="fault-info">
+            <i class="material-icons">error_outline</i>
+            <span class="fault-text">{{ reparacion.falla }}</span>
+          </div>
+
+          <div class="time-info" *ngIf="getDiasEnTaller(reparacion) > 0">
+            <i class="material-icons">schedule</i>
+            <span>{{ getDiasEnTaller(reparacion) }} días en taller</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button
+            class="btn btn-manage"
+            routerLink="/reparaciones"
+            title="Gestionar reparación"
+          >
+            <div class="btn-content">
+              <i class="material-icons">build</i>
+              <span class="btn-text">Gestionar</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay reparaciones -->
+    <div *ngIf="filteredReparacionesForStatus.length === 0" class="no-repairs">
+      <i class="material-icons">engineering</i>
+      <p>No hay reparaciones pendientes en este momento</p>
+    </div>
+  </div>
+</div>

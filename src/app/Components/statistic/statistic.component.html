@@ -1,38 +1,175 @@
-<div class="container">
-  <h2 class="h2-title">Estadísticas anuales</h2>
-  <p class="description">
-    Consulta las estadísticas anuales de reparaciones y gastos
-  </p>
-  <div class="d-flex m-3 justify-content-center year-input-container">
-    <label for="yearInput" class="text-f">Año:</label>
-    <input
-      type="number"
-      id="yearInput"
-      [(ngModel)]="selectedYear"
-      (change)="changeYear(selectedYear)"
-      placeholder="YYYY"
-      min="2017"
-      max="2100"
-      class="rounded year-input"
-    />
-  </div>
-  <div id="reparacionesPorMes" class="chart"></div>
-  <div id="noDataReparacionesPorMes" class="no-data">
-    No se encontraron datos históricos para la gráfica 'Reparaciones por mes'
-  </div>
-
-  <div id="gastosEnElAno" class="chart mt-4"></div>
-  <div id="noDataGastosEnElAno" class="no-data">
-    No se encontraron datos históricos para la gráfica 'Gastos en el año'
-  </div>
-  <div id="comprasPorProveedor" class="chart mt-4"></div>
-  <div id="noDataComprasPorProveedor" class="no-data">
-    No se encontraron datos históricos para la gráfica 'Compras por proveedor'
+<div class="statistics-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="main-title">
+        <i class="material-icons">insights</i>
+        Estadísticas y Análisis
+      </h1>
+      <p class="subtitle">
+        Panel completo de métricas y tendencias del negocio
+      </p>
+    </div>
+    <div class="year-selector">
+      <label for="yearInput" class="year-label">
+        <i class="material-icons">calendar_today</i>
+        Año:
+      </label>
+      <input
+        type="number"
+        id="yearInput"
+        [(ngModel)]="selectedYear"
+        (change)="changeYear(selectedYear)"
+        placeholder="YYYY"
+        min="2017"
+        max="2100"
+        class="year-input"
+      />
+    </div>
   </div>
 
-  <div id="reparacionesPorTecnico" class="chart mt-4"></div>
-  <div id="noDataReparacionesPorTecnico" class="no-data">
-    No se encontraron datos históricos para la gráfica 'Reparaciones por
-    técnico'
+  <!-- Estadísticas Básicas -->
+  <div class="stats-section basic-stats">
+    <div class="stat-card">
+      <i class="material-icons">build</i>
+      <div class="stat-info">
+        <span class="stat-value">{{ getReparacionesEnTaller() }}</span>
+        <span class="stat-label">En Taller</span>
+        <span class="stat-percentage">{{ (getReparacionesEnTaller() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <i class="material-icons">done_all</i>
+      <div class="stat-info">
+        <span class="stat-value">{{ getReparacionesFinalizadas() }}</span>
+        <span class="stat-label">Finalizadas</span>
+        <span class="stat-percentage">{{ (getReparacionesFinalizadas() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <i class="material-icons">handshake</i>
+      <div class="stat-info">
+        <span class="stat-value">{{ getReparacionesEntregadas() }}</span>
+        <span class="stat-label">Entregadas</span>
+        <span class="stat-percentage">{{ (getReparacionesEntregadas() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas Detalladas -->
+  <div class="detailed-stats-section">
+    <div class="section-header">
+      <h2><i class="material-icons">insights</i> Estadísticas Detalladas</h2>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card highlight warning" *ngIf="getEstadisticasGenerales().reparacionesUrgentes > 0">
+        <i class="material-icons">warning</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().reparacionesUrgentes }}</span>
+          <span class="stat-label">Reparaciones Urgentes</span>
+          <span class="stat-description">Más de 7 días en taller</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight success">
+        <i class="material-icons">payments</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().ingresosMensuales | currency }}</span>
+          <span class="stat-label">Ingresos del Mes</span>
+          <span class="stat-description">De reparaciones entregadas</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight info">
+        <i class="material-icons">schedule</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().promedioTiempoReparacion }}</span>
+          <span class="stat-label">Días Promedio</span>
+          <span class="stat-description">Tiempo promedio de reparación</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight primary">
+        <i class="material-icons">people</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().clientesRecurrentes }}</span>
+          <span class="stat-label">Clientes Recurrentes</span>
+          <span class="stat-description">Con más de una reparación</span>
+        </div>
+      </div>
+
+      <div class="stat-card highlight success">
+        <i class="material-icons">engineering</i>
+        <div class="stat-info">
+          <span class="stat-value">{{ getEstadisticasGenerales().tecnicoMasProductivo }}</span>
+          <span class="stat-label">Técnico más Productivo</span>
+          <span class="stat-description">Mayor número de reparaciones completadas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="charts-grid">
+    <!-- Reparaciones Section -->
+    <div class="stats-section">
+      <h2 class="section-title">
+        <i class="material-icons">build</i>
+        Reparaciones
+      </h2>
+      <div class="chart-container">
+        <div id="reparacionesPorMes" class="chart"></div>
+        <div id="noDataReparacionesPorMes" class="no-data">
+          <i class="material-icons">info</i>
+          <p>No hay reparaciones registradas para el año {{ selectedYear }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Técnicos Section -->
+    <div class="stats-section">
+      <h2 class="section-title">
+        <i class="material-icons">engineering</i>
+        Rendimiento de Técnicos
+      </h2>
+      <div class="chart-container">
+        <div id="reparacionesPorTecnico" class="chart"></div>
+        <div id="noDataReparacionesPorTecnico" class="no-data">
+          <i class="material-icons">info</i>
+          <p>No hay reparaciones asignadas a técnicos para el año {{ selectedYear }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingresos y Gastos Section -->
+    <div class="stats-section">
+      <h2 class="section-title">
+        <i class="material-icons">payments</i>
+        Ingresos y Gastos
+      </h2>
+      <div class="chart-container">
+        <div id="gastosEnElAno" class="chart"></div>
+        <div id="noDataGastosEnElAno" class="no-data">
+          <i class="material-icons">info</i>
+          <p>No hay gastos registrados para el año {{ selectedYear }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proveedores Section -->
+    <div class="stats-section">
+      <h2 class="section-title">
+        <i class="material-icons">business</i>
+        Distribución de Proveedores
+      </h2>
+      <div class="chart-container">
+        <div id="comprasPorProveedor" class="chart"></div>
+        <div id="noDataComprasPorProveedor" class="no-data">
+          <i class="material-icons">info</i>
+          <p>No hay compras a proveedores registradas para el año {{ selectedYear }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

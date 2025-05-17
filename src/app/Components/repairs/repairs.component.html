@@ -16,7 +16,6 @@
         class="form-select"
         (change)="onFilterChange()"
       >
-        <option value="Todos">Todos</option>
         <option *ngFor="let estado of estados" [value]="estado">
           {{ estado }}
         </option>
@@ -76,6 +75,7 @@
               class="btn btn-success me-2"
               (click)="abrirFinalizarReparacionModal(repair)"
               title="Finalizar"
+              [disabled]="repair.estado === 'Entregada'"
             >
               <span class="material-icons icon-small">done</span>
             </button>
@@ -434,7 +434,7 @@
         ></button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="terminarReparacion()">
+        <form (ngSubmit)="terminarReparacion()" #finalizarForm="ngForm">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="manoDeObra" class="form-label">
@@ -476,11 +476,57 @@
               required
               class="form-control fs-5"
               rows="3"
+              #informeInput="ngModel"
             ></textarea>
+            <div *ngIf="informeInput.invalid && (informeInput.dirty || informeInput.touched)" class="text-danger">
+              El informe es requerido para finalizar la reparación
+            </div>
           </div>
           <div class="mb-3">
             <h5>Total: {{ getTotal() | currency }}</h5>
           </div>
+
+          <!-- Sección de puntos -->
+          <div class="mb-3">
+            <h5>Puntos del cliente: {{ getPuntosDisponibles() }}</h5>
+            <div class="form-check mb-2">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="usarPuntos"
+                name="usarPuntos"
+                [(ngModel)]="usarPuntos"
+                (change)="onUsarPuntosChange()"
+                [disabled]="!getPuntosDisponibles()"
+              />
+              <label class="form-check-label" for="usarPuntos">
+                Usar puntos (1 punto = {{ valorPunto | currency }})
+              </label>
+            </div>
+            <div *ngIf="usarPuntos" class="mb-2">
+              <label for="puntosAUsar" class="form-label">Puntos a usar:</label>
+              <input
+                type="number"
+                class="form-control"
+                id="puntosAUsar"
+                name="puntosAUsar"
+                [(ngModel)]="puntosAUsar"
+                (change)="onPuntosAUsarChange()"
+                min="0"
+                [max]="calcularMaximoPuntosAUsar()"
+              />
+              <small class="text-muted d-block">
+                Descuento por puntos: {{ (puntosAUsar * valorPunto) | currency }}
+              </small>
+              <small class="text-muted d-block">
+                Máximo de puntos a utilizar: {{ calcularMaximoPuntosAUsar() }}
+              </small>
+              <small class="text-danger d-block" *ngIf="superaMaximoDescuento()">
+                El descuento máximo permitido es del 50% del valor total
+              </small>
+            </div>
+          </div>
+
           <div class="modal-footer">
             <button
               type="button"
@@ -489,7 +535,7 @@
             >
               Cerrar
             </button>
-            <button type="submit" class="btn btn-success col-3">
+            <button type="submit" class="btn btn-success col-3" [disabled]="!finalizarForm.form.valid">
               Finalizar
             </button>
           </div>

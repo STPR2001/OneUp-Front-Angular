@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
+import { tap, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -129,10 +130,34 @@ export class RepairsService {
     if (anio) {
       params = params.append('anio', anio.toString());
     }
-    return this.http.get<any>(`${this.apiUrl}/reparaciones-por-mes`, {
-      headers,
-      params,
-    });
+    console.log(
+      'Solicitando reparaciones por mes:',
+      `${this.apiUrl}/reparaciones-por-mes`,
+      { anio, headers }
+    );
+    return this.http
+      .get<any>(`${this.apiUrl}/reparaciones-por-mes`, {
+        headers,
+        params,
+      })
+      .pipe(
+        tap((response) => {
+          console.log('Respuesta reparaciones por mes (raw):', response);
+          if (Array.isArray(response)) {
+            console.log(
+              'Número de elementos en la respuesta:',
+              response.length
+            );
+            response.forEach((item) => console.log('Item de respuesta:', item));
+          } else {
+            console.log('La respuesta no es un array:', typeof response);
+          }
+        }),
+        catchError((error) => {
+          console.error('Error en reparaciones por mes:', error);
+          throw error;
+        })
+      );
   }
 
   getReparacionesPorTecnico(anio?: number): Observable<any> {
@@ -141,9 +166,24 @@ export class RepairsService {
     if (anio) {
       params = params.append('anio', anio.toString());
     }
-    return this.http.get<any>(`${this.apiUrl}/reparaciones-por-tecnico`, {
-      headers,
-      params,
-    });
+    console.log(
+      'Solicitando reparaciones por técnico:',
+      `${this.apiUrl}/reparaciones-por-tecnico`,
+      { anio }
+    );
+    return this.http
+      .get<any>(`${this.apiUrl}/reparaciones-por-tecnico`, {
+        headers,
+        params,
+      })
+      .pipe(
+        tap((response) =>
+          console.log('Respuesta reparaciones por técnico:', response)
+        ),
+        catchError((error) => {
+          console.error('Error en reparaciones por técnico:', error);
+          throw error;
+        })
+      );
   }
 }

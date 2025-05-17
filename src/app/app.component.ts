@@ -1,6 +1,10 @@
 import { Component, ViewChild, OnInit, HostListener } from '@angular/core';
 import { AuthService } from './services/auth/auth.service';
 import { Router, NavigationEnd } from '@angular/router';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +18,13 @@ export class AppComponent implements OnInit {
 
   @ViewChild('cerrarSesion') modalCerrarSesion: any;
 
-  constructor(private authService: AuthService, private router: Router) {
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+    .pipe(
+      map(result => result.matches),
+      shareReplay()
+    );
+
+  constructor(private authService: AuthService, private router: Router, private breakpointObserver: BreakpointObserver) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentRoute = event.urlAfterRedirects;
@@ -51,7 +61,21 @@ export class AppComponent implements OnInit {
     this.sidebarOpen = !this.sidebarOpen;
   }
 
+  closeSidebarOnMobile() {
+    if (window.innerWidth < 768) {
+      this.sidebarOpen = false;
+    }
+  }
+
   isActive(route: string): boolean {
     return this.currentRoute === route;
+  }
+
+  closeDrawerOnMobile(drawer: MatSidenav) {
+    this.isHandset$.subscribe(isHandset => {
+      if (isHandset) {
+        drawer.close();
+      }
+    });
   }
 }
