@@ -10,35 +10,21 @@ export class HistorialClienteService {
   private apiUrl =
     'https://app.oneupsoluciones.com:8443/oneup-backend/api/reparacion';
 
-  constructor(private http: HttpClient, private pointsService: PointsService) {}
+  constructor(
+    private http: HttpClient, 
+    private pointsService: PointsService
+  ) {}
 
-  // Obtener todas las reparaciones y filtrar por DNI del cliente
+  // Obtener historial por DNI del cliente usando endpoint público
   obtenerHistorialPorDNI(dni: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/all`).pipe(
+    return this.http.get<any[]>(`${this.apiUrl}/public/historial/${dni}`).pipe(
       tap((response) => {
         console.log('Respuesta completa del API:', response);
         console.log('Buscando reparaciones para cédula:', dni);
       }),
       map((reparaciones) => {
-        const reparacionesFiltradas = reparaciones.filter((rep) => {
-          const cedulaCliente = rep.cliente?.cedula?.toString();
-          const cedulaConsulta = dni.toString();
-          const coincide = cedulaCliente === cedulaConsulta;
-
-          console.log(`Reparación ${rep.id}:`, {
-            cedulaCliente: cedulaCliente,
-            tipoCedulaCliente: typeof cedulaCliente,
-            cedulaConsulta: cedulaConsulta,
-            tipoCedulaConsulta: typeof cedulaConsulta,
-            coincide: coincide,
-            estado: rep.estado,
-            cliente: rep.cliente,
-          });
-
-          return coincide;
-        });
-        console.log('Reparaciones filtradas:', reparacionesFiltradas);
-        return reparacionesFiltradas;
+        console.log('Reparaciones filtradas:', reparaciones);
+        return reparaciones;
       })
     );
   }

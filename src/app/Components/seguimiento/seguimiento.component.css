@@ -858,3 +858,17 @@
     padding: 1rem;
   }
 }
+
+::ng-deep .success-snackbar {
+  background: #4caf50;
+  color: white;
+}
+
+::ng-deep .error-snackbar {
+  background: #f44336;
+  color: white;
+}
+
+::ng-deep .mat-simple-snackbar-action {
+  color: white;
+}

@@ -28,6 +28,7 @@ import { RestoreDataComponent } from './Components/restore-data/restore-data.com
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
@@ -62,6 +63,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     BrowserAnimationsModule,
     MatDialogModule,
     MatButtonModule,
+    MatSnackBarModule,
   ],
   providers: [AuthGuard],
 

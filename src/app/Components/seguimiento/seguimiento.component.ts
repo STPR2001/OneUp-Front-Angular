@@ -5,6 +5,7 @@ import { HistorialClienteService } from 'src/app/services/historial-cliente.serv
 import { trigger, transition, style, animate } from '@angular/animations';
 import { PointsService } from '../../services/points.service';
 import { ClientsService } from '../../services/clients.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-seguimiento',
@@ -40,7 +41,8 @@ export class SeguimientoComponent implements OnInit {
     private repairsService: RepairsService,
     private clientsService: ClientsService,
     private historialClienteService: HistorialClienteService,
-    private pointsService: PointsService
+    private pointsService: PointsService,
+    private snackBar: MatSnackBar
   ) {
     this.form = this.fb.group({
       codigo: ['', [Validators.required, Validators.minLength(3)]],
@@ -60,18 +62,15 @@ export class SeguimientoComponent implements OnInit {
 
   verDetallesReparacion(reparacion: any): void {
     this.reparacionSeleccionada = reparacion;
-    // Prevenir scroll del body cuando el modal está abierto
     document.body.style.overflow = 'hidden';
   }
 
   cerrarModal(event: MouseEvent): void {
-    // Solo cerrar si se hace clic en el overlay o en el botón de cerrar
     if (
       event.target === event.currentTarget || 
       (event.target as HTMLElement).closest('.cerrar-modal')
     ) {
       this.reparacionSeleccionada = null;
-      // Restaurar scroll del body
       document.body.style.overflow = 'auto';
     }
   }
@@ -116,11 +115,14 @@ export class SeguimientoComponent implements OnInit {
           }, 100);
         },
         error: (error) => {
-          console.error('Error al obtener reparación:', error);
           this.reparacionBuscada = null;
           this.errorMessage = 'No se encontró ninguna reparación con el código ingresado';
           this.mostrarHistorial = false;
           this.isLoading = false;
+          this.snackBar.open('No se encontró ninguna reparación con el código ingresado', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
         }
       });
     } else {
@@ -129,6 +131,10 @@ export class SeguimientoComponent implements OnInit {
         if (control?.invalid) {
           control.markAsTouched();
         }
+      });
+      this.snackBar.open('Por favor, ingresa un código válido', 'Cerrar', {
+        duration: 5000,
+        panelClass: ['error-snackbar']
       });
     }
   }
@@ -144,9 +150,17 @@ export class SeguimientoComponent implements OnInit {
         if (historial.length === 0) {
           this.errorMessage = 'No se encontraron reparaciones para el DNI ingresado';
           this.mostrarHistorial = false;
+          this.snackBar.open('No se encontraron reparaciones para el DNI ingresado', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
         } else {
           this.estadisticasCliente = this.historialClienteService.obtenerEstadisticas(historial);
           this.mostrarHistorial = true;
+          this.snackBar.open('Historial encontrado correctamente', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
         }
         this.isLoading = false;
         setTimeout(() => {
@@ -157,10 +171,13 @@ export class SeguimientoComponent implements OnInit {
         }, 100);
       },
       error: (error) => {
-        console.error('Error al obtener historial:', error);
         this.errorMessage = 'Ocurrió un error al buscar el historial del cliente';
         this.mostrarHistorial = false;
         this.isLoading = false;
+        this.snackBar.open('Ocurrió un error al buscar el historial del cliente', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }
@@ -171,6 +188,10 @@ export class SeguimientoComponent implements OnInit {
       this.buscarHistorialCliente(dni);
     } else {
       this.form.get('dni')?.markAsTouched();
+      this.snackBar.open('Por favor, ingresa un número de cédula válido', 'Cerrar', {
+        duration: 5000,
+        panelClass: ['error-snackbar']
+      });
     }
   }
 
