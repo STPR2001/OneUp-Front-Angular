@@ -33,6 +33,7 @@ export class SeguimientoComponent implements OnInit {
   errorMessage: string = '';
   busquedaRealizada: boolean = false;
   reparacionSeleccionada: any = null;
+  valorPunto: number = 5;
 
   constructor(
     private fb: FormBuilder, 
@@ -45,6 +46,7 @@ export class SeguimientoComponent implements OnInit {
       codigo: ['', [Validators.required, Validators.minLength(3)]],
       dni: ['', [Validators.pattern('^[0-9]{8}$')]]
     });
+    this.valorPunto = this.pointsService.calculatePointsValue(1);
   }
 
   ngOnInit(): void {}

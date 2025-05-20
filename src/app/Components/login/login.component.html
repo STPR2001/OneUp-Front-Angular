@@ -57,18 +57,18 @@
           </div>
         </div>
 
+        <!-- Mensaje de Error de Login -->
+        <div class="alert alert-danger" *ngIf="loginError" role="alert">
+          <i class="material-icons">error</i>
+          Usuario o contraseña incorrectos
+        </div>
+
         <!-- Recordar usuario -->
         <div class="form-options">
           <label class="remember-me">
             <input type="checkbox" formControlName="rememberMe">
             <span>Recordar usuario</span>
           </label>
-        </div>
-
-        <!-- Mensaje de error de login -->
-        <div class="error-message" *ngIf="loginError">
-          <i class="material-icons">error_outline</i>
-          <span>Usuario o contraseña incorrectos</span>
         </div>
 
         <!-- Botón de Login -->

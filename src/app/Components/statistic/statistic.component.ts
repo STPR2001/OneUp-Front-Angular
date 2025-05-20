@@ -79,14 +79,66 @@ export class StatisticComponent implements OnInit {
 
   calcularIngresosMensuales(): number {
     const hoy = new Date();
-    const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    const mesActual = hoy.getMonth();
+    const anioActual = hoy.getFullYear();
     
-    const reparacionesEntregadas = this.reparaciones.filter(r => 
-      r.activo === true && 
-      r.estado === 'Entregada'
-    );
+    console.log('Calculando ingresos para:', {
+      mes: mesActual + 1,
+      anio: anioActual
+    });
+
+    console.log('Total de reparaciones antes del filtro:', this.reparaciones.length);
     
-    const total = reparacionesEntregadas.reduce((total, r) => total + (r.manoDeObra + r.entrega), 0);
+    const reparacionesEntregadas = this.reparaciones.filter(r => {
+      // Inspeccionar el objeto completo
+      console.log('Evaluando reparación completa:', r);
+
+      // Verificar específicamente la propiedad activo
+      console.log('Tipo de activo:', typeof r.activo, 'Valor de activo:', r.activo);
+
+      // Cambiar la lógica de verificación de activo
+      if (r.activo === undefined || r.activo === null) {
+        console.log('La propiedad activo no está definida, asumiendo como activa');
+      } else if (r.activo === false) {
+        console.log('Reparación descartada: está explícitamente inactiva');
+        return false;
+      }
+      
+      if (r.estado !== 'Entregada') {
+        console.log('Reparación descartada: no está entregada');
+        return false;
+      }
+      
+      if (!r.fechaEntrega) {
+        console.log('Reparación descartada: no tiene fecha de entrega');
+        return false;
+      }
+      
+      const fechaEntrega = new Date(r.fechaEntrega);
+      const mesEntrega = fechaEntrega.getMonth();
+      const anioEntrega = fechaEntrega.getFullYear();
+      
+      const estaEnMesActual = mesEntrega === mesActual && anioEntrega === anioActual;
+      
+      if (!estaEnMesActual) {
+        console.log(`Reparación descartada: fecha fuera del mes actual - Mes: ${mesEntrega + 1}, Año: ${anioEntrega}`);
+      } else {
+        console.log('Reparación aceptada para el cálculo');
+      }
+      
+      return estaEnMesActual;
+    });
+    
+    console.log('Reparaciones entregadas este mes:', reparacionesEntregadas);
+    
+    const total = reparacionesEntregadas.reduce((total, r) => {
+      const subtotal = (r.manoDeObra || 0) + (r.entrega || 0);
+      console.log(`Sumando reparación ${r.id}: manoDeObra=${r.manoDeObra}, entrega=${r.entrega}, subtotal=${subtotal}`);
+      return total + subtotal;
+    }, 0);
+    
+    console.log('Total ingresos del mes:', total);
+    
     return total;
   }
 

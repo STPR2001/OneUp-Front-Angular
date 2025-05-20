@@ -56,28 +56,47 @@ export class LoginComponent implements OnInit {
         password: password
       };
 
-      this.loginService.login(credentials).subscribe({
-        next: (userData) => {
-          this.authService.login(userData.token);
-          
-          // Manejar "Recordar usuario"
-          if (rememberMe) {
-            localStorage.setItem('rememberedUser', username);
-          } else {
-            localStorage.removeItem('rememberedUser');
-          }
+      try {
+        this.loginService.login(credentials).subscribe({
+          next: (userData) => {
+            this.authService.login(userData.token);
+            
+            // Manejar "Recordar usuario"
+            if (rememberMe) {
+              localStorage.setItem('rememberedUser', username);
+            } else {
+              localStorage.removeItem('rememberedUser');
+            }
 
-          this.router.navigate(['/home']);
-        },
-        error: (error) => {
-          console.error('Error de login:', error);
-          this.loginError = true;
-          this.loginForm.setErrors({ invalidLogin: true });
-        },
-        complete: () => {
-          this.isLoading = false;
-        }
-      });
+            this.router.navigate(['/home']);
+          },
+          error: (error) => {
+            console.error('Error de login:', error);
+            this.loginError = true;
+            this.loginForm.setErrors({ invalidLogin: true });
+            this.isLoading = false;
+            
+            // Limpiar el mensaje de error después de 3 segundos
+            setTimeout(() => {
+              this.loginError = false;
+              this.loginForm.setErrors(null);
+            }, 3000);
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
+        });
+      } catch (error) {
+        console.error('Error inesperado:', error);
+        this.loginError = true;
+        this.isLoading = false;
+        
+        // Limpiar el mensaje de error después de 3 segundos
+        setTimeout(() => {
+          this.loginError = false;
+          this.loginForm.setErrors(null);
+        }, 3000);
+      }
     } else {
       Object.keys(this.loginForm.controls).forEach(key => {
         const control = this.loginForm.get(key);

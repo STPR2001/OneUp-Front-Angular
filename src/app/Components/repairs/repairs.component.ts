@@ -35,7 +35,7 @@ export class RepairsComponent implements OnInit {
   nombreCliente?: string;
   usarPuntos: boolean = false;
   puntosAUsar: number = 0;
-  valorPunto: number = 10; // Mantener esta propiedad para la vista
+  valorPunto: number = 5; // Actualizado para usar el nuevo valor del servicio
 
   reparacionSeleccionada: any = {
     id: '',
@@ -107,7 +107,9 @@ export class RepairsComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog,
     private pointsService: PointsService
-  ) {}
+  ) {
+    this.valorPunto = this.pointsService.calculatePointsValue(1);
+  }
 
   ngOnInit(): void {
     //this.setFechaActual();
@@ -506,14 +508,13 @@ export class RepairsComponent implements OnInit {
         margin: 1,
       });
 
-      // Agregar el código QR centrado
-      const pageWidth = pdf.internal.pageSize.getWidth();
+      // Cambiar la posición X del QR para alinearlo más a la izquierda
+      const qrX = 5; // posición fija a la izquierda
       const qrWidth = 30; // ancho en mm
       const qrHeight = 30; // alto en mm
-      const qrX = (pageWidth - qrWidth) / 2; // centrar horizontalmente
       pdf.addImage(qrDataUrl, 'PNG', qrX, y, qrWidth, qrHeight);
 
-      // Agregar texto explicativo debajo del QR
+      // Agregar texto explicativo debajo del QR, también alineado a la izquierda
       y += qrHeight + 2; // Espacio entre QR y texto
       pdf.setFontSize(6);
       pdf.setFont('Helvetica', 'normal');
@@ -524,21 +525,18 @@ export class RepairsComponent implements OnInit {
         'tus puntos acumulados y más.'
       ];
 
-      // Centrar cada línea de texto
+      // Usar X fijo para los textos
+      const textX = 5;
       textoExplicativo.forEach((linea, index) => {
-        const textWidth = pdf.getStringUnitWidth(linea) * 6 / pdf.internal.scaleFactor;
-        const textX = (pageWidth - textWidth) / 2;
         pdf.text(linea, textX, y + (index * 3));
       });
 
-      // Agregar la URL directa
+      // Agregar la URL directa, también alineada a la izquierda
       y += (textoExplicativo.length * 3) + 2; // Espacio después del texto explicativo
       pdf.setFontSize(5);
       pdf.setFont('Helvetica', 'bold');
       const urlText = 'URL: ' + qrUrl;
-      const urlWidth = pdf.getStringUnitWidth(urlText) * 5 / pdf.internal.scaleFactor;
-      const urlX = (pageWidth - urlWidth) / 2;
-      pdf.text(urlText, urlX, y);
+      pdf.text(urlText, textX, y);
 
       return y + 3; // Retorna la nueva posición Y después de la URL
     } catch (err) {
@@ -673,6 +671,7 @@ export class RepairsComponent implements OnInit {
     y += 2;
 
     // Informe   AQUI ACCEDE A LA ULTIMA NOTA DE REAPRACION
+    /*
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Informe:', 2, y);
     pdf.setFont('Helvetica', 'normal');
@@ -740,13 +739,13 @@ export class RepairsComponent implements OnInit {
     pdf.text('Total puntos:', 2, y);
     pdf.setFont('Helvetica', 'normal');
     const totalPuntos = reparacion.cliente.puntos || 0;
-    pdf.text(`${totalPuntos} ($${totalPuntos * 10})`, 25, y);
+    pdf.text(`${totalPuntos} ($${totalPuntos * 5})`, 25, y);
     y += lineHeight;
 
     // Mensaje informativo sobre puntos
     pdf.setFontSize(6);
     pdf.setFont('Helvetica', 'italic');
-    const mensajePuntos = '¡Tus puntos tienen valor! Descuentos de hasta 50%';
+    const mensajePuntos = '¡Tus puntos tienen valor! Descuentos de hasta 100%';
     const mensajePuntos2 = 'en tu próxima reparación o accesorios seleccionados.';
     pdf.text(mensajePuntos, 2, y);
     y += lineHeight - 1;
@@ -755,7 +754,7 @@ export class RepairsComponent implements OnInit {
     pdf.setFontSize(8); // Restaurar tamaño de fuente original
     pdf.setFont('Helvetica', 'normal');
     y += 2;
-
+    */
     // Firma
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Firma:', 2, y);
@@ -971,13 +970,13 @@ export class RepairsComponent implements OnInit {
     pdf.text('Total puntos:', 2, y);
     pdf.setFont('Helvetica', 'normal');
     const totalPuntos = reparacion.cliente.puntos || 0;
-    pdf.text(`${totalPuntos} ($${totalPuntos * 10})`, 25, y);
+    pdf.text(`${totalPuntos} ($${totalPuntos * 5})`, 25, y);
     y += lineHeight;
 
     // Mensaje informativo sobre puntos
     pdf.setFontSize(6);
     pdf.setFont('Helvetica', 'italic');
-    const mensajePuntos = '¡Tus puntos tienen valor! Descuentos de hasta 50%';
+    const mensajePuntos = '¡Tus puntos tienen valor! Descuentos de hasta 100%';
     const mensajePuntos2 = 'en tu próxima reparación o accesorios seleccionados.';
     pdf.text(mensajePuntos, 2, y);
     y += lineHeight - 1;

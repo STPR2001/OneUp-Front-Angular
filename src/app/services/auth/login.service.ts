@@ -26,7 +26,35 @@ export class LoginService {
 
   login(credentials: LoginRequest): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post<any>(this.apiUrl, credentials, { headers });
+    return this.http.post<any>(this.apiUrl, credentials, { headers }).pipe(
+      tap((response) => {
+        this.currentUserLoginOn.next(true);
+        if (response.user) {
+          this.currentUserData.next(response.user);
+        }
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'Ha ocurrido un error en el servidor';
+    
+    if (error.error instanceof ErrorEvent) {
+      // Error del lado del cliente
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // Error del lado del servidor
+      if (error.status === 401) {
+        errorMessage = 'Usuario o contraseña incorrectos';
+      } else if (error.status === 0) {
+        errorMessage = 'No se puede conectar con el servidor';
+      } else {
+        errorMessage = `Error ${error.status}: ${error.error?.message || error.statusText}`;
+      }
+    }
+    
+    return throwError(() => new Error(errorMessage));
   }
 
   private getHeaders(): HttpHeaders {

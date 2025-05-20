@@ -5,8 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class PointsService {
   private readonly POINTS_CONVERSION_FACTOR = 100; // $100 = 1 punto
-  private readonly POINT_VALUE = 10; // 1 punto = $10 en descuentos
-  private readonly MAX_DISCOUNT_PERCENTAGE = 0.5; // 50% máximo de descuento
+  private readonly POINT_VALUE = 5; // 1 punto = $5 en descuentos
+  private readonly MAX_DISCOUNT_PERCENTAGE = 1; // 100% máximo de descuento
 
   constructor() { }
 
@@ -48,10 +48,8 @@ export class PointsService {
    * @returns Número máximo de puntos que se pueden usar
    */
   calculateMaxPointsToUse(totalAmount: number, availablePoints: number): number {
-    const maxDiscountAmount = totalAmount * this.MAX_DISCOUNT_PERCENTAGE;
-    const maxPointsByDiscount = Math.floor(maxDiscountAmount / this.POINT_VALUE);
     const maxPointsByTotal = Math.floor(totalAmount / this.POINT_VALUE);
-    return Math.min(availablePoints, maxPointsByTotal, maxPointsByDiscount);
+    return Math.min(availablePoints, maxPointsByTotal);
   }
 
   /**
@@ -61,8 +59,7 @@ export class PointsService {
    * @returns true si supera el máximo permitido
    */
   exceedsMaxDiscount(totalAmount: number, pointsToUse: number): boolean {
-    const discountAmount = this.calculatePointsValue(pointsToUse);
-    return discountAmount > (totalAmount * this.MAX_DISCOUNT_PERCENTAGE);
+    return false; // Ya no hay límite de descuento
   }
 
   /**
