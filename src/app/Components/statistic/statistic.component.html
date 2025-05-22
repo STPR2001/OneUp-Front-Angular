@@ -4,7 +4,7 @@
     <div class="title-section">
       <h1 class="main-title">
         <i class="material-icons">insights</i>
-        Estadísticas y Análisis
+        Estadísticas y análisis
       </h1>
       <p class="subtitle">
         Panel completo de métricas y tendencias del negocio
@@ -59,7 +59,7 @@
   <!-- Estadísticas Detalladas -->
   <div class="detailed-stats-section">
     <div class="section-header">
-      <h2><i class="material-icons">insights</i> Estadísticas Detalladas</h2>
+      <h2><i class="material-icons">insights</i> Estadísticas detalladas</h2>
     </div>
 
     <div class="stats-grid">
@@ -116,7 +116,7 @@
     <div class="stats-section">
       <h2 class="section-title">
         <i class="material-icons">build</i>
-        Reparaciones
+        Reparaciones por mes
       </h2>
       <div class="chart-container">
         <div id="reparacionesPorMes" class="chart"></div>
@@ -131,7 +131,7 @@
     <div class="stats-section">
       <h2 class="section-title">
         <i class="material-icons">engineering</i>
-        Rendimiento de Técnicos
+        Reparaciones por técnico
       </h2>
       <div class="chart-container">
         <div id="reparacionesPorTecnico" class="chart"></div>
@@ -142,32 +142,34 @@
       </div>
     </div>
 
-    <!-- Ingresos y Gastos Section -->
+    <!-- Ingresos por Mes Section (antes era Proveedores) -->
     <div class="stats-section">
       <h2 class="section-title">
         <i class="material-icons">payments</i>
-        Ingresos y Gastos
-      </h2>
-      <div class="chart-container">
-        <div id="gastosEnElAno" class="chart"></div>
-        <div id="noDataGastosEnElAno" class="no-data">
-          <i class="material-icons">info</i>
-          <p>No hay gastos registrados para el año {{ selectedYear }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Proveedores Section -->
-    <div class="stats-section">
-      <h2 class="section-title">
-        <i class="material-icons">business</i>
-        Distribución de Proveedores
+        Ingresos por mes
       </h2>
       <div class="chart-container">
         <div id="comprasPorProveedor" class="chart"></div>
         <div id="noDataComprasPorProveedor" class="no-data">
           <i class="material-icons">info</i>
-          <p>No hay compras a proveedores registradas para el año {{ selectedYear }}</p>
+          <p>No hay ingresos registrados para el año {{ selectedYear }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingresos por Técnico (CanvasJS) -->
+    <div class="stats-section">
+      <h2 class="section-title">
+        <i class="material-icons">bar_chart</i>
+        Ingresos mensuales por técnico
+      </h2>
+      <div *ngIf="ingresosTecnicoLoading" class="loading">Cargando datos...</div>
+      <div *ngIf="ingresosTecnicoError" class="error">{{ ingresosTecnicoError }}</div>
+      <div class="chart-container">
+        <div id="ingresosPorTecnicoCanvas" class="chart"></div>
+        <div id="noDataIngresosPorTecnicoCanvas" class="no-data">
+          <i class="material-icons">info</i>
+          <p>No hay datos de ingresos por técnico para el año {{ selectedYear }}</p>
         </div>
       </div>
     </div>

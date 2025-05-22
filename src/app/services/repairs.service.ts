@@ -186,4 +186,31 @@ export class RepairsService {
         })
       );
   }
+
+  getIngresosPorTecnico(anio?: number): Observable<any> {
+    const headers = this.getHeaders();
+    let params = new HttpParams();
+    if (anio) {
+      params = params.append('anio', anio.toString());
+    }
+    console.log(
+      'Solicitando ingresos por técnico:',
+      `${this.apiUrl}/estadisticas/ingresos-tecnico`,
+      { anio }
+    );
+    return this.http
+      .get<any>(`${this.apiUrl}/estadisticas/ingresos-tecnico`, {
+        headers,
+        params,
+      })
+      .pipe(
+        tap((response) =>
+          console.log('Respuesta ingresos por técnico:', response)
+        ),
+        catchError((error) => {
+          console.error('Error en ingresos por técnico:', error);
+          throw error;
+        })
+      );
+  }
 }

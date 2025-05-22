@@ -11,13 +11,15 @@ import { ShoppingService } from 'src/app/services/shopping.service';
 export class StatisticComponent implements OnInit {
   selectedYear: number = new Date().getFullYear();
   reparaciones: any[] = [];
-  chartColors = {
-    primary: '#007bff',
-    success: '#28a745',
-    warning: '#ffc107',
-    danger: '#dc3545',
-    info: '#17a2b8'
-  };
+  chartColors = [
+    '#4f8cff', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1', '#fd7e14', '#20c997', '#6610f2', '#e83e8c', '#343a40', '#adb5bd',
+    '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeead', '#ff9999', '#99cc99', '#ffcc99', '#99ccff', '#ff99cc', '#cc99ff', '#99ff99'
+  ];
+
+  // Ingresos por técnico (CanvasJS)
+  ingresosTecnicoLoading = false;
+  ingresosTecnicoError: string | null = null;
+  anios: number[] = [];
 
   constructor(
     private shoppingService: ShoppingService,
@@ -27,6 +29,8 @@ export class StatisticComponent implements OnInit {
   ngOnInit(): void {
     this.cargarReparaciones();
     this.renderAllCharts();
+    this.initAnios();
+    this.renderIngresosPorTecnicoCanvas();
   }
 
   cargarReparaciones() {
@@ -192,7 +196,6 @@ export class StatisticComponent implements OnInit {
 
   renderAllCharts(): void {
     this.renderReparacionesPorMesChart();
-    this.renderGastosEnElAnoChart();
     this.renderComprasPorProveedorChart();
     this.renderReparacionesPorTecnicoChart();
   }
@@ -206,7 +209,7 @@ export class StatisticComponent implements OnInit {
           console.log('No hay datos válidos para mostrar en la gráfica de reparaciones');
           this.showNoData('reparacionesPorMes');
         } else {
-          this.renderChart('reparacionesPorMes', 'Reparaciones por Mes', dataPoints, 'column');
+          this.renderChart('reparacionesPorMes', '', dataPoints, 'column');
         }
       },
       error => {
@@ -216,58 +219,45 @@ export class StatisticComponent implements OnInit {
     );
   }
 
-  renderGastosEnElAnoChart() {
-    this.shoppingService.getComprasPorMes(this.selectedYear).subscribe(
-      (data) => {
-        console.log('Datos de gastos por mes:', data);
-        const dataPoints = this.mapDataToDataPoints(data || []);
-        if (!dataPoints || dataPoints.length === 0) {
-          console.log('No hay datos válidos para mostrar en la gráfica de gastos');
-          this.showNoData('gastosEnElAno');
-        } else {
-          this.renderChart('gastosEnElAno', 'Gastos Mensuales', dataPoints, 'area');
-        }
-      },
-      error => {
-        console.error('Error al obtener datos de gastos:', error);
-        this.showNoData('gastosEnElAno');
-      }
-    );
-  }
-
   renderComprasPorProveedorChart() {
-    this.shoppingService.getComprasPorProveedor(this.selectedYear).subscribe(
-      (data) => {
-        console.log('Datos de compras por proveedor:', data);
-        const dataPoints = this.mapDataToDataPoints(data || []);
-        if (!dataPoints || dataPoints.length === 0) {
-          console.log('No hay datos válidos para mostrar en la gráfica de proveedores');
-          this.showNoData('comprasPorProveedor');
-        } else {
-          this.renderDoughnutChart('comprasPorProveedor', 'Distribución de Compras por Proveedor', dataPoints);
+    // Reemplazar la gráfica de proveedores por ingresos por mes
+    const meses: { label: string, anio: number, mes: number, total: number }[] = [];
+    const hoy = new Date();
+    for (let i = 0; i < 12; i++) {
+      const fecha = new Date(this.selectedYear, i, 1);
+      meses.push({
+        label: fecha.toLocaleString('es-ES', { month: 'short' }),
+        anio: fecha.getFullYear(),
+        mes: fecha.getMonth(),
+        total: 0
+      });
+    }
+    this.reparaciones.forEach(r => {
+      if (r.estado === 'Entregada' && r.fechaEntrega) {
+        const fechaEntrega = new Date(r.fechaEntrega);
+        const mes = fechaEntrega.getMonth();
+        const anio = fechaEntrega.getFullYear();
+        const mesObj = meses.find(m => m.mes === mes && m.anio === anio);
+        if (mesObj) {
+          mesObj.total += (r.manoDeObra || 0) + (r.entrega || 0);
         }
-      },
-      error => {
-        console.error('Error al obtener datos de proveedores:', error);
-        this.showNoData('comprasPorProveedor');
       }
-    );
+    });
+    const dataPoints = meses.map(m => ({ label: m.label, y: m.total }));
+    this.renderChart('comprasPorProveedor', '', dataPoints, 'column');
   }
 
   renderReparacionesPorTecnicoChart() {
     this.repairsService.getReparacionesPorTecnico(this.selectedYear).subscribe(
       (data) => {
-        console.log('Datos de reparaciones por técnico:', data);
         const dataPoints = this.mapDataToDataPoints(data || []);
         if (!dataPoints || dataPoints.length === 0) {
-          console.log('No hay datos válidos para mostrar en la gráfica de técnicos');
           this.showNoData('reparacionesPorTecnico');
         } else {
-          this.renderBarChart('reparacionesPorTecnico', 'Rendimiento por Técnico', dataPoints);
+          this.renderBarChart('reparacionesPorTecnico', '', dataPoints);
         }
       },
       error => {
-        console.error('Error al obtener datos de técnicos:', error);
         this.showNoData('reparacionesPorTecnico');
       }
     );
@@ -295,7 +285,7 @@ export class StatisticComponent implements OnInit {
       },
       data: [{
         type: 'line',
-        color: this.chartColors.warning,
+        color: this.chartColors[0],
         dataPoints: dummyData
       }],
       backgroundColor: 'transparent'
@@ -377,7 +367,7 @@ export class StatisticComponent implements OnInit {
       },
       data: [{
         type: 'spline',
-        color: this.chartColors.primary,
+        color: this.chartColors[0],
         dataPoints: dummyData
       }],
       backgroundColor: 'transparent'
@@ -387,6 +377,17 @@ export class StatisticComponent implements OnInit {
   changeYear(year: number) {
     this.selectedYear = year;
     this.renderAllCharts();
+    // Asegurar que se llame al endpoint al cambiar el año
+    this.repairsService.getIngresosPorTecnico(this.selectedYear).subscribe({
+      next: (data: any) => {
+        this.renderIngresosPorTecnicoCanvas();
+      },
+      error: () => {
+        this.ingresosTecnicoError = 'No se pudieron cargar los datos';
+        this.ingresosTecnicoLoading = false;
+        this.showNoData('ingresosPorTecnicoCanvas');
+      }
+    });
   }
 
   private mapDataToDataPoints(data: any[]): any[] {
@@ -471,6 +472,11 @@ export class StatisticComponent implements OnInit {
   private renderChart(chartId: string, title: string, dataPoints: any[], type: string) {
     if (dataPoints && dataPoints.length > 0) {
       this.hideNoData(chartId);
+      const coloredDataPoints = dataPoints.map((dp, i) => ({
+        ...dp,
+        color: this.chartColors[i % this.chartColors.length]
+      }));
+
       new CanvasJS.Chart(chartId, {
         animationEnabled: true,
         theme: 'light2',
@@ -492,9 +498,8 @@ export class StatisticComponent implements OnInit {
         },
         data: [{
           type: type,
-          color: this.chartColors.primary,
-          fillOpacity: type === 'area' ? 0.3 : 1,
-          dataPoints: dataPoints
+          dataPoints: coloredDataPoints,
+          fillOpacity: type === 'area' ? 0.3 : 1
         }],
         backgroundColor: 'transparent'
       }).render();
@@ -538,6 +543,11 @@ export class StatisticComponent implements OnInit {
   private renderBarChart(chartId: string, title: string, dataPoints: any[]) {
     if (dataPoints && dataPoints.length > 0) {
       this.hideNoData(chartId);
+      const coloredDataPoints = dataPoints.map((dp, i) => ({
+        ...dp,
+        color: this.chartColors[i % this.chartColors.length]
+      }));
+
       new CanvasJS.Chart(chartId, {
         animationEnabled: true,
         theme: 'light2',
@@ -557,13 +567,88 @@ export class StatisticComponent implements OnInit {
         },
         data: [{
           type: 'bar',
-          color: this.chartColors.success,
-          dataPoints: dataPoints
+          dataPoints: coloredDataPoints
         }],
         backgroundColor: 'transparent'
       }).render();
     } else {
       this.showNoData(chartId);
     }
+  }
+
+  initAnios() {
+    const current = new Date().getFullYear();
+    this.anios = Array.from({ length: 6 }, (_, i) => current - i);
+  }
+
+  onYearChangeIngresosTecnico() {
+    this.renderIngresosPorTecnicoCanvas();
+  }
+
+  renderIngresosPorTecnicoCanvas() {
+    this.ingresosTecnicoLoading = true;
+    this.ingresosTecnicoError = null;
+    const chartContainer = document.getElementById('ingresosPorTecnicoCanvas');
+    if (chartContainer) {
+      chartContainer.innerHTML = '';
+    }
+    this.repairsService.getIngresosPorTecnico(this.selectedYear).subscribe({
+      next: (data: any) => {
+        if (!data || data.length === 0) {
+          this.showNoData('ingresosPorTecnicoCanvas');
+          this.ingresosTecnicoLoading = false;
+          return;
+        }
+        const meses = [
+          'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        const datasets = data.map((tecnicoObj: any, idx: any) => ({
+          type: 'column',
+          name: tecnicoObj.tecnico,
+          showInLegend: true,
+          color: this.chartColors[idx % this.chartColors.length],
+          dataPoints: meses.map(mes => ({ 
+            label: mes, 
+            y: tecnicoObj.ingresosMensuales[mes] || 0,
+            color: this.chartColors[idx % this.chartColors.length]
+          }))
+        }));
+        new CanvasJS.Chart('ingresosPorTecnicoCanvas', {
+          animationEnabled: true,
+          theme: 'light2',
+          title: {
+            text: '',
+            fontSize: 20,
+            padding: 10
+          },
+          axisX: {
+            title: 'Mes',
+            titleFontSize: 14,
+            labelAngle: -45
+          },
+          axisY: {
+            title: 'Ingresos ($)',
+            titleFontSize: 14,
+            gridColor: '#f0f0f0',
+            prefix: '$',
+            labelFormatter: function(e: any) { return "$" + e.value.toLocaleString(); }
+          },
+          legend: {
+            fontSize: 14,
+            verticalAlign: 'top',
+            horizontalAlign: 'center'
+          },
+          data: datasets,
+          backgroundColor: 'transparent'
+        }).render();
+        this.ingresosTecnicoLoading = false;
+      },
+      error: () => {
+        this.ingresosTecnicoError = 'No se pudieron cargar los datos';
+        this.ingresosTecnicoLoading = false;
+        this.showNoData('ingresosPorTecnicoCanvas');
+      }
+    });
   }
 }

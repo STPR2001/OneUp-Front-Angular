@@ -291,10 +291,10 @@
     gap: 1rem;
   }
 }
-
 /* Chart Customization */
 .chart {
   background-color: transparent;
   border: none;
   box-shadow: none;
 }
+

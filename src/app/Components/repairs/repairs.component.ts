@@ -1067,6 +1067,9 @@ export class RepairsComponent implements OnInit {
     const totalPesos = this.reparacionSeleccionada.manoDeObra + this.reparacionSeleccionada.entrega;
     const puntosGanados = this.calcularPuntosDesdePesos(totalPesos);
 
+    // Asignar los nuevos campos antes de guardar
+    this.reparacionSeleccionada.fechaEntrega = new Date().toISOString();
+
     // Actualizar puntos del cliente
     const clienteActualizado = { ...this.reparacionSeleccionada.cliente };
     // Restar los puntos usados y sumar los nuevos puntos ganados
