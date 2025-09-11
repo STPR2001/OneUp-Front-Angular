@@ -1,3 +1,877 @@
-.icon-small {
-  font-size: 17px;
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* Page Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.header-titles {
+  flex: 1;
+}
+
+.main-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #6c757d;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Stats Cards */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.stat-icon.compras {
+  background: rgba(255, 143, 0, 0.1);
+  color: #ff8f00;
+}
+
+.stat-icon.articulos {
+  background: rgba(25, 135, 84, 0.1);
+  color: #198754;
+}
+
+.stat-icon.monto {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.stat-icon.mes {
+  background: rgba(13, 110, 253, 0.1);
+  color: #0d6efd;
+}
+
+.stat-info h3 {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0.25rem 0 0;
+}
+
+/* Filters Section */
+.filters-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.search-box {
+  background: white;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  width: 100%;
+  color: #2c3e50;
+  background: transparent;
+}
+
+.search-box span {
+  color: #6c757d;
+  margin-right: 0.5rem;
+}
+
+.date-filters {
+  display: flex;
+  gap: 1rem;
+}
+
+.date-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 0.875rem;
+}
+
+.date-group label .material-icons {
+  font-size: 16px;
+  color: #6c757d;
+}
+
+.date-group .form-control {
+  padding: 0.5rem;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  min-width: 140px;
+  background: white;
+}
+
+.date-group .form-control:focus {
+  outline: none;
+  border-color: #ff8f00;
+  box-shadow: 0 0 0 3px rgba(255, 143, 0, 0.1);
+}
+
+.export-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.export-btn, .refresh-btn {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.export-btn:hover, .refresh-btn:hover {
+  background: #f8f9fa;
+  color: #ff8f00;
+  border-color: #ff8f00;
+}
+
+/* Add Compra Button */
+.btn-primary.add-compra {
+  background: linear-gradient(135deg, #ff8f00 0%, #ff6f00 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  color: white;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(255, 143, 0, 0.2);
+  text-decoration: none;
+}
+
+.btn-primary.add-compra:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 143, 0, 0.3);
+  background: linear-gradient(135deg, #ff6f00 0%, #e65100 100%);
+  color: white;
+}
+
+/* Compras Table */
+.compras-table {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.compras-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.compras-table thead {
+  background: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.compras-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.compras-table th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.compras-table th:last-child {
+  border-top-right-radius: 12px;
+  text-align: center;
+}
+
+.compras-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f1f1;
+  vertical-align: middle;
+  color: #2c3e50;
+}
+
+.compras-table td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.compras-table td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+.compras-table tbody tr {
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.compras-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: #f8f9fa;
+}
+
+.compras-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Fecha Cell */
+.fecha-cell {
+  min-width: 140px;
+}
+
+.fecha-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fecha-principal {
+  font-weight: 600;
+  margin: 0;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.hora-info {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hora-info .material-icons {
+  font-size: 14px;
+}
+
+/* Repuestos Cell */
+.repuestos-cell {
+  min-width: 250px;
+  max-width: 350px;
+}
+
+.repuestos-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.repuesto-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 143, 0, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #ff8f00;
+}
+
+.repuesto-name {
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 0.875rem;
+  flex: 1;
+  margin-right: 0.5rem;
+}
+
+.repuesto-cantidad {
+  background: rgba(255, 143, 0, 0.1);
+  color: #ff8f00;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.mas-items {
+  color: #6c757d;
+  font-size: 0.8rem;
+  font-style: italic;
+  text-align: center;
+  padding: 0.25rem;
+}
+
+/* Cantidad Cell */
+.cantidad-cell {
+  text-align: center;
+}
+
+.cantidad-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  background: rgba(25, 135, 84, 0.1);
+  color: #198754;
+  border-radius: 25px;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.cantidad-badge .material-icons {
+  font-size: 16px;
+}
+
+/* Monto Cell */
+.monto-cell {
+  min-width: 130px;
+}
+
+.monto-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.monto-principal {
+  font-weight: 600;
+  color: #198754;
+  font-size: 1rem;
+}
+
+.precio-unitario {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Estado Cell */
+.estado-cell {
+  text-align: center;
+}
+
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.estado-badge.reciente {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.estado-badge.nueva {
+  background: rgba(255, 143, 0, 0.1);
+  color: #ff8f00;
+}
+
+.estado-badge.normal {
+  background: rgba(13, 110, 253, 0.1);
+  color: #0d6efd;
+}
+
+.estado-badge.antigua {
+  background: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+.estado-badge .material-icons {
+  font-size: 16px;
+}
+
+/* Action Buttons */
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.compras-table tr:hover .actions-cell {
+  opacity: 1;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-btn.view {
+  background: rgba(13, 110, 253, 0.1);
+  color: #0d6efd;
+}
+
+.action-btn.edit {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.action-btn.delete {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.action-btn .material-icons {
+  font-size: 18px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+}
+
+.empty-icon {
+  margin-bottom: 1.5rem;
+}
+
+.empty-icon .material-icons {
+  font-size: 4rem;
+  color: #dee2e6;
+}
+
+.empty-state h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.page-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  background: white;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #ff8f00;
+  color: #ff8f00;
+}
+
+.page-btn.active {
+  background: #ff8f00;
+  border-color: #ff8f00;
+  color: white;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modal Styles */
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+.modal-title-container {
+  flex: 1;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.modal-subtitle {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+/* Compra Details Modal */
+.compra-details {
+  display: grid;
+  gap: 2rem;
+}
+
+.detail-section {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.detail-section h4 {
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-item .material-icons {
+  color: #6c757d;
+  font-size: 20px;
+  margin-top: 0.1rem;
+}
+
+.detail-item div {
+  flex: 1;
+}
+
+.detail-item strong {
+  color: #2c3e50;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.detail-item p {
+  margin: 0;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.monto-total-display {
+  color: #198754 !important;
+  font-weight: 600;
+  font-size: 1.2rem !important;
+}
+
+/* Repuestos Detalle */
+.repuestos-detalle {
+  display: grid;
+  gap: 1rem;
+}
+
+.repuesto-detalle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid #ff8f00;
+}
+
+.repuesto-info-detalle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.repuesto-info-detalle .material-icons {
+  color: #ff8f00;
+  font-size: 24px;
+}
+
+.repuesto-info-detalle strong {
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.repuesto-info-detalle p {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+}
+
+.repuesto-cantidad-detalle {
+  text-align: right;
+}
+
+.cantidad {
+  background: rgba(255, 143, 0, 0.1);
+  color: #ff8f00;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Modal Buttons */
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #ff8f00;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #ff6f00;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545862;
+}
+
+.btn .material-icons {
+  font-size: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .date-filters {
+    justify-content: flex-start;
+  }
+
+  .search-box {
+    min-width: unset;
+  }
+
+  .compras-table {
+    overflow-x: auto;
+  }
+
+  .compras-table table {
+    min-width: 1000px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+  }
+
+  .btn-primary.add-compra {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .stat-number {
+    font-size: 1.25rem;
+  }
+
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+
+  .detail-section {
+    padding: 1rem;
+  }
+
+  .stats-container {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .date-filters {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .export-actions {
+    justify-content: flex-start;
+  }
+
+  .repuesto-detalle-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .repuesto-cantidad-detalle {
+    text-align: left;
+    width: 100%;
+  }
 }

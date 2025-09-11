@@ -10,10 +10,7 @@ export class HistorialClienteService {
   private apiUrl =
     'https://app.oneupsoluciones.com:8443/oneup-backend/api/reparacion';
 
-  constructor(
-    private http: HttpClient, 
-    private pointsService: PointsService
-  ) {}
+  constructor(private http: HttpClient, private pointsService: PointsService) {}
 
   // Obtener historial por DNI del cliente usando endpoint público
   obtenerHistorialPorDNI(dni: string): Observable<any[]> {

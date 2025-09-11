@@ -1,190 +1,262 @@
-<div class="container">
-  <h2 class="h2-title">Reparaciones</h2>
-  <div class="row mb-3">
-    <div class="col-12 col-md-6 mb-2 mb-md-0">
-      <input
-        type="text"
-        placeholder="Buscar por cliente..."
-        [(ngModel)]="nombreCliente"
-        (change)="onFilterChange()"
-        class="form-control"
-      />
+<div class="dashboard-container" [class.dark-mode]="darkMode">  <!-- Main Content -->  <main class="main-content" [class.dark-mode]="darkMode">    <!-- Simple Header -->    <div class="page-header">      <div class="header-titles">        <h1 class="main-title">Gestión de Reparaciones</h1>        <p class="subtitle">Seguimiento y control de equipos en servicio técnico</p>      </div>      <div class="header-actions">        <button class="dark-mode-toggle" (click)="toggleDarkMode()" title="Cambiar modo oscuro">          <span class="material-icons">{{darkMode ? 'light_mode' : 'dark_mode'}}</span>        </button>        <button class="btn-primary add-repair" routerLink="/agregarReparacion">          <span class="material-icons">add</span>          Nueva Reparación        </button>      </div>    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon pending">
+          <span class="material-icons">pending</span>
+        </div>
+        <div class="stat-info">
+          <h3>En taller</h3>
+          <p class="stat-number">{{getTotalEnTaller()}}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon in-progress">
+          <span class="material-icons">engineering</span>
+        </div>
+        <div class="stat-info">
+          <h3>Finalizadas</h3>
+          <p class="stat-number">{{getTotalFinalizadas()}}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon completed">
+          <span class="material-icons">task_alt</span>
+        </div>
+        <div class="stat-info">
+          <h3>Entregadas</h3>
+          <p class="stat-number">{{getTotalEntregadas()}}</p>
+        </div>
+      </div>
     </div>
-    <div class="col-6 col-md-2 mb-2 mb-md-0">
-      <select
-        [(ngModel)]="estadoFiltro"
-        class="form-select"
-        (change)="onFilterChange()"
-      >
-        <option *ngFor="let estado of estados" [value]="estado">
-          {{ estado }}
-        </option>
-      </select>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input
+          type="text"
+          placeholder="Buscar por cliente..."
+          [(ngModel)]="nombreCliente"
+          (input)="onSearchInput($event)"
+        />
+      </div>
+      <div class="filter-box">
+        <span class="material-icons">filter_list</span>
+        <select
+          [(ngModel)]="estadoFiltro"
+          (change)="onFilterChange()"
+        >
+          <option *ngFor="let estado of estados" [value]="estado">
+            {{estado}}
+          </option>
+        </select>
+      </div>
+      <div class="view-toggle">
+        <button 
+          class="view-btn" 
+          [class.active]="viewMode === 'cards'"
+          (click)="viewMode = 'cards'"
+          title="Vista de tarjetas">
+          <span class="material-icons">grid_view</span>
+        </button>
+        <button 
+          class="view-btn" 
+          [class.active]="viewMode === 'table'"
+          (click)="viewMode = 'table'"
+          title="Vista de tabla">
+          <span class="material-icons">view_list</span>
+        </button>
+      </div>
     </div>
-    <div class="col-6 col-md-4 text-md-end">
-      <button
-        type="button"
-        class="btn btn-success w-100 w-md-auto"
-        routerLink="/agregarReparacion"
-      >
-        Agregar reparación
-      </button>
+
+    <!-- Repairs Cards Grid -->
+    <div class="repairs-grid" *ngIf="viewMode === 'cards'">
+      <div class="repair-card" *ngFor="let repair of reparaciones">
+        <div class="repair-header">
+          <span class="repair-id">#{{repair.id}}</span>
+          <span class="repair-status" [ngClass]="repair.estado.toLowerCase().replace(' ', '-')">
+            {{repair.estado}}
+          </span>
+        </div>
+        <div class="repair-body">
+          <div class="repair-info">
+            <p class="client-name">{{repair.cliente.nombre}}</p>
+            <p class="device-info">
+              {{repair.equipo.marca.nombre}} {{repair.equipo.modelo.nombre}}
+            </p>
+            <p class="repair-date">
+              <span class="material-icons">event</span>
+              {{formatDate(repair.fechaIngreso)}}
+            </p>
+            <p class="technician">
+              <span class="material-icons">person</span>
+              {{repair.tecnico.nombre}}
+            </p>
+            <p class="failure-desc">
+              <span class="material-icons">error_outline</span>
+              {{repair.falla}}
+            </p>
+          </div>
+        </div>
+        <div class="repair-actions">
+          <button class="action-btn edit" [routerLink]="['/modificarReparacion', repair.id]" title="Modificar">
+            <span class="material-icons">edit</span>
+          </button>
+          <button class="action-btn delete" (click)="desactivarReparacion(repair)" title="Eliminar">
+            <span class="material-icons">delete</span>
+          </button>
+          <button class="action-btn complete" 
+                  (click)="abrirFinalizarReparacionModal(repair)" 
+                  [disabled]="repair.estado === 'Entregada'"
+                  title="Finalizar">
+            <span class="material-icons">done</span>
+          </button>
+          <div class="dropdown">
+            <button class="action-btn more" type="button" data-bs-toggle="dropdown">
+              <span class="material-icons">more_vert</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <button class="dropdown-item" (click)="verDetallesReparacion(repair)">
+                  <span class="material-icons">visibility</span>
+                  Ver más
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" (click)="abrirModalAgregarNota(repair)">
+                  <span class="material-icons">note_add</span>
+                  Agregar nota
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" (click)="generarPDFPrueba2(repair)">
+                  <span class="material-icons">print</span>
+                  Imprimir
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="table-responsive table-container">
-    <table class="table table-striped">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col">Orden</th>
-          <th scope="col">Fecha</th>
-          <th scope="col">Cliente</th>
-          <th scope="col">Marca</th>
-          <th scope="col">Modelo</th>
-          <th scope="col">Falla</th>
-          <th scope="col">Técnico</th>
-          <th scope="col">Estado</th>
-          <th scope="col">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let repair of reparaciones" class="hover-row">
-          <td>{{ repair.id }}</td>
-          <td>{{ formatDate(repair.fechaIngreso) }}</td>
-          <td class="truncate">{{ repair.cliente.nombre }}</td>
-          <td>{{ repair.equipo.marca.nombre }}</td>
-          <td>{{ repair.equipo.modelo.nombre }}</td>
-          <td class="truncate">{{ repair.falla }}</td>
-          <td>{{ repair.tecnico.nombre }}</td>
-          <td>{{ repair.estado }}</td>
-          <td>
-            <button
-              class="btn btn-primary me-2"
-              [routerLink]="['/modificarReparacion', repair.id]"
-              title="Modificar"
-            >
-              <span class="material-icons icon-small">edit</span>
-            </button>
-            <button
-              class="btn btn-danger me-2"
-              (click)="desactivarReparacion(repair)"
-              title="Eliminar"
-            >
-              <span class="material-icons icon-small">delete</span>
-            </button>
-            <button
-              class="btn btn-success me-2"
-              (click)="abrirFinalizarReparacionModal(repair)"
-              title="Finalizar"
-              [disabled]="repair.estado === 'Entregada'"
-            >
-              <span class="material-icons icon-small">done</span>
-            </button>
-            <div class="btn-group">
-              <button
-                type="button"
-                class="btn btn-secondary dropdown-toggle"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                title="Extras"
-              >
-                Extras
+
+    <!-- Repairs Table View -->
+    <div class="repairs-table" *ngIf="viewMode === 'table'">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Equipo</th>
+            <th>Fecha</th>
+            <th>Técnico</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let repair of reparaciones" [ngClass]="repair.estado.toLowerCase().replace(' ', '-')">
+            <td class="id-cell">#{{repair.id}}</td>
+            <td>{{repair.cliente.nombre}}</td>
+            <td>{{repair.equipo.marca.nombre}} {{repair.equipo.modelo.nombre}}</td>
+            <td>{{formatDate(repair.fechaIngreso)}}</td>
+            <td>{{repair.tecnico.nombre}}</td>
+            <td>
+              <span class="status-badge" [ngClass]="repair.estado.toLowerCase().replace(' ', '-')">
+                {{repair.estado}}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button class="action-btn edit" [routerLink]="['/modificarReparacion', repair.id]" title="Modificar">
+                <span class="material-icons">edit</span>
               </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <button
-                    class="dropdown-item"
-                    (click)="verDetallesReparacion(repair)"
-                    title="Ver más"
-                  >
-                    <span class="material-icons icon-small">visibility</span>
-                    Ver más
-                  </button>
-                </li>
-                <li>
-                  <button
-                    class="dropdown-item"
-                    (click)="abrirModalAgregarNota(repair)"
-                    title="Agregar nota"
-                  >
-                    <span class="material-icons icon-small">note_add</span>
-                    Agregar nota
-                  </button>
-                </li>
-                <li>
-                  <button
-                    class="dropdown-item"
-                    (click)="generarPDFPrueba2(repair)"
-                    title="Imprimir"
-                  >
-                    <span class="material-icons icon-small">print</span>
-                    Imprimir
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              <button class="action-btn delete" (click)="desactivarReparacion(repair)" title="Eliminar">
+                <span class="material-icons">delete</span>
+              </button>
+              <button class="action-btn complete" 
+                      (click)="abrirFinalizarReparacionModal(repair)" 
+                      [disabled]="repair.estado === 'Entregada'"
+                      title="Finalizar">
+                <span class="material-icons">done</span>
+              </button>
+              <div class="dropdown">
+                <button class="action-btn more" type="button" data-bs-toggle="dropdown">
+                  <span class="material-icons">more_vert</span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <button class="dropdown-item" (click)="verDetallesReparacion(repair)">
+                      <span class="material-icons">visibility</span>
+                      Ver más
+                    </button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item" (click)="abrirModalAgregarNota(repair)">
+                      <span class="material-icons">note_add</span>
+                      Agregar nota
+                    </button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item" (click)="generarPDFPrueba2(repair)">
+                      <span class="material-icons">print</span>
+                      Imprimir
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <div class="d-flex justify-content-center">
-      <button
-        class="btn btn-primary me-1"
-        (click)="onPageChange(currentPage - 1)"
-        [disabled]="currentPage === 0"
-      >
-        Anterior
+    <!-- Pagination -->
+    <div class="pagination">
+      <button class="page-btn" 
+              (click)="onPageChange(currentPage - 1)"
+              [disabled]="currentPage === 0">
+        <span class="material-icons">chevron_left</span>
       </button>
-      <ng-container *ngIf="totalPages > 0">
-        <button
-          class="btn btn-primary me-1"
-          (click)="onPageChange(0)"
-          [disabled]="currentPage === 0"
-        >
-          1
-        </button>
-        <button
-          *ngIf="currentPage > 1"
-          class="btn btn-primary me-1"
-          (click)="onPageChange(currentPage - 1)"
-          [disabled]="currentPage === 1"
-        >
-          {{ currentPage }}
-        </button>
-        <button
-          *ngIf="currentPage != 0 && totalPages != currentPage + 1"
-          class="btn btn-primary me-1"
-          (click)="onPageChange(currentPage)"
-          [disabled]="true"
-        >
-          {{ currentPage + 1 }}
-        </button>
-
-        <button
-          *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
-          class="btn btn-primary me-1"
-          (click)="onPageChange(currentPage + 1)"
-        >
-          {{ currentPage + 2 }}
-        </button>
-        <button
-          *ngIf="totalPages > 1"
-          class="btn btn-primary me-1"
-          (click)="onPageChange(totalPages - 1)"
-          [disabled]="currentPage === totalPages - 1"
-        >
-          {{ totalPages }}
-        </button>
-      </ng-container>
-      <button
-        class="btn btn-primary"
-        (click)="onPageChange(currentPage + 1)"
-        [disabled]="currentPage === totalPages - 1 || totalPages === 0"
-      >
-        Siguiente
+      
+      <button class="page-btn" 
+              *ngIf="totalPages > 0"
+              (click)="onPageChange(0)"
+              [class.active]="currentPage === 0">1</button>
+              
+      <button class="page-btn" 
+              *ngIf="currentPage > 1"
+              (click)="onPageChange(currentPage - 1)">
+        {{currentPage}}
+      </button>
+      
+      <button class="page-btn active" 
+              *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+              [disabled]="true">
+        {{currentPage + 1}}
+      </button>
+      
+      <button class="page-btn"
+              *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+              (click)="onPageChange(currentPage + 1)">
+        {{currentPage + 2}}
+      </button>
+      
+      <button class="page-btn"
+              *ngIf="totalPages > 1"
+              (click)="onPageChange(totalPages - 1)"
+              [class.active]="currentPage === totalPages - 1">
+        {{totalPages}}
+      </button>
+      
+      <button class="page-btn"
+              (click)="onPageChange(currentPage + 1)"
+              [disabled]="currentPage === totalPages - 1 || totalPages === 0">
+        <span class="material-icons">chevron_right</span>
       </button>
     </div>
-  </div>
+  </main>
 </div>
 
 <!-- Modal Ver Detalles -->

@@ -39,7 +39,7 @@ export class LoginService {
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ha ocurrido un error en el servidor';
-    
+
     if (error.error instanceof ErrorEvent) {
       // Error del lado del cliente
       errorMessage = `Error: ${error.error.message}`;
@@ -50,10 +50,12 @@ export class LoginService {
       } else if (error.status === 0) {
         errorMessage = 'No se puede conectar con el servidor';
       } else {
-        errorMessage = `Error ${error.status}: ${error.error?.message || error.statusText}`;
+        errorMessage = `Error ${error.status}: ${
+          error.error?.message || error.statusText
+        }`;
       }
     }
-    
+
     return throwError(() => new Error(errorMessage));
   }
 

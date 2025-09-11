@@ -1,17 +1,19 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RepairsService } from 'src/app/services/repairs.service';
 import { Router } from '@angular/router';
 import { TecnicsService } from 'src/app/services/tecnics.service';
 import { ClientsService } from 'src/app/services/clients.service';
 import { EquipoService } from 'src/app/services/equipo.service';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   reparaciones: any[] = [];
   tecnicos: any[] = [];
   equipos: any[] = [];
@@ -20,6 +22,12 @@ export class HomeComponent implements OnInit {
   searchTerm: string = '';
   estadoFiltro: string = 'En taller';
   estados: string[] = ['En taller', 'Finalizada', 'Entregada'];
+  isLoading: boolean = true;
+  
+  // Subject para búsqueda con debounce
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
+
   nuevaReparacion: any = {
     fechaIngreso: '',
     tecnico: { id: '' },
@@ -56,31 +64,97 @@ export class HomeComponent implements OnInit {
     private EquipoService: EquipoService,
     private router: Router,
     private dialog: MatDialog
-  ) {}
+  ) {
+    // Configurar búsqueda con debounce
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(searchTerm => {
+      this.searchTerm = searchTerm;
+    });
+  }
 
   ngOnInit(): void {
     this.setFechaActual();
-    this.obtenerReparaciones();
-    this.obtenerTecnicos();
-    this.obtenerClientes();
-    this.obtenerEquipos();
+    this.cargarDatos();
   }
 
-  obtenerReparaciones(): void {
-    this.RepairsService.getAllReparaciones().subscribe(
-      (data) => {
-        this.reparaciones = data;
-      },
-      (error) => {
-        console.error('Error al obtener reparaciones:', error);
-      }
-    );
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // Método para cargar todos los datos
+  cargarDatos(): void {
+    this.isLoading = true;
+    Promise.all([
+      this.obtenerReparaciones(),
+      this.obtenerTecnicos(),
+      this.obtenerClientes(),
+      this.obtenerEquipos()
+    ]).finally(() => {
+      this.isLoading = false;
+    });
+  }
+
+  // Método para refrescar datos
+  refrescarDatos(): void {
+    this.cargarDatos();
+  }
+
+  // Método para manejar búsqueda con debounce
+  onSearchInput(event: any): void {
+    const searchTerm = event.target.value;
+    this.searchSubject.next(searchTerm);
+  }
+
+  // TrackBy function para performance
+  trackByReparacionId(index: number, reparacion: any): number {
+    return reparacion.id;
+  }
+
+  // Método para formatear fechas
+  formatearFecha(fecha: string): string {
+    if (!fecha) return 'No especificada';
+    const date = new Date(fecha);
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+
+  // Método para ver detalles de reparación
+  verDetallesReparacion(reparacion: any): void {
+    this.reparacionSeleccionada = { ...reparacion };
+    // Abrir modal usando Bootstrap
+    const modalElement = document.getElementById('verDetallesReparacionModal');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  obtenerReparaciones(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.RepairsService.getAllReparaciones().subscribe(
+        (data) => {
+          this.reparaciones = data;
+          resolve();
+        },
+        (error) => {
+          console.error('Error al obtener reparaciones:', error);
+          reject(error);
+        }
+      );
+    });
   }
 
   eliminarReparacion(id: number): void {
     this.RepairsService.eliminarReparacion(id).subscribe(
       () => {
-        this.obtenerReparaciones();
+        this.cargarDatos();
       },
       (error) => {
         console.error('Error al eliminar reparacion', error);
@@ -92,37 +166,49 @@ export class HomeComponent implements OnInit {
     this.reparacionSeleccionada = { ...reparacion };
   }
 
-  obtenerClientes(): void {
-    this.ClientsService.getAllClientes().subscribe(
-      (data) => {
-        this.clientes = data;
-      },
-      (error) => {
-        console.error('Error al obtener clientes:', error);
-      }
-    );
+  obtenerClientes(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.ClientsService.getAllClientes().subscribe(
+        (data) => {
+          this.clientes = data;
+          resolve();
+        },
+        (error) => {
+          console.error('Error al obtener clientes:', error);
+          reject(error);
+        }
+      );
+    });
   }
 
-  obtenerTecnicos(): void {
-    this.TecnicsService.getAllTecnicos().subscribe(
-      (data) => {
-        this.tecnicos = data;
-      },
-      (error) => {
-        console.error('Error al obtener los tecnicos:', error);
-      }
-    );
+  obtenerTecnicos(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.TecnicsService.getAllTecnicos().subscribe(
+        (data) => {
+          this.tecnicos = data;
+          resolve();
+        },
+        (error) => {
+          console.error('Error al obtener los tecnicos:', error);
+          reject(error);
+        }
+      );
+    });
   }
 
-  obtenerEquipos(): void {
-    this.EquipoService.getAllEquipos().subscribe(
-      (data) => {
-        this.equipos = data;
-      },
-      (error) => {
-        console.error('Error al obtener los equipos:', error);
-      }
-    );
+  obtenerEquipos(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.EquipoService.getAllEquipos().subscribe(
+        (data) => {
+          this.equipos = data;
+          resolve();
+        },
+        (error) => {
+          console.error('Error al obtener los equipos:', error);
+          reject(error);
+        }
+      );
+    });
   }
 
   get filteredReparaciones() {

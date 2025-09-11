@@ -1,171 +1,512 @@
-<!-- Contenedor Principal -->
 <div class="dashboard-container">
-  <!-- Dashboard Header -->
-  <div class="dashboard-header">
-    <div class="welcome-section">
-      <h1 class="h2-title">
-        <i class="material-icons">dashboard</i>
-        Bienvenido al Panel de Control
-      </h1>
-      <p class="text-muted">Sistema de Gestión - OneUp Soluciones</p>
-    </div>
-  </div>
-
-  <!-- Sección de Estadísticas -->
-  <div class="stats-overview-section">
-    <div class="section-header">
-      <h2><i class="material-icons">insights</i> Resumen de Estadísticas</h2>
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Simple Header -->
+    <div class="page-header">
+      <div class="header-titles">
+        <h1 class="main-title">Panel de Control</h1>
+        <p class="subtitle">Sistema de Gestión OneUp Soluciones - Resumen general</p>
+      </div>
+      <button class="btn-primary dashboard-action" routerLink="/reparaciones">
+        <span class="material-icons">build</span>
+        Gestionar Reparaciones
+      </button>
     </div>
 
-    <!-- Estadísticas de Estado -->
-    <div class="stats-section basic-stats">
-      <div class="stat-card">
-        <i class="material-icons">build</i>
-        <div class="stat-info">
-          <span class="stat-value">{{ getReparacionesEnTaller() }}</span>
-          <span class="stat-label">En Taller</span>
-          <span class="stat-percentage">{{ (getReparacionesEnTaller() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
-        </div>
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner">
+        <span class="material-icons">autorenew</span>
       </div>
-      <div class="stat-card">
-        <i class="material-icons">done_all</i>
-        <div class="stat-info">
-          <span class="stat-value">{{ getReparacionesFinalizadas() }}</span>
-          <span class="stat-label">Finalizadas</span>
-          <span class="stat-percentage">{{ (getReparacionesFinalizadas() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <i class="material-icons">handshake</i>
-        <div class="stat-info">
-          <span class="stat-value">{{ getReparacionesEntregadas() }}</span>
-          <span class="stat-label">Entregadas</span>
-          <span class="stat-percentage">{{ (getReparacionesEntregadas() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
-        </div>
-      </div>
+      <p>Cargando dashboard...</p>
     </div>
 
-    <!-- Estadísticas Detalladas -->
-    <div class="stats-grid">
-      <!-- KPIs Principales -->
-      <div class="stat-card highlight warning" *ngIf="getEstadisticasGenerales().reparacionesUrgentes > 0">
-        <i class="material-icons">warning</i>
-        <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().reparacionesUrgentes }}</span>
-          <span class="stat-label">Reparaciones Urgentes</span>
-          <span class="stat-description">Más de 7 días en taller</span>
-        </div>
-      </div>
-
-      <div class="stat-card highlight success">
-        <i class="material-icons">payments</i>
-        <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().ingresosMensuales | currency }}</span>
-          <span class="stat-label">Ingresos del Mes</span>
-          <span class="stat-description">De reparaciones entregadas</span>
-        </div>
-      </div>
-
-      <div class="stat-card highlight info">
-        <i class="material-icons">schedule</i>
-        <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().promedioTiempoReparacion }}</span>
-          <span class="stat-label">Días Promedio</span>
-          <span class="stat-description">Tiempo promedio de reparación</span>
-        </div>
-      </div>
-
-      <div class="stat-card highlight primary">
-        <i class="material-icons">people</i>
-        <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().clientesRecurrentes }}</span>
-          <span class="stat-label">Clientes Recurrentes</span>
-          <span class="stat-description">Con más de una reparación</span>
-        </div>
-      </div>
-
-      <div class="stat-card highlight success">
-        <i class="material-icons">engineering</i>
-        <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().tecnicoMasProductivo }}</span>
-          <span class="stat-label">Técnico más Productivo</span>
-          <span class="stat-description">Mayor número de reparaciones completadas</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Reparaciones Pendientes Section -->
-  <div class="pending-repairs-section">
-    <div class="section-header">
-      <h2><i class="material-icons">pending_actions</i> Reparaciones Pendientes</h2>
-      <div class="search-container">
-        <div class="search-box">
-          <input
-            type="text"
-            placeholder="Buscar por cliente, equipo o falla..."
-            [(ngModel)]="searchTerm"
-            class="search-input"
-          />
-          <i class="material-icons">search</i>
-        </div>
-      </div>
-    </div>
-
-    <div class="card-container">
-      <div *ngFor="let reparacion of filteredReparacionesForStatus" class="repair-card">
-        <div class="card-header">
-          <div class="order-number">
-            <span class="label">Orden:</span>
-            <span class="value">#{{ reparacion.id }}</span>
+    <!-- Content Area -->
+    <div *ngIf="!isLoading">
+      <!-- Quick Actions - Movidas al tope para máxima visibilidad -->
+      <div class="quick-actions-section">
+        <div class="section-header-modern">
+          <div class="header-info">
+            <h2>Acciones Rápidas</h2>
+            <p>Accede a las funciones más utilizadas del sistema</p>
           </div>
-          <div class="date">{{ reparacion.fechaIngreso | date:'dd/MM/yyyy' }}</div>
+          <div class="header-badge">
+            <span class="material-icons">bolt</span>
+            <span>6 acciones</span>
+          </div>
         </div>
         
-        <div class="card-body">
-          <div class="client-info">
-            <i class="material-icons">person</i>
-            <span>{{ reparacion.cliente.nombre }}</span>
-          </div>
-          
-          <div class="device-info">
-            <i class="material-icons">devices</i>
-            <div>
-              <span class="brand">{{ reparacion.equipo.marca.nombre }}</span>
-              <span class="model">{{ reparacion.equipo.modelo.nombre }}</span>
+        <div class="quick-actions-grid">
+          <!-- Acción Principal -->
+          <div class="quick-action-card featured" routerLink="/agregarReparacion">
+            <div class="card-header">
+              <div class="action-icon primary">
+                <span class="material-icons">add_circle_outline</span>
+              </div>
+              <div class="action-badge priority">Principal</div>
+            </div>
+            <div class="card-content">
+              <h3>Nueva Reparación</h3>
+              <p>Registrar un nuevo equipo para servicio técnico</p>
+              <div class="action-meta">
+                <span class="material-icons">schedule</span>
+                <span>2 min</span>
+              </div>
             </div>
           </div>
 
-          <div class="fault-info">
-            <i class="material-icons">error_outline</i>
-            <span class="fault-text">{{ reparacion.falla }}</span>
+          <!-- Acciones Secundarias -->
+          <div class="quick-action-card" routerLink="/agregarCliente">
+            <div class="card-header">
+              <div class="action-icon secondary">
+                <span class="material-icons">person_add_alt</span>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3>Nuevo Cliente</h3>
+              <p>Agregar cliente al sistema</p>
+              <div class="action-meta">
+                <span class="material-icons">schedule</span>
+                <span>1 min</span>
+              </div>
+            </div>
           </div>
 
-          <div class="time-info" *ngIf="getDiasEnTaller(reparacion) > 0">
-            <i class="material-icons">schedule</i>
-            <span>{{ getDiasEnTaller(reparacion) }} días en taller</span>
+          <div class="quick-action-card" routerLink="/reparaciones">
+            <div class="card-header">
+              <div class="action-icon tertiary">
+                <span class="material-icons">build_circle</span>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3>Ver Reparaciones</h3>
+              <p>Gestionar reparaciones activas</p>
+              <div class="action-meta">
+                <span class="material-icons">schedule</span>
+                <span>Instantáneo</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-action-card" routerLink="/equipos">
+            <div class="card-header">
+              <div class="action-icon quaternary">
+                <span class="material-icons">inventory</span>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3>Gestionar Equipos</h3>
+              <p>Ver y administrar inventario</p>
+              <div class="action-meta">
+                <span class="material-icons">schedule</span>
+                <span>Instantáneo</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-action-card" routerLink="/clientes">
+            <div class="card-header">
+              <div class="action-icon quinary">
+                <span class="material-icons">people_alt</span>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3>Base de Clientes</h3>
+              <p>Ver y gestionar clientes</p>
+              <div class="action-meta">
+                <span class="material-icons">schedule</span>
+                <span>Instantáneo</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-action-card" routerLink="/tecnicos">
+            <div class="card-header">
+              <div class="action-icon senary">
+                <span class="material-icons">engineering</span>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3>Personal Técnico</h3>
+              <p>Administrar técnicos</p>
+              <div class="action-meta">
+                <span class="material-icons">schedule</span>
+                <span>Instantáneo</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="card-footer">
-          <button
-            class="btn btn-manage"
-            routerLink="/reparaciones"
-            title="Gestionar reparación"
-          >
-            <div class="btn-content">
-              <i class="material-icons">build</i>
-              <span class="btn-text">Gestionar</span>
-            </div>
+        <!-- Acciones Adicionales -->
+        <div class="additional-actions">
+          <button class="action-link" routerLink="/reportes">
+            <span class="material-icons">analytics</span>
+            <span>Ver Reportes</span>
+          </button>
+          <button class="action-link" routerLink="/configuracion">
+            <span class="material-icons">settings</span>
+            <span>Configuración</span>
+          </button>
+          <button class="action-link" routerLink="/ayuda">
+            <span class="material-icons">help_outline</span>
+            <span>Centro de Ayuda</span>
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Mensaje cuando no hay reparaciones -->
-    <div *ngIf="filteredReparacionesForStatus.length === 0" class="no-repairs">
-      <i class="material-icons">engineering</i>
-      <p>No hay reparaciones pendientes en este momento</p>
+      <!-- Stats Cards -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-icon en-taller">
+            <span class="material-icons">build</span>
+          </div>
+          <div class="stat-info">
+            <h3>En Taller</h3>
+            <p class="stat-number">{{ getReparacionesEnTaller() }}</p>
+            <p class="stat-percentage">{{ getTotalReparaciones() > 0 ? (getReparacionesEnTaller() / getTotalReparaciones() * 100 | number:'1.0-0') : 0 }}% del total</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon finalizadas">
+            <span class="material-icons">done_all</span>
+          </div>
+          <div class="stat-info">
+            <h3>Finalizadas</h3>
+            <p class="stat-number">{{ getReparacionesFinalizadas() }}</p>
+            <p class="stat-percentage">{{ getTotalReparaciones() > 0 ? (getReparacionesFinalizadas() / getTotalReparaciones() * 100 | number:'1.0-0') : 0 }}% del total</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon entregadas">
+            <span class="material-icons">handshake</span>
+          </div>
+          <div class="stat-info">
+            <h3>Entregadas</h3>
+            <p class="stat-number">{{ getReparacionesEntregadas() }}</p>
+            <p class="stat-percentage">{{ getTotalReparaciones() > 0 ? (getReparacionesEntregadas() / getTotalReparaciones() * 100 | number:'1.0-0') : 0 }}% del total</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon total">
+            <span class="material-icons">devices</span>
+          </div>
+          <div class="stat-info">
+            <h3>Total Reparaciones</h3>
+            <p class="stat-number">{{ getTotalReparaciones() }}</p>
+            <p class="stat-percentage">Equipos gestionados</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extended Stats -->
+      <div class="extended-stats">
+        <div class="stat-card-extended urgentes" *ngIf="getEstadisticasGenerales().reparacionesUrgentes > 0">
+          <div class="stat-icon-extended">
+            <span class="material-icons">warning</span>
+          </div>
+          <div class="stat-content">
+            <h4>Reparaciones Urgentes</h4>
+            <p class="stat-value">{{ getEstadisticasGenerales().reparacionesUrgentes }}</p>
+            <p class="stat-description">Más de 7 días en taller</p>
+          </div>
+          <div class="stat-action">
+            <button class="action-btn urgente" routerLink="/reparaciones" title="Ver reparaciones urgentes">
+              <span class="material-icons">emergency</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="stat-card-extended ingresos">
+          <div class="stat-icon-extended">
+            <span class="material-icons">payments</span>
+          </div>
+          <div class="stat-content">
+            <h4>Ingresos del Mes</h4>
+            <p class="stat-value">{{ getEstadisticasGenerales().ingresosMensuales | currency:'USD':'symbol':'1.0-0' }}</p>
+            <p class="stat-description">De reparaciones entregadas</p>
+          </div>
+          <div class="stat-action">
+            <button class="action-btn ingresos" title="Ver detalle ingresos">
+              <span class="material-icons">monetization_on</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="stat-card-extended promedio">
+          <div class="stat-icon-extended">
+            <span class="material-icons">schedule</span>
+          </div>
+          <div class="stat-content">
+            <h4>Tiempo Promedio</h4>
+            <p class="stat-value">{{ getEstadisticasGenerales().promedioTiempoReparacion }} días</p>
+            <p class="stat-description">Duración promedio de reparaciones</p>
+          </div>
+          <div class="stat-action">
+            <button class="action-btn promedio" title="Ver estadísticas detalladas">
+              <span class="material-icons">analytics</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="stat-card-extended clientes">
+          <div class="stat-icon-extended">
+            <span class="material-icons">people</span>
+          </div>
+          <div class="stat-content">
+            <h4>Clientes Recurrentes</h4>
+            <p class="stat-value">{{ getEstadisticasGenerales().clientesRecurrentes }}</p>
+            <p class="stat-description">Con más de una reparación</p>
+          </div>
+          <div class="stat-action">
+            <button class="action-btn clientes" routerLink="/clientes" title="Ver clientes">
+              <span class="material-icons">person_add</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="stat-card-extended tecnico">
+          <div class="stat-icon-extended">
+            <span class="material-icons">engineering</span>
+          </div>
+          <div class="stat-content">
+            <h4>Técnico Destacado</h4>
+            <p class="stat-value">{{ getEstadisticasGenerales().tecnicoMasProductivo || 'N/A' }}</p>
+            <p class="stat-description">Mayor número de reparaciones completadas</p>
+          </div>
+          <div class="stat-action">
+            <button class="action-btn tecnico" routerLink="/tecnicos" title="Ver técnicos">
+              <span class="material-icons">star</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reparaciones Pendientes Section -->
+      <div class="pending-section">
+        <div class="section-header">
+          <h2><span class="material-icons">pending_actions</span>Reparaciones Pendientes</h2>
+          <div class="section-actions">
+            <div class="search-box">
+              <span class="material-icons">search</span>
+              <input
+                type="text"
+                placeholder="Buscar por cliente, equipo o falla..."
+                (input)="onSearchInput($event)"
+                [value]="searchTerm"
+              />
+            </div>
+            <button class="refresh-btn" (click)="refrescarDatos()" title="Actualizar datos">
+              <span class="material-icons">refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Reparaciones Cards -->
+        <div *ngIf="filteredReparacionesForStatus.length > 0; else noPendingTemplate" class="repairs-grid">
+          <div class="repair-card" *ngFor="let reparacion of filteredReparacionesForStatus; trackBy: trackByReparacionId">
+            <div class="repair-header">
+              <div class="repair-id">
+                <span class="material-icons">confirmation_number</span>
+                <span class="id-text">#{{"000" + reparacion.id | slice:-4}}</span>
+              </div>
+              <div class="repair-date">
+                <span class="material-icons">event</span>
+                <span>{{ formatearFecha(reparacion.fechaIngreso) }}</span>
+              </div>
+              <div class="days-in-shop" [class.urgent]="getDiasEnTaller(reparacion) > 7">
+                <span class="material-icons">schedule</span>
+                <span>{{ getDiasEnTaller(reparacion) }} días</span>
+              </div>
+            </div>
+
+            <div class="repair-body">
+              <div class="client-section">
+                <div class="client-info">
+                  <span class="material-icons">person</span>
+                  <div>
+                    <strong>Cliente</strong>
+                    <p>{{ reparacion.cliente.nombre }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="equipment-section">
+                <div class="equipment-info">
+                  <span class="material-icons">devices</span>
+                  <div>
+                    <strong>Equipo</strong>
+                    <p>{{ reparacion.equipo.marca.nombre }} {{ reparacion.equipo.modelo.nombre }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fault-section">
+                <div class="fault-info">
+                  <span class="material-icons">error_outline</span>
+                  <div>
+                    <strong>Falla reportada</strong>
+                    <p class="fault-text">{{ reparacion.falla }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="technician-section" *ngIf="reparacion.tecnico.nombre">
+                <div class="technician-info">
+                  <span class="material-icons">engineering</span>
+                  <div>
+                    <strong>Técnico asignado</strong>
+                    <p>{{ reparacion.tecnico.nombre }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="repair-actions">
+              <button class="action-btn view" (click)="verDetallesReparacion(reparacion)" title="Ver detalles">
+                <span class="material-icons">visibility</span>
+              </button>
+              <button class="action-btn manage" routerLink="/reparaciones" title="Gestionar reparación">
+                <span class="material-icons">build</span>
+              </button>
+              <button class="action-btn priority" *ngIf="getDiasEnTaller(reparacion) > 7" title="Marcar como prioritaria">
+                <span class="material-icons">priority_high</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State Template -->
+        <ng-template #noPendingTemplate>
+          <div class="empty-state">
+            <div class="empty-icon">
+              <span class="material-icons">engineering</span>
+            </div>
+            <h3>No hay reparaciones pendientes</h3>
+            <p>¡Excelente trabajo! No hay equipos esperando en el taller.</p>
+            <button class="btn-primary" routerLink="/reparaciones">
+              <span class="material-icons">add</span>
+              Nueva reparación
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal para ver detalles de reparación -->
+<div class="modal fade" id="verDetallesReparacionModal" tabindex="-1" aria-labelledby="verDetallesReparacionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Detalles de la Reparación</h2>
+          <p class="modal-subtitle">Información completa de la reparación #{{"000" + (reparacionSeleccionada.id || 0) | slice:-4}}</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="reparacion-details" *ngIf="reparacionSeleccionada.id">
+          <div class="detail-section">
+            <h4><span class="material-icons">info</span>Información General</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="material-icons">confirmation_number</span>
+                <div>
+                  <strong>ID de Reparación</strong>
+                  <p>#{{ reparacionSeleccionada.id }}</p>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons">event</span>
+                <div>
+                  <strong>Fecha de Ingreso</strong>
+                  <p>{{ formatearFecha(reparacionSeleccionada.fechaIngreso) }}</p>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons">schedule</span>
+                <div>
+                  <strong>Tiempo en Taller</strong>
+                  <p>{{ getDiasEnTaller(reparacionSeleccionada) }} días</p>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons">info</span>
+                <div>
+                  <strong>Estado</strong>
+                  <p><span class="status-badge en-taller">{{ reparacionSeleccionada.estado }}</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h4><span class="material-icons">person</span>Cliente</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="material-icons">person</span>
+                <div>
+                  <strong>Nombre</strong>
+                  <p>{{ reparacionSeleccionada.cliente?.nombre || 'No especificado' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4><span class="material-icons">devices</span>Equipo</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="material-icons">devices</span>
+                <div>
+                  <strong>Marca y Modelo</strong>
+                  <p>{{ reparacionSeleccionada.equipo?.marca?.nombre }} {{ reparacionSeleccionada.equipo?.modelo?.nombre }}</p>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons">inventory</span>
+                <div>
+                  <strong>Accesorios</strong>
+                  <p>{{ reparacionSeleccionada.accesorios || 'No especificados' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4><span class="material-icons">error_outline</span>Falla y Técnico</h4>
+            <div class="detail-grid">
+              <div class="detail-item full-width">
+                <span class="material-icons">error_outline</span>
+                <div>
+                  <strong>Falla Reportada</strong>
+                  <p>{{ reparacionSeleccionada.falla || 'No especificada' }}</p>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons">engineering</span>
+                <div>
+                  <strong>Técnico Asignado</strong>
+                  <p>{{ reparacionSeleccionada.tecnico?.nombre || 'No asignado' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-primary" routerLink="/reparaciones" data-bs-dismiss="modal">
+          <span class="material-icons">build</span>
+          Gestionar Reparación
+        </button>
+      </div>
     </div>
   </div>
 </div>

@@ -1,317 +1,610 @@
-<div class="container">
-  <h2 class="h2-title">Proveedores</h2>
-  <div class="row mb-3">
-    <div class="col-md-6">
-      <input
-        type="text"
-        placeholder="Buscar por nombre..."
-        [(ngModel)]="nombre"
-        class="form-control"
-        (change)="onFilterChange()"
-      />
-    </div>
-    <div class="col-md-6 text-end">
-      <button
-        type="button"
-        class="btn btn-success"
-        data-bs-toggle="modal"
-        data-bs-target="#agregarProveedorModal"
-      >
-        Agregar proveedor
+<div class="dashboard-container">
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Simple Header -->
+    <div class="page-header">
+      <div class="header-titles">
+        <h1 class="main-title">Gestión de Proveedores</h1>
+        <p class="subtitle">Administración de proveedores y contactos comerciales</p>
+      </div>
+      <button class="btn-primary add-proveedor" data-bs-toggle="modal" data-bs-target="#agregarProveedorModal">
+        <span class="material-icons">local_shipping</span>
+        Nuevo Proveedor
       </button>
     </div>
-  </div>
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Direccion</th>
-          <th>Telefono</th>
-          <th>Correo</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let proveedor of proveedores" class="hover-row">
-          <td>{{ proveedor.nombre }}</td>
-          <td>{{ proveedor.direccion }}</td>
-          <td>{{ proveedor.telefono }}</td>
-          <td>{{ proveedor.email }}</td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-primary me-2"
-              data-bs-toggle="modal"
-              data-bs-target="#ModificarProveedorModal"
-              title="Modificar"
-              (click)="
-                abrirModalModificacion(
-                  proveedor.id,
-                  proveedor.nombre,
-                  proveedor.direccion,
-                  proveedor.telefono,
-                  proveedor.email
-                )
-              "
-            >
-              <span class="material-icons icon-small">edit</span>
-            </button>
 
-            <button
-              class="btn btn-danger"
-              (click)="desactivarProveedor(proveedor)"
-              title="Eliminar"
-            >
-              <span class="material-icons icon-small">delete</span>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Stats Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon proveedores">
+          <span class="material-icons">local_shipping</span>
+        </div>
+        <div class="stat-info">
+          <h3>Total Proveedores</h3>
+          <p class="stat-number">{{ getTotalProveedores() }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon email">
+          <span class="material-icons">email</span>
+        </div>
+        <div class="stat-info">
+          <h3>Con Email</h3>
+          <p class="stat-number">{{ getProveedoresConEmail() }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon telefono">
+          <span class="material-icons">phone</span>
+        </div>
+        <div class="stat-info">
+          <h3>Con Teléfono</h3>
+          <p class="stat-number">{{ getProveedoresConTelefono() }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon reciente">
+          <span class="material-icons">schedule</span>
+        </div>
+        <div class="stat-info">
+          <h3>Más Reciente</h3>
+          <p class="stat-number">{{ getProveedorReciente()?.nombre || 'N/A' }}</p>
+        </div>
+      </div>
+    </div>
 
-    <div class="d-flex justify-content-center">
-      <button
-        class="btn btn-primary me-1"
-        (click)="onPageChange(currentPage - 1)"
-        [disabled]="currentPage === 0"
-      >
-        Anterior
-      </button>
-      <ng-container *ngIf="totalPages > 0">
-        <button
-          class="btn btn-primary me-1"
-          (click)="onPageChange(0)"
-          [disabled]="currentPage === 0"
-        >
-          1
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input
+          type="text"
+          placeholder="Buscar proveedores por nombre..."
+          (input)="onSearchInput($event)"
+          [value]="nombre"
+        />
+      </div>
+      <div class="export-actions">
+        <button class="export-btn" (click)="exportarProveedores()" title="Exportar a CSV">
+          <span class="material-icons">download</span>
+          Exportar
         </button>
+        <button class="refresh-btn" (click)="refrescarDatos()" title="Actualizar datos">
+          <span class="material-icons">refresh</span>
+        </button>
+        <button class="view-toggle-btn" (click)="toggleViewMode()" title="Cambiar vista">
+          <span class="material-icons">{{ viewMode === 'table' ? 'view_module' : 'table_view' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner">
+        <span class="material-icons">autorenew</span>
+      </div>
+      <p>Cargando proveedores...</p>
+    </div>
+
+    <!-- Content Area -->
+    <div *ngIf="!isLoading">
+      <div *ngIf="proveedores.length > 0; else noProveedoresTemplate">
+        <!-- Table View -->
+        <div *ngIf="viewMode === 'table'" class="proveedores-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Proveedor</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let proveedor of proveedores; trackBy: trackByProveedorId">
+                <td class="proveedor-cell">
+                  <div class="proveedor-info">
+                    <div class="proveedor-avatar">
+                      <span class="material-icons">local_shipping</span>
+                    </div>
+                    <div class="proveedor-details">
+                      <p class="proveedor-name">{{ proveedor.nombre || 'Sin nombre' }}</p>
+                      <p class="proveedor-id">ID: {{ proveedor.id }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="direccion-cell">
+                  <span class="direccion-text">{{ proveedor.direccion || 'No especificada' }}</span>
+                </td>
+                <td class="telefono-cell">
+                  <span *ngIf="proveedor.telefono" class="telefono-badge">
+                    <span class="material-icons">phone</span>
+                    {{ formatearTelefono(proveedor.telefono) }}
+                  </span>
+                  <span *ngIf="!proveedor.telefono" class="no-data">Sin teléfono</span>
+                </td>
+                <td class="email-cell">
+                  <a *ngIf="proveedor.email" [href]="'mailto:' + proveedor.email" class="email-link">
+                    <span class="material-icons">email</span>
+                    {{ proveedor.email }}
+                  </a>
+                  <span *ngIf="!proveedor.email" class="no-data">Sin email</span>
+                </td>
+                <td class="actions-cell">
+                  <button class="action-btn view" (click)="verDetallesProveedor(proveedor)" title="Ver detalles">
+                    <span class="material-icons">visibility</span>
+                  </button>
+                  <button 
+                    class="action-btn edit" 
+                    data-bs-toggle="modal"
+                    data-bs-target="#ModificarProveedorModal"
+                    (click)="abrirModalModificacion(
+                      proveedor.id,
+                      proveedor.nombre,
+                      proveedor.direccion,
+                      proveedor.telefono,
+                      proveedor.email
+                    )"
+                    title="Modificar">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="action-btn delete" (click)="desactivarProveedor(proveedor)" title="Desactivar">
+                    <span class="material-icons">delete</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Card View -->
+        <div *ngIf="viewMode === 'cards'" class="proveedores-cards">
+          <div class="cards-container">
+            <div class="proveedor-card" *ngFor="let proveedor of proveedores; trackBy: trackByProveedorId">
+              <div class="card-header">
+                <div class="proveedor-icon">
+                  <span class="material-icons">local_shipping</span>
+                </div>
+                <div class="proveedor-title">
+                  <h4>{{ proveedor.nombre || 'Proveedor sin nombre' }}</h4>
+                  <p>{{ proveedor.direccion || 'Dirección no especificada' }}</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="proveedor-detail">
+                  <span class="material-icons">phone</span>
+                  <div>
+                    <strong>Teléfono</strong>
+                    <p *ngIf="proveedor.telefono">{{ formatearTelefono(proveedor.telefono) }}</p>
+                    <p *ngIf="!proveedor.telefono" class="no-data">Sin teléfono</p>
+                  </div>
+                </div>
+                <div class="proveedor-detail">
+                  <span class="material-icons">email</span>
+                  <div>
+                    <strong>Email</strong>
+                    <p *ngIf="proveedor.email">
+                      <a [href]="'mailto:' + proveedor.email" class="email-link">{{ proveedor.email }}</a>
+                    </p>
+                    <p *ngIf="!proveedor.email" class="no-data">Sin email</p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="action-btn view" (click)="verDetallesProveedor(proveedor)" title="Ver detalles">
+                  <span class="material-icons">visibility</span>
+                </button>
+                <button 
+                  class="action-btn edit" 
+                  data-bs-toggle="modal"
+                  data-bs-target="#ModificarProveedorModal"
+                  (click)="abrirModalModificacion(
+                    proveedor.id,
+                    proveedor.nombre,
+                    proveedor.direccion,
+                    proveedor.telefono,
+                    proveedor.email
+                  )"
+                  title="Modificar">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="action-btn delete" (click)="desactivarProveedor(proveedor)" title="Desactivar">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State Template -->
+      <ng-template #noProveedoresTemplate>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <span class="material-icons">local_shipping</span>
+          </div>
+          <h3>No hay proveedores registrados</h3>
+          <p>Comienza agregando tu primer proveedor para gestionar tus contactos comerciales.</p>
+          <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#agregarProveedorModal">
+            <span class="material-icons">local_shipping</span>
+            Agregar primer proveedor
+          </button>
+        </div>
+      </ng-template>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="proveedores.length > 0 && totalPages > 1">
         <button
-          *ngIf="currentPage > 1"
-          class="btn btn-primary me-1"
+          class="page-btn"
           (click)="onPageChange(currentPage - 1)"
-          [disabled]="currentPage === 1"
+          [disabled]="currentPage === 0"
+          title="Página anterior"
         >
-          {{ currentPage }}
+          <span class="material-icons">chevron_left</span>
         </button>
+        
+        <div class="page-numbers">
+          <button
+            class="page-btn"
+            [class.active]="currentPage === 0"
+            (click)="onPageChange(0)"
+            *ngIf="totalPages > 0"
+          >
+            1
+          </button>
+          
+          <button
+            *ngIf="currentPage > 1"
+            class="page-btn"
+            (click)="onPageChange(currentPage - 1)"
+          >
+            {{ currentPage }}
+          </button>
+          
+          <button
+            *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+            class="page-btn active"
+            [disabled]="true"
+          >
+            {{ currentPage + 1 }}
+          </button>
+          
+          <button
+            *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+            class="page-btn"
+            (click)="onPageChange(currentPage + 1)"
+          >
+            {{ currentPage + 2 }}
+          </button>
+          
+          <button
+            *ngIf="totalPages > 1"
+            class="page-btn"
+            (click)="onPageChange(totalPages - 1)"
+            [disabled]="currentPage === totalPages - 1"
+          >
+            {{ totalPages }}
+          </button>
+        </div>
+        
         <button
-          *ngIf="currentPage != 0 && totalPages != currentPage + 1"
-          class="btn btn-primary me-1"
-          (click)="onPageChange(currentPage)"
-          [disabled]="true"
-        >
-          {{ currentPage + 1 }}
-        </button>
-
-        <button
-          *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
-          class="btn btn-primary me-1"
+          class="page-btn"
           (click)="onPageChange(currentPage + 1)"
+          [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          title="Página siguiente"
         >
-          {{ currentPage + 2 }}
+          <span class="material-icons">chevron_right</span>
         </button>
-        <button
-          *ngIf="totalPages > 1"
-          class="btn btn-primary me-1"
-          (click)="onPageChange(totalPages - 1)"
-          [disabled]="currentPage === totalPages - 1"
-        >
-          {{ totalPages }}
-        </button>
-      </ng-container>
-      <button
-        class="btn btn-primary"
-        (click)="onPageChange(currentPage + 1)"
-        [disabled]="currentPage === totalPages - 1 || totalPages === 0"
-      >
-        Siguiente
-      </button>
-    </div>
-  </div>
+      </div>
 
-  <div
-    class="modal fade"
-    id="agregarProveedorModal"
-    tabindex="-1"
-    aria-labelledby="agregarProveedorModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <form (ngSubmit)="agregarProveedor()">
-          <div class="modal-header">
-            <h2 class="modal-title text-center fs-2 h2-title">
-              Agregar proveedor
-            </h2>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-              #agregarProveedorModal
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="nombre"
-                  >Nombre <span class="requerido">*</span></label
-                >
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  class="form-control fs-5"
-                  required
-                  [(ngModel)]="nuevoProveedor.nombre"
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="direccion">Dirección</label>
-                <input
-                  type="text"
-                  id="direccion"
-                  name="direccion"
-                  class="form-control fs-5"
-                  required
-                  [(ngModel)]="nuevoProveedor.direccion"
-                />
+      <div class="pagination-info" *ngIf="proveedores.length > 0">
+        <p>Página {{ currentPage + 1 }} de {{ totalPages }} ({{ getTotalProveedores() }} proveedores en total)</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal para ver detalles del proveedor -->
+<div class="modal fade" id="verDetallesProveedorModal" tabindex="-1" aria-labelledby="verDetallesProveedorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Detalles del Proveedor</h2>
+          <p class="modal-subtitle">Información completa del proveedor seleccionado</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="proveedor-details" *ngIf="proveedorSeleccionado.id">
+          <div class="detail-section">
+            <h4><span class="material-icons">info</span>Información General</h4>
+            <div class="detail-item">
+              <span class="material-icons">person</span>
+              <div>
+                <strong>Nombre</strong>
+                <p>{{ proveedorSeleccionado.nombre || 'No especificado' }}</p>
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="telefono">Teléfono</label>
-                <input
-                  type="text"
-                  id="telefono"
-                  name="telefono"
-                  class="form-control fs-5"
-                  required
-                  [(ngModel)]="nuevoProveedor.telefono"
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="correo">Correo</label>
-                <input
-                  type="email"
-                  id="correo"
-                  name="correo"
-                  class="form-control fs-5"
-                  required
-                  [(ngModel)]="nuevoProveedor.email"
-                />
+            <div class="detail-item">
+              <span class="material-icons">location_on</span>
+              <div>
+                <strong>Dirección</strong>
+                <p>{{ proveedorSeleccionado.direccion || 'No especificada' }}</p>
               </div>
             </div>
-            <div *ngIf="errorAgregarProveedor" class="text-danger">
-              Error al agregar el proveedor.
+            <div class="detail-item">
+              <span class="material-icons">phone</span>
+              <div>
+                <strong>Teléfono</strong>
+                <p *ngIf="proveedorSeleccionado.telefono">{{ formatearTelefono(proveedorSeleccionado.telefono) }}</p>
+                <p *ngIf="!proveedorSeleccionado.telefono" class="no-data">Sin teléfono</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">email</span>
+              <div>
+                <strong>Email</strong>
+                <p *ngIf="proveedorSeleccionado.email">
+                  <a [href]="'mailto:' + proveedorSeleccionado.email" class="email-link">{{ proveedorSeleccionado.email }}</a>
+                </p>
+                <p *ngIf="!proveedorSeleccionado.email" class="no-data">Sin email</p>
+              </div>
+            </div>
+            <div class="detail-item" *ngIf="proveedorSeleccionado.fechaCreacion">
+              <span class="material-icons">schedule</span>
+              <div>
+                <strong>Fecha de Registro</strong>
+                <p>{{ formatearFecha(proveedorSeleccionado.fechaCreacion) }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">check_circle</span>
+              <div>
+                <strong>Estado</strong>
+                <p><span class="status-badge activo">Activo</span></p>
+              </div>
             </div>
           </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-danger col-3 me-2"
-              data-bs-dismiss="modal"
-            >
-              Cerrar
-            </button>
-            <button type="submit" class="btn btn-success col-3">Agregar</button>
-          </div>
-        </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          data-bs-toggle="modal" 
+          data-bs-target="#ModificarProveedorModal"
+          data-bs-dismiss="modal"
+          (click)="abrirModalModificacion(
+            proveedorSeleccionado.id,
+            proveedorSeleccionado.nombre,
+            proveedorSeleccionado.direccion,
+            proveedorSeleccionado.telefono,
+            proveedorSeleccionado.email
+          )">
+          <span class="material-icons">edit</span>
+          Modificar
+        </button>
       </div>
     </div>
   </div>
+</div>
 
-  <div
-    class="modal fade"
-    id="ModificarProveedorModal"
-    tabindex="-1"
-    aria-labelledby="ModificarProveedorModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <form (ngSubmit)="modificarProveedor()">
-          <div class="modal-header">
-            <h2 class="modal-title text-center fs-2 h2-title">
-              Modificar proveedor
-            </h2>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-              #ModificarProveedorModal
-            ></button>
+<!-- Modal Agregar Proveedor -->
+<div class="modal fade" id="agregarProveedorModal" tabindex="-1" aria-labelledby="agregarProveedorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form (ngSubmit)="agregarProveedor()">
+        <div class="modal-header">
+          <div class="modal-title-container">
+            <h2 class="modal-title">Agregar Nuevo Proveedor</h2>
+            <p class="modal-subtitle">Registrar un nuevo proveedor en el sistema</p>
           </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="nombre"
-                  >Nombre <span class="requerido">*</span></label
-                >
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  class="form-control fs-5"
-                  required
-                  [(ngModel)]="proveedor.nombre"
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="direccion">Dirección</label>
-                <input
-                  type="text"
-                  id="direccion"
-                  name="direccion"
-                  class="form-control fs-5"
-                  required
-                  [(ngModel)]="proveedor.direccion"
-                />
-              </div>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #agregarProveedorModal
+          >
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">
+                <span class="material-icons">person</span>
+                Nombre <span class="requerido">*</span>
+              </label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                class="form-control"
+                required
+                [(ngModel)]="nuevoProveedor.nombre"
+                placeholder="Ingrese el nombre del proveedor"
+              />
             </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="telefono">Teléfono</label>
-                <input
-                  type="text"
-                  id="telefono"
-                  name="telefono"
-                  class="form-control fs-5"
-                  required
-                  [(ngModel)]="proveedor.telefono"
-                />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="correo">Correo</label>
-                <input
-                  type="email"
-                  id="correo"
-                  name="correo"
-                  class="form-control fs-5"
-                  required
-                  [(ngModel)]="proveedor.email"
-                />
-              </div>
-            </div>
-            <div *ngIf="errorModificarProveedor" class="text-danger">
-              Error al modificar el proveedor.
+            <div class="form-group">
+              <label for="direccion">
+                <span class="material-icons">location_on</span>
+                Dirección
+              </label>
+              <input
+                type="text"
+                id="direccion"
+                name="direccion"
+                class="form-control"
+                [(ngModel)]="nuevoProveedor.direccion"
+                placeholder="Ingrese la dirección"
+              />
             </div>
           </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-danger col-3 me-2"
-              data-bs-dismiss="modal"
-            >
-              Cerrar
-            </button>
-            <button type="submit" class="btn btn-success col-3">
-              Modificar
-            </button>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefono">
+                <span class="material-icons">phone</span>
+                Teléfono
+              </label>
+              <input
+                type="text"
+                id="telefono"
+                name="telefono"
+                class="form-control"
+                [(ngModel)]="nuevoProveedor.telefono"
+                placeholder="Ingrese el teléfono"
+              />
+            </div>
+            <div class="form-group">
+              <label for="correo">
+                <span class="material-icons">email</span>
+                Email
+              </label>
+              <input
+                type="email"
+                id="correo"
+                name="correo"
+                class="form-control"
+                [(ngModel)]="nuevoProveedor.email"
+                placeholder="Ingrese el email"
+              />
+            </div>
           </div>
-        </form>
-      </div>
+          <div *ngIf="errorAgregarProveedor" class="error-message">
+            <span class="material-icons">error</span>
+            Error al agregar el proveedor.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            <span class="material-icons">close</span>
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <span class="material-icons">add</span>
+            Agregar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Modificar Proveedor -->
+<div class="modal fade" id="ModificarProveedorModal" tabindex="-1" aria-labelledby="ModificarProveedorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form (ngSubmit)="modificarProveedor()">
+        <div class="modal-header">
+          <div class="modal-title-container">
+            <h2 class="modal-title">Modificar Proveedor</h2>
+            <p class="modal-subtitle">Actualizar información del proveedor</p>
+          </div>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            #ModificarProveedorModal
+          >
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombreModificar">
+                <span class="material-icons">person</span>
+                Nombre <span class="requerido">*</span>
+              </label>
+              <input
+                type="text"
+                id="nombreModificar"
+                name="nombreModificar"
+                class="form-control"
+                required
+                [(ngModel)]="proveedor.nombre"
+                placeholder="Ingrese el nombre del proveedor"
+              />
+            </div>
+            <div class="form-group">
+              <label for="direccionModificar">
+                <span class="material-icons">location_on</span>
+                Dirección
+              </label>
+              <input
+                type="text"
+                id="direccionModificar"
+                name="direccionModificar"
+                class="form-control"
+                [(ngModel)]="proveedor.direccion"
+                placeholder="Ingrese la dirección"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefonoModificar">
+                <span class="material-icons">phone</span>
+                Teléfono
+              </label>
+              <input
+                type="text"
+                id="telefonoModificar"
+                name="telefonoModificar"
+                class="form-control"
+                [(ngModel)]="proveedor.telefono"
+                placeholder="Ingrese el teléfono"
+              />
+            </div>
+            <div class="form-group">
+              <label for="correoModificar">
+                <span class="material-icons">email</span>
+                Email
+              </label>
+              <input
+                type="email"
+                id="correoModificar"
+                name="correoModificar"
+                class="form-control"
+                [(ngModel)]="proveedor.email"
+                placeholder="Ingrese el email"
+              />
+            </div>
+          </div>
+          <div *ngIf="errorModificarProveedor" class="error-message">
+            <span class="material-icons">error</span>
+            Error al modificar el proveedor.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            <span class="material-icons">close</span>
+            Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <span class="material-icons">save</span>
+            Modificar
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -12,14 +12,16 @@ import { AfterViewInit, Renderer2 } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, debounceTime, distinctUntilChanged, map } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, map, Subject, Subscription } from 'rxjs';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-equipments',
   templateUrl: './equipments.component.html',
   styleUrls: ['./equipments.component.css'],
 })
-export class EquipmentsComponent implements OnInit {
+export class EquipmentsComponent implements OnInit, OnDestroy {
   @ViewChild('agregarEquipoModal') agregarEquipoModal: any;
   @ViewChild('ModificarEquipoModal') modalCloseUpdate: any;
   @ViewChild('agregarTipoEquipoModal') agregarTipoEquipoModal: any;
@@ -33,6 +35,8 @@ export class EquipmentsComponent implements OnInit {
   agregarModeloModalRef: NgbModalRef | undefined;
 
   equipos: any[] = [];
+  allEquipos: any[] = [];
+  filteredEquipos: any[] = [];
   equipo: any = {};
   equipoSeleccionado: any = {};
   searchTerm: string = '';
@@ -65,6 +69,20 @@ export class EquipmentsComponent implements OnInit {
   };
   errorAgregarModelo = false;
 
+  // Para búsqueda con debounce
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
+
+  // Nuevas propiedades para estadísticas y funcionalidades
+  viewMode: 'cards' | 'table' = 'table';
+  darkMode: boolean = false;
+  isLoading: boolean = false;
+
+  // Autocompletado
+  tipoEquipoSeleccionado: boolean = false;
+  marcaSeleccionada: boolean = false;
+  modeloSeleccionado: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -77,23 +95,195 @@ export class EquipmentsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initializeDarkMode();
+    this.setupSearchDebounce();
     this.getEquipos();
-    this.getMarcas();
+    this.getAllEquiposForStats();
     this.getTiposEquipo();
+    this.getMarcas();
+    this.getModelos();
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+  }
+
+  private initializeDarkMode(): void {
+    const savedMode = localStorage.getItem('darkMode');
+    this.darkMode = savedMode === 'true';
+    this.applyDarkMode();
+  }
+
+  private applyDarkMode(): void {
+    if (this.darkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+
+  toggleDarkMode(): void {
+    this.darkMode = !this.darkMode;
+    localStorage.setItem('darkMode', this.darkMode.toString());
+    this.applyDarkMode();
+  }
+
+  private setupSearchDebounce(): void {
+    this.searchSubscription = this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(searchTerm => {
+        this.nombre = searchTerm;
+        this.currentPage = 0;
+        this.getEquipos();
+      });
+  }
+
+  onSearchInput(event: any): void {
+    this.searchSubject.next(event.target.value);
+  }
+
+  getAllEquiposForStats(): void {
+    // Obtener todos los equipos para las estadísticas
+    this.EquipoService
+      .getEquiposActivos(0, 1000, '')
+      .subscribe(
+        (data) => {
+          this.allEquipos = data.content;
+        },
+        (error) => {
+          console.error('Error al obtener equipos para estadísticas:', error);
+        }
+      );
+  }
+
+  // Métodos para estadísticas
+  getTotalEquipos(): number {
+    return this.allEquipos.length;
+  }
+
+  getEquiposPorTipo(): { [key: string]: number } {
+    const equiposPorTipo: { [key: string]: number } = {};
+    this.allEquipos.forEach(equipo => {
+      const tipo = equipo.tipo_equipo?.nombre || 'Sin tipo';
+      equiposPorTipo[tipo] = (equiposPorTipo[tipo] || 0) + 1;
+    });
+    return equiposPorTipo;
+  }
+
+  getEquiposPorMarca(): { [key: string]: number } {
+    const equiposPorMarca: { [key: string]: number } = {};
+    this.allEquipos.forEach(equipo => {
+      const marca = equipo.marca?.nombre || 'Sin marca';
+      equiposPorMarca[marca] = (equiposPorMarca[marca] || 0) + 1;
+    });
+    return equiposPorMarca;
+  }
+
+  getMarcaMasComun(): string {
+    const equiposPorMarca = this.getEquiposPorMarca();
+    const marcas = Object.keys(equiposPorMarca);
+    if (marcas.length === 0) return '';
+    
+    return marcas.reduce((marcaMasComun, marca) => 
+      equiposPorMarca[marca] > equiposPorMarca[marcaMasComun] ? marca : marcaMasComun
+    );
+  }
+
+  getTiposEquipoCount(): number {
+    const tipos = new Set(this.allEquipos.map(e => e.tipo_equipo?.nombre).filter(Boolean));
+    return tipos.size;
+  }
+
+  getMarcasCount(): number {
+    const marcas = new Set(this.allEquipos.map(e => e.marca?.nombre).filter(Boolean));
+    return marcas.size;
+  }
+
+  // Funcionalidades adicionales
+  trackByEquipoId(index: number, equipo: any): any {
+    return equipo.id;
+  }
+
+  verDetallesEquipo(equipo: any): void {
+    this.equipoSeleccionado = { ...equipo };
+    const modalElement = document.getElementById('verDetallesEquipoModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  getEquipoIcon(equipo: any): string {
+    const tipo = equipo.tipo_equipo?.nombre?.toLowerCase() || '';
+    if (tipo.includes('laptop') || tipo.includes('portátil')) return 'laptop';
+    if (tipo.includes('desktop') || tipo.includes('escritorio')) return 'computer';
+    if (tipo.includes('tablet')) return 'tablet';
+    if (tipo.includes('phone') || tipo.includes('móvil')) return 'smartphone';
+    if (tipo.includes('monitor')) return 'monitor';
+    if (tipo.includes('server') || tipo.includes('servidor')) return 'dns';
+    return 'devices';
+  }
+
+  exportarEquipos(): void {
+    if (this.equipos.length === 0) {
+      return;
+    }
+
+    const csvHeaders = ['Tipo de Equipo', 'Marca', 'Modelo', 'Número de Serie'];
+    const csvData = this.equipos.map(equipo => [
+      equipo.tipo_equipo?.nombre || '',
+      equipo.marca?.nombre || '',
+      equipo.modelo?.nombre || '',
+      equipo.numeroSerie || ''
+    ]);
+
+    const csvContent = [csvHeaders, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `equipos_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  refrescarDatos(): void {
+    this.getEquipos();
+    this.getAllEquiposForStats();
+  }
+
+  toggleViewMode(): void {
+    this.viewMode = this.viewMode === 'table' ? 'cards' : 'table';
+  }
+
+  formatearFecha(fecha: string): string {
+    if (!fecha) return '';
+    return new Date(fecha).toLocaleDateString('es-ES');
   }
 
   getEquipos(): void {
-    this.EquipoService.getEquiposActivos(
-      this.currentPage,
-      this.pageSize,
-      this.nombre
-    ).subscribe(
+    this.isLoading = true;
+    this.EquipoService
+      .getEquiposActivos(this.currentPage, this.pageSize, this.nombre)
+      .subscribe(
       (data) => {
         this.equipos = data.content;
         this.totalPages = data.totalPages;
+          this.isLoading = false;
       },
       (error) => {
-        console.error('Error al obtener la lista de equipos:', error);
+          console.error('Error al obtener equipos:', error);
+          this.isLoading = false;
       }
     );
   }
@@ -107,6 +297,7 @@ export class EquipmentsComponent implements OnInit {
             tap(() => {
               console.log('Equipo desactivado exitosamente');
               this.getEquipos();
+              this.getAllEquiposForStats();
             }),
             catchError((error) => {
               console.error('Error al desactivar equipo:', error);
@@ -140,6 +331,7 @@ export class EquipmentsComponent implements OnInit {
             modelo: { id: '' },
           };
           this.getEquipos();
+          this.getAllEquiposForStats();
           if (this.agregarEquipoModalRef) {
             this.agregarEquipoModalRef.close();
           }
@@ -162,6 +354,7 @@ export class EquipmentsComponent implements OnInit {
         tap(() => {
           console.log('Equipo modificado exitosamente');
           this.getEquipos();
+          this.getAllEquiposForStats();
           this.modalService.dismissAll();
         }),
         catchError((error) => {
@@ -183,6 +376,7 @@ export class EquipmentsComponent implements OnInit {
         this.EquipoService.eliminarEquipo(id).subscribe(
           () => {
             this.getEquipos();
+            this.getAllEquiposForStats();
           },
           (error) => {
             console.error('Error al eliminar equipo', error);
@@ -214,8 +408,18 @@ export class EquipmentsComponent implements OnInit {
     );
   }
 
-  //modals selects
+  getModelos(): void {
+    this.ModelService.getModelos().subscribe(
+      (modelos) => {
+        this.modelos = modelos;
+      },
+      (error) => {
+        console.error('Error al obtener modelos:', error);
+      }
+    );
+  }
 
+  //modals selects
   agregarTipoEquipo(): void {
     this.EquipmentTypeService.agregarTipoEquipo(this.nuevoTipoEquipo)
       .pipe(
@@ -238,6 +442,7 @@ export class EquipmentsComponent implements OnInit {
       )
       .subscribe();
   }
+
   onMarcaChange(event: any): void {
     const marcaId = event.target.value;
     this.getModelosPorMarca(marcaId);
@@ -257,6 +462,7 @@ export class EquipmentsComponent implements OnInit {
       this.modelos = [];
     }
   }
+
   agregarMarca(): void {
     this.BrandService.agregarMarca(this.nuevaMarca)
       .pipe(
@@ -352,8 +558,6 @@ export class EquipmentsComponent implements OnInit {
     });
   }
 
-  tipoEquipoSeleccionado = false;
-
   // Función de búsqueda para Typeahead
   buscarTiposEquipo = (text$: Observable<string>) =>
     text$.pipe(
@@ -387,8 +591,6 @@ export class EquipmentsComponent implements OnInit {
     this.nuevoEquipo.tipo_equipo = null;
     this.tipoEquipoSeleccionado = false;
   }
-
-  marcaSeleccionada = false;
 
   // Función de búsqueda para Typeahead
   buscarMarcas = (text$: Observable<string>) =>
@@ -425,8 +627,6 @@ export class EquipmentsComponent implements OnInit {
     this.nuevoEquipo.marca = null;
     this.marcaSeleccionada = false;
   }
-
-  modeloSeleccionado = false; // Indica si se ha seleccionado un modelo
 
   // Función de búsqueda para Typeahead
   buscarModelos = (text$: Observable<string>) =>

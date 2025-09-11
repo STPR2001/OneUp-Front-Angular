@@ -1,135 +1,241 @@
-<div class="container">
-  <h2 class="h2-title">Repuestos</h2>
-  <div class="row mb-3">
-    <div class="col-md-6">
-      <input
-        type="text"
-        placeholder="Buscar por número de parte..."
-        [(ngModel)]="nombre"
-        class="form-control"
-        (input)="onFilterChange()"
-      />
-    </div>
-    <div class="col-md-6 text-end">
-      <button
-        type="button"
-        class="btn btn-success"
-        data-bs-toggle="modal"
-        data-bs-target="#agregarRepuestoModal"
-      >
-        Agregar repuesto
+<div class="dashboard-container">
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Simple Header -->
+    <div class="page-header">
+      <div class="header-titles">
+        <h1 class="main-title">Gestión de Repuestos</h1>
+        <p class="subtitle">Control de inventario y gestión de stock</p>
+      </div>
+      <button class="btn-primary add-repuesto" data-bs-toggle="modal" data-bs-target="#agregarRepuestoModal">
+        <span class="material-icons">inventory_2</span>
+        Nuevo Repuesto
       </button>
     </div>
-  </div>
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <th>Repuesto</th>
-          <th>Número de parte</th>
-          <th>Precio costo</th>
-          <th>Precio venta</th>
-          <th>Stock</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let repuesto of repuestos" class="hover-row">
-          <td>{{ repuesto.descripcion }}</td>
-          <td>{{ repuesto.numeroDeParte }}</td>
-          <td>{{ repuesto.precioCosto }}</td>
-          <td>{{ repuesto.precioVenta }}</td>
-          <td>{{ repuesto.stock }}</td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-primary me-2"
-              data-bs-toggle="modal"
-              data-bs-target="#ModificarRepuestoModal"
-              (click)="
-                abrirModalModificacion(
-                  repuesto.id,
-                  repuesto.numeroDeParte,
-                  repuesto.descripcion,
-                  repuesto.precioCosto,
-                  repuesto.precioVenta,
-                  repuesto.stock
-                )
-              "
-              title="Modificar"
-            >
-              <span class="material-icons icon-small">edit</span>
-            </button>
-            <button
-              class="btn btn-danger"
-              (click)="desactivarRepuesto(repuesto)"
-              title="Eliminar"
-            >
-              <span class="material-icons icon-small">delete</span>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="d-flex justify-content-center">
-      <button
-        class="btn btn-primary me-1"
-        (click)="onPageChange(currentPage - 1)"
-        [disabled]="currentPage === 0"
-      >
-        Anterior
-      </button>
-      <ng-container *ngIf="totalPages > 0">
-        <button
-          class="btn btn-primary me-1"
-          (click)="onPageChange(0)"
-          [disabled]="currentPage === 0"
-        >
-          1
+
+    <!-- Stats Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon repuestos">
+          <span class="material-icons">inventory</span>
+        </div>
+        <div class="stat-info">
+          <h3>Total Repuestos</h3>
+          <p class="stat-number">{{getTotalRepuestos()}}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stock">
+          <span class="material-icons">storage</span>
+        </div>
+        <div class="stat-info">
+          <h3>Stock Total</h3>
+          <p class="stat-number">{{getTotalStock()}}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon low-stock">
+          <span class="material-icons">warning</span>
+        </div>
+        <div class="stat-info">
+          <h3>Stock Bajo</h3>
+          <p class="stat-number">{{getRepuestosStockBajo()}}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon value">
+          <span class="material-icons">monetization_on</span>
+        </div>
+        <div class="stat-info">
+          <h3>Valor Inventario</h3>
+          <p class="stat-number">{{formatearMoneda(getValorInventario())}}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input
+          type="text"
+          placeholder="Buscar por número de parte o descripción..."
+          [(ngModel)]="nombre"
+          (input)="onSearchInput($event)"
+        />
+      </div>
+      <div class="export-actions">
+        <button class="export-btn" (click)="exportarRepuestos()" title="Exportar a CSV">
+          <span class="material-icons">download</span>
+          Exportar
         </button>
+        <button class="refresh-btn" (click)="refrescarDatos()" title="Actualizar datos">
+          <span class="material-icons">refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Repuestos Table View -->
+    <div class="repuestos-table">
+      <table *ngIf="repuestos.length > 0; else noRepuestosTemplate">
+        <thead>
+          <tr>
+            <th>Repuesto</th>
+            <th>Precios</th>
+            <th>Stock</th>
+            <th>Rentabilidad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let repuesto of repuestos; trackBy: trackByRepuestoId">
+            <td class="repuesto-cell">
+              <div class="repuesto-info">
+                <p class="repuesto-description">{{repuesto.descripcion}}</p>
+                <p class="repuesto-part-number">
+                  <span class="material-icons">qr_code</span>
+                  {{repuesto.numeroDeParte}}
+                </p>
+              </div>
+            </td>
+            <td class="prices-cell">
+              <div class="prices-info">
+                <p class="precio-costo">
+                  <span class="label">Costo:</span>
+                  <span class="value">{{formatearMoneda(repuesto.precioCosto)}}</span>
+                </p>
+                <p class="precio-venta">
+                  <span class="label">Venta:</span>
+                  <span class="value">{{formatearMoneda(repuesto.precioVenta)}}</span>
+                </p>
+              </div>
+            </td>
+            <td class="stock-cell">
+              <span class="stock-badge" [class.stock-bajo]="repuesto.stock <= 5" [class.stock-agotado]="repuesto.stock === 0">
+                <span class="material-icons">{{getStockIcon(repuesto.stock)}}</span>
+                {{repuesto.stock}} und.
+              </span>
+            </td>
+            <td class="rentability-cell">
+              <div class="rentability-info">
+                <span class="rentability-percentage" [class.alta]="getRentabilidad(repuesto) >= 50" [class.media]="getRentabilidad(repuesto) >= 20 && getRentabilidad(repuesto) < 50" [class.baja]="getRentabilidad(repuesto) < 20">
+                  {{getRentabilidad(repuesto)}}%
+                </span>
+                <span class="rentability-amount">
+                  +{{formatearMoneda(repuesto.precioVenta - repuesto.precioCosto)}}
+                </span>
+              </div>
+            </td>
+            <td class="status-cell">
+              <span class="status-badge" [ngClass]="getStatusClass(repuesto)">
+                {{getStatusText(repuesto)}}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button class="action-btn view" (click)="verDetallesRepuesto(repuesto)" title="Ver detalles">
+                <span class="material-icons">visibility</span>
+              </button>
+              <button 
+                class="action-btn edit" 
+                data-bs-toggle="modal"
+                data-bs-target="#ModificarRepuestoModal"
+                (click)="abrirModalModificacion(repuesto.id, repuesto.numeroDeParte, repuesto.descripcion, repuesto.precioCosto, repuesto.precioVenta, repuesto.stock)"
+                title="Modificar">
+                <span class="material-icons">edit</span>
+              </button>
+              <button class="action-btn delete" (click)="desactivarRepuesto(repuesto)" title="Eliminar">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Empty State -->
+      <ng-template #noRepuestosTemplate>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <span class="material-icons">inventory_2</span>
+          </div>
+          <h3>No hay repuestos registrados</h3>
+          <p>Comienza agregando tu primer repuesto para gestionar tu inventario.</p>
+          <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#agregarRepuestoModal">
+            <span class="material-icons">inventory_2</span>
+            Agregar primer repuesto
+          </button>
+        </div>
+      </ng-template>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="repuestos.length > 0">
         <button
-          *ngIf="currentPage > 1"
-          class="btn btn-primary me-1"
+          class="page-btn"
           (click)="onPageChange(currentPage - 1)"
-          [disabled]="currentPage === 1"
+          [disabled]="currentPage === 0"
+          title="Página anterior"
         >
-          {{ currentPage }}
+          <span class="material-icons">chevron_left</span>
         </button>
+        
+        <div class="page-numbers">
+          <button
+            class="page-btn"
+            [class.active]="currentPage === 0"
+            (click)="onPageChange(0)"
+            *ngIf="totalPages > 0"
+          >
+            1
+          </button>
+          
+          <button
+            *ngIf="currentPage > 1"
+            class="page-btn"
+            (click)="onPageChange(currentPage - 1)"
+          >
+            {{ currentPage }}
+          </button>
+          
+          <button
+            *ngIf="currentPage != 0 && totalPages != currentPage + 1"
+            class="page-btn active"
+            [disabled]="true"
+          >
+            {{ currentPage + 1 }}
+          </button>
+          
+          <button
+            *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+            class="page-btn"
+            (click)="onPageChange(currentPage + 1)"
+          >
+            {{ currentPage + 2 }}
+          </button>
+          
+          <button
+            *ngIf="totalPages > 1"
+            class="page-btn"
+            [class.active]="currentPage === totalPages - 1"
+            (click)="onPageChange(totalPages - 1)"
+          >
+            {{ totalPages }}
+          </button>
+        </div>
+        
         <button
-          *ngIf="currentPage != 0 && totalPages != currentPage + 1"
-          class="btn btn-primary me-1"
-          (click)="onPageChange(currentPage)"
-          [disabled]="true"
-        >
-          {{ currentPage + 1 }}
-        </button>
-        <button
-          *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
-          class="btn btn-primary me-1"
+          class="page-btn"
           (click)="onPageChange(currentPage + 1)"
+          [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          title="Página siguiente"
         >
-          {{ currentPage + 2 }}
+          <span class="material-icons">chevron_right</span>
         </button>
-        <button
-          *ngIf="totalPages > 1"
-          class="btn btn-primary me-1"
-          (click)="onPageChange(totalPages - 1)"
-          [disabled]="currentPage === totalPages - 1"
-        >
-          {{ totalPages }}
-        </button>
-      </ng-container>
-      <button
-        class="btn btn-primary"
-        (click)="onPageChange(currentPage + 1)"
-        [disabled]="currentPage === totalPages - 1 || totalPages === 0"
-      >
-        Siguiente
-      </button>
+      </div>
     </div>
-  </div>
+  </main>
 </div>
 
+<!-- Modal Agregar Repuesto -->
 <div
   class="modal fade"
   id="agregarRepuestoModal"
@@ -141,9 +247,10 @@
     <div class="modal-content">
       <form (ngSubmit)="agregarRepuesto()">
         <div class="modal-header">
-          <h2 class="modal-title text-center fs-2 h2-title">
-            Agregar repuesto
-          </h2>
+          <div class="modal-title-container">
+            <h2 class="modal-title">Agregar repuesto</h2>
+            <p class="modal-subtitle">Complete la información del nuevo repuesto</p>
+          </div>
           <button
             type="button"
             class="btn-close"
@@ -153,102 +260,141 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="descripcion"
-                >Repuesto <span class="requerido">*</span></label
-              >
+          <div class="form-row">
+            <div class="form-group">
+              <label for="descripcion">
+                <span class="material-icons">inventory</span>
+                Descripción del repuesto <span class="requerido">*</span>
+              </label>
               <input
                 type="text"
                 id="descripcion"
                 name="descripcion"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="nuevoRepuesto.descripcion"
+                placeholder="Ej: Pantalla LCD iPhone 12"
               />
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="numero_de_parte">Número de parte</label>
+            <div class="form-group">
+              <label for="numero_de_parte">
+                <span class="material-icons">qr_code</span>
+                Número de parte <span class="requerido">*</span>
+              </label>
               <input
                 type="text"
                 id="numero_de_parte"
                 name="numero_de_parte"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="nuevoRepuesto.numeroDeParte"
+                placeholder="Ej: LCD-IP12-BLK-01"
               />
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="precio_costo">Precio de costo</label>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="precio_costo">
+                <span class="material-icons">attach_money</span>
+                Precio de costo <span class="requerido">*</span>
+              </label>
               <input
-                type="text"
+                type="number"
                 id="precio_costo"
                 name="precio_costo"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="nuevoRepuesto.precioCosto"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
               />
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="precio_venta">Precio de venta</label>
+            <div class="form-group">
+              <label for="precio_venta">
+                <span class="material-icons">sell</span>
+                Precio de venta <span class="requerido">*</span>
+              </label>
               <input
-                type="text"
+                type="number"
                 id="precio_venta"
                 name="precio_venta"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="nuevoRepuesto.precioVenta"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
               />
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="stock">Stock <span class="requerido">*</span></label>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="stock">
+                <span class="material-icons">storage</span>
+                Stock inicial <span class="requerido">*</span>
+              </label>
               <input
-                type="text"
+                type="number"
                 id="stock"
                 name="stock"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="nuevoRepuesto.stock"
+                placeholder="0"
+                min="0"
               />
             </div>
+            <div class="form-group">
+              <div class="calculated-info">
+                <label>Rentabilidad calculada:</label>
+                <div class="calc-result">
+                  <span class="percentage">{{calcularRentabilidadModal()}}%</span>
+                  <span class="amount">+{{formatearMoneda((nuevoRepuesto.precioVenta || 0) - (nuevoRepuesto.precioCosto || 0))}}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div *ngIf="errorAgregarRepuesto" class="text-danger">
-            Error al agregar el repuesto.
+          <div *ngIf="errorAgregarRepuesto" class="error-message">
+            <span class="material-icons">error</span>
+            Error al agregar el repuesto. Intente nuevamente.
           </div>
         </div>
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-danger col-3 me-2"
+            class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Cerrar
+            <span class="material-icons">cancel</span>
+            Cancelar
           </button>
-          <button type="submit" class="btn btn-success col-3">Agregar</button>
+          <button type="submit" class="btn btn-primary">
+            <span class="material-icons">save</span>
+            Agregar Repuesto
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
+<!-- Modal Modificar Repuesto -->
 <div
   class="modal fade"
   id="ModificarRepuestoModal"
   tabindex="-1"
-  aria-labelledby="ModificarRepuestoModalLabel"
+  aria-labelledby="modificarRepuestoModalLabel"
   aria-hidden="true"
 >
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <form (ngSubmit)="modificarRepuesto()">
         <div class="modal-header">
-          <h2 class="modal-title text-center fs-2 h2-title">
-            Modificar Repuesto
-          </h2>
+          <div class="modal-title-container">
+            <h2 class="modal-title">Modificar repuesto</h2>
+            <p class="modal-subtitle">Actualice la información del repuesto</p>
+          </div>
           <button
             type="button"
             class="btn-close"
@@ -258,84 +404,223 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="descripcion"
-                >Repuesto <span class="requerido">*</span></label
-              >
+          <div class="form-row">
+            <div class="form-group">
+              <label for="descripcion">
+                <span class="material-icons">inventory</span>
+                Descripción del repuesto <span class="requerido">*</span>
+              </label>
               <input
                 type="text"
                 id="descripcion"
                 name="descripcion"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="repuesto.descripcion"
+                placeholder="Ej: Pantalla LCD iPhone 12"
               />
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="numero_de_parte">Número de parte</label>
+            <div class="form-group">
+              <label for="numero_de_parte">
+                <span class="material-icons">qr_code</span>
+                Número de parte <span class="requerido">*</span>
+              </label>
               <input
                 type="text"
                 id="numero_de_parte"
                 name="numero_de_parte"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="repuesto.numeroDeParte"
+                placeholder="Ej: LCD-IP12-BLK-01"
               />
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="precio_costo">Precio de costo</label>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="precio_costo">
+                <span class="material-icons">attach_money</span>
+                Precio de costo <span class="requerido">*</span>
+              </label>
               <input
-                type="text"
+                type="number"
                 id="precio_costo"
                 name="precio_costo"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="repuesto.precioCosto"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
               />
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="precio_venta">Precio de venta</label>
+            <div class="form-group">
+              <label for="precio_venta">
+                <span class="material-icons">sell</span>
+                Precio de venta <span class="requerido">*</span>
+              </label>
               <input
-                type="text"
+                type="number"
                 id="precio_venta"
                 name="precio_venta"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="repuesto.precioVenta"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
               />
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="stock">Stock <span class="requerido">*</span></label>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="stock">
+                <span class="material-icons">storage</span>
+                Stock actual <span class="requerido">*</span>
+              </label>
               <input
-                type="text"
+                type="number"
                 id="stock"
                 name="stock"
-                class="form-control fs-5"
+                class="form-control"
                 required
                 [(ngModel)]="repuesto.stock"
+                placeholder="0"
+                min="0"
               />
             </div>
+            <div class="form-group">
+              <div class="calculated-info">
+                <label>Rentabilidad calculada:</label>
+                <div class="calc-result">
+                  <span class="percentage">{{calcularRentabilidadModalEdit()}}%</span>
+                  <span class="amount">+{{formatearMoneda((repuesto.precioVenta || 0) - (repuesto.precioCosto || 0))}}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div *ngIf="errorModificarRepuesto" class="text-danger">
-            Error al modificar el repuesto.
+          <div *ngIf="errorModificarRepuesto" class="error-message">
+            <span class="material-icons">error</span>
+            Error al modificar el repuesto. Intente nuevamente.
           </div>
         </div>
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-danger col-3 me-2"
+            class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Cerrar
+            <span class="material-icons">cancel</span>
+            Cancelar
           </button>
-          <button type="submit" class="btn btn-success col-3">Modificar</button>
+          <button type="submit" class="btn btn-primary">
+            <span class="material-icons">save</span>
+            Guardar Cambios
+          </button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver Detalles Repuesto -->
+<div
+  class="modal fade"
+  id="verDetallesRepuestoModal"
+  tabindex="-1"
+  aria-labelledby="verDetallesRepuestoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Detalles del repuesto</h2>
+          <p class="modal-subtitle">Información completa del repuesto</p>
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="cerrarModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="repuesto-details">
+          <div class="detail-section">
+            <h4>Información del Producto</h4>
+            <div class="detail-item">
+              <span class="material-icons">inventory</span>
+              <div>
+                <strong>Descripción:</strong>
+                <p>{{ repuestoSeleccionado.descripcion }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">qr_code</span>
+              <div>
+                <strong>Número de Parte:</strong>
+                <p>{{ repuestoSeleccionado.numeroDeParte }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h4>Información de Precios</h4>
+            <div class="detail-item">
+              <span class="material-icons">attach_money</span>
+              <div>
+                <strong>Precio de Costo:</strong>
+                <p class="precio-costo-display">{{ formatearMoneda(repuestoSeleccionado.precioCosto) }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">sell</span>
+              <div>
+                <strong>Precio de Venta:</strong>
+                <p class="precio-venta-display">{{ formatearMoneda(repuestoSeleccionado.precioVenta) }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">trending_up</span>
+              <div>
+                <strong>Rentabilidad:</strong>
+                <p class="rentabilidad-display">{{ getRentabilidad(repuestoSeleccionado) }}% (+{{ formatearMoneda((repuestoSeleccionado.precioVenta || 0) - (repuestoSeleccionado.precioCosto || 0)) }})</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h4>Información de Stock</h4>
+            <div class="detail-item">
+              <span class="material-icons">storage</span>
+              <div>
+                <strong>Stock Disponible:</strong>
+                <p class="stock-display" [class.stock-bajo]="repuestoSeleccionado.stock <= 5" [class.stock-agotado]="repuestoSeleccionado.stock === 0">{{ repuestoSeleccionado.stock }} unidades</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">assessment</span>
+              <div>
+                <strong>Valor en Inventario:</strong>
+                <p class="valor-inventario-display">{{ formatearMoneda((repuestoSeleccionado.precioCosto || 0) * (repuestoSeleccionado.stock || 0)) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="cerrarModal()"
+        >
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
+      </div>
     </div>
   </div>
 </div>

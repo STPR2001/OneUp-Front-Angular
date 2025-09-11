@@ -1,25 +1,53 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CanvasJS } from '@canvasjs/angular-charts';
 import { RepairsService } from 'src/app/services/repairs.service';
 import { ShoppingService } from 'src/app/services/shopping.service';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-statistic',
   templateUrl: './statistic.component.html',
   styleUrls: ['./statistic.component.css'],
 })
-export class StatisticComponent implements OnInit {
+export class StatisticComponent implements OnInit, OnDestroy {
   selectedYear: number = new Date().getFullYear();
   reparaciones: any[] = [];
+  allReparaciones: any[] = []; // Para estadísticas completas
+  
+  // Configuración de gráficos
   chartColors = [
-    '#4f8cff', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1', '#fd7e14', '#20c997', '#6610f2', '#e83e8c', '#343a40', '#adb5bd',
-    '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeead', '#ff9999', '#99cc99', '#ffcc99', '#99ccff', '#ff99cc', '#cc99ff', '#99ff99'
+    '#7c3aed', '#a855f7', '#c084fc', '#e879f9', '#f3e8ff',
+    '#4f46e5', '#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd',
+    '#ec4899', '#f472b6', '#fb7185', '#fda4af', '#fecaca'
   ];
 
-  // Ingresos por técnico (CanvasJS)
+  // Estados de carga y error
   ingresosTecnicoLoading = false;
   ingresosTecnicoError: string | null = null;
   anios: number[] = [];
+
+  // Filtros y vista
+  vistaSeleccionada: string = 'todos';
+  periodoSeleccionado: string = 'mensual';
+  
+  // Tipos de gráficos (para toggle)
+  chartTypes: { [key: string]: string } = {
+    'reparacionesMes': 'line',
+    'tecnicosRendimiento': 'column',
+    'ingresosMes': 'area',
+    'ingresosTecnico': 'bar'
+  };
+
+  // Para búsqueda y filtros con debounce
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
+
+  // Objetivos y metas
+  objetivoMensualIngresos: number = 5000000; // $5,000,000 COP
+  tiempoIdealReparacion: number = 5; // 5 días
 
   constructor(
     private shoppingService: ShoppingService,
@@ -28,19 +56,27 @@ export class StatisticComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarReparaciones();
+    this.getAllReparacionesForStats();
     this.renderAllCharts();
     this.initAnios();
     this.renderIngresosPorTecnicoCanvas();
   }
 
-  cargarReparaciones() {
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+  }
+
+    cargarReparaciones() {    this.repairsService.getAllReparaciones().subscribe(      (data) => {        this.reparaciones = data.filter((r: any) =>           new Date(r.fechaIngreso).getFullYear() === this.selectedYear        );        this.renderAllCharts();      },      (error) => {        console.error('Error al cargar reparaciones:', error);      }    );  }
+
+  getAllReparacionesForStats(): void {
     this.repairsService.getAllReparaciones().subscribe(
       (data) => {
-        this.reparaciones = data;
-        this.renderAllCharts();
+        this.allReparaciones = data;
       },
       (error) => {
-        console.error('Error al cargar reparaciones:', error);
+        console.error('Error al obtener reparaciones para estadísticas:', error);
       }
     );
   }
@@ -86,64 +122,21 @@ export class StatisticComponent implements OnInit {
     const mesActual = hoy.getMonth();
     const anioActual = hoy.getFullYear();
     
-    console.log('Calculando ingresos para:', {
-      mes: mesActual + 1,
-      anio: anioActual
-    });
-
-    console.log('Total de reparaciones antes del filtro:', this.reparaciones.length);
-    
     const reparacionesEntregadas = this.reparaciones.filter(r => {
-      // Inspeccionar el objeto completo
-      console.log('Evaluando reparación completa:', r);
-
-      // Verificar específicamente la propiedad activo
-      console.log('Tipo de activo:', typeof r.activo, 'Valor de activo:', r.activo);
-
-      // Cambiar la lógica de verificación de activo
-      if (r.activo === undefined || r.activo === null) {
-        console.log('La propiedad activo no está definida, asumiendo como activa');
-      } else if (r.activo === false) {
-        console.log('Reparación descartada: está explícitamente inactiva');
-        return false;
-      }
-      
-      if (r.estado !== 'Entregada') {
-        console.log('Reparación descartada: no está entregada');
-        return false;
-      }
-      
-      if (!r.fechaEntrega) {
-        console.log('Reparación descartada: no tiene fecha de entrega');
-        return false;
-      }
+      if (r.activo === false) return false;
+      if (r.estado !== 'Entregada') return false;
+      if (!r.fechaEntrega) return false;
       
       const fechaEntrega = new Date(r.fechaEntrega);
       const mesEntrega = fechaEntrega.getMonth();
       const anioEntrega = fechaEntrega.getFullYear();
       
-      const estaEnMesActual = mesEntrega === mesActual && anioEntrega === anioActual;
-      
-      if (!estaEnMesActual) {
-        console.log(`Reparación descartada: fecha fuera del mes actual - Mes: ${mesEntrega + 1}, Año: ${anioEntrega}`);
-      } else {
-        console.log('Reparación aceptada para el cálculo');
-      }
-      
-      return estaEnMesActual;
+      return mesEntrega === mesActual && anioEntrega === anioActual;
     });
     
-    console.log('Reparaciones entregadas este mes:', reparacionesEntregadas);
-    
-    const total = reparacionesEntregadas.reduce((total, r) => {
-      const subtotal = (r.manoDeObra || 0) + (r.entrega || 0);
-      console.log(`Sumando reparación ${r.id}: manoDeObra=${r.manoDeObra}, entrega=${r.entrega}, subtotal=${subtotal}`);
-      return total + subtotal;
+    return reparacionesEntregadas.reduce((total, r) => {
+      return total + (r.manoDeObra || 0) + (r.entrega || 0);
     }, 0);
-    
-    console.log('Total ingresos del mes:', total);
-    
-    return total;
   }
 
   calcularPromedioTiempoReparacion(): number {
@@ -194,6 +187,260 @@ export class StatisticComponent implements OnInit {
     return tecnicoMasProductivo;
   }
 
+  // Métodos de utilidad nuevos
+  formatearMoneda(valor: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP'
+    }).format(valor || 0);
+  }
+
+  formatDate(isoDate: string): string {
+    const date = new Date(isoDate);
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  // Nuevos métodos para estadísticas avanzadas
+  getProgresoIngresos(): number {
+    const ingresosActuales = this.getEstadisticasGenerales().ingresosMensuales;
+    return Math.min(Math.round((ingresosActuales / this.objetivoMensualIngresos) * 100), 100);
+  }
+
+  getEficienciaOperacional(): number {
+    const tiempoPromedio = this.getEstadisticasGenerales().promedioTiempoReparacion;
+    if (tiempoPromedio === 0) return 100;
+    
+    const eficiencia = Math.max(0, 100 - ((tiempoPromedio - this.tiempoIdealReparacion) * 10));
+    return Math.round(eficiencia);
+  }
+
+  getFidelizacionPorcentaje(): number {
+    const totalClientes = new Set(this.reparaciones.filter(r => r.activo).map(r => r.cliente.id)).size;
+    const clientesRecurrentes = this.getEstadisticasGenerales().clientesRecurrentes;
+    
+    if (totalClientes === 0) return 0;
+    return Math.round((clientesRecurrentes / totalClientes) * 100);
+  }
+
+  getTrendIcon(tipo: string): string {
+    switch (tipo) {
+      case 'tiempo':
+        const tiempo = this.getEstadisticasGenerales().promedioTiempoReparacion;
+        return tiempo <= this.tiempoIdealReparacion ? 'trending_down' : 'trending_up';
+      default:
+        return 'trending_flat';
+    }
+  }
+
+  getTrendClass(tipo: string): string {
+    switch (tipo) {
+      case 'tiempo':
+        const tiempo = this.getEstadisticasGenerales().promedioTiempoReparacion;
+        return tiempo <= this.tiempoIdealReparacion ? 'trend-positive' : 'trend-negative';
+      default:
+        return 'trend-neutral';
+    }
+  }
+
+  getTrendText(tipo: string): string {
+    switch (tipo) {
+      case 'tiempo':
+        const tiempo = this.getEstadisticasGenerales().promedioTiempoReparacion;
+        return tiempo <= this.tiempoIdealReparacion ? 'Excelente tiempo' : 'Mejorar tiempo';
+      default:
+        return 'Sin cambios';
+    }
+  }
+
+  // Métodos para filtros y vista
+  onVistaChange(): void {
+    setTimeout(() => {
+      this.renderAllCharts();
+    }, 100);
+  }
+
+  onPeriodoChange(): void {
+    this.renderAllCharts();
+  }
+
+  // Métodos para gestión de gráficos
+  getChartTypeIcon(chartKey: string): string {
+    const type = this.chartTypes[chartKey] || 'line';
+    switch (type) {
+      case 'line': return 'show_chart';
+      case 'column': return 'bar_chart';
+      case 'area': return 'area_chart';
+      case 'bar': return 'bar_chart';
+      default: return 'show_chart';
+    }
+  }
+
+  toggleChartType(chartKey: string): void {
+    const currentType = this.chartTypes[chartKey];
+    const types = ['line', 'column', 'area', 'bar'];
+    const currentIndex = types.indexOf(currentType);
+    const nextIndex = (currentIndex + 1) % types.length;
+    this.chartTypes[chartKey] = types[nextIndex];
+    
+    setTimeout(() => {
+      this.renderAllCharts();
+    }, 100);
+  }
+
+  downloadChart(chartKey: string): void {
+    // Implementar descarga de gráfico
+    console.log('Descargando gráfico:', chartKey);
+  }
+
+  // Método para insights y recomendaciones
+  getInsights(): any[] {
+    const stats = this.getEstadisticasGenerales();
+    const insights: any[] = [];
+
+    // Insight sobre reparaciones urgentes
+    if (stats.reparacionesUrgentes > 0) {
+      insights.push({
+        type: 'warning',
+        icon: 'warning',
+        title: 'Reparaciones Urgentes Detectadas',
+        description: `Hay ${stats.reparacionesUrgentes} reparaciones que llevan más de 7 días en taller. Se recomienda priorizar su finalización.`,
+        action: 'ver_urgentes',
+        actionText: 'Ver reparaciones urgentes'
+      });
+    }
+
+    // Insight sobre eficiencia
+    const eficiencia = this.getEficienciaOperacional();
+    if (eficiencia < 70) {
+      insights.push({
+        type: 'improvement',
+        icon: 'speed',
+        title: 'Oportunidad de Mejora en Eficiencia',
+        description: `La eficiencia operacional está en ${eficiencia}%. Se recomienda optimizar los procesos de reparación.`,
+        action: 'optimizar_procesos',
+        actionText: 'Ver estrategias'
+      });
+    }
+
+    // Insight sobre ingresos
+    const progreso = this.getProgresoIngresos();
+    if (progreso >= 100) {
+      insights.push({
+        type: 'success',
+        icon: 'celebration',
+        title: '¡Objetivo Mensual Alcanzado!',
+        description: `Has superado el objetivo mensual de ingresos en un ${progreso}%. ¡Excelente trabajo!`,
+        action: null,
+        actionText: null
+      });
+    } else if (progreso < 50) {
+      insights.push({
+        type: 'attention',
+        icon: 'trending_up',
+        title: 'Aumentar Ingresos del Mes',
+        description: `Estás al ${progreso}% del objetivo mensual. Considera estrategias para incrementar las reparaciones completadas.`,
+        action: 'estrategias_ingresos',
+        actionText: 'Ver estrategias'
+      });
+    }
+
+    // Insight sobre fidelización
+    const fidelizacion = this.getFidelizacionPorcentaje();
+    if (fidelizacion > 40) {
+      insights.push({
+        type: 'success',
+        icon: 'favorite',
+        title: 'Excelente Fidelización de Clientes',
+        description: `El ${fidelizacion}% de tus clientes son recurrentes. Esto indica una alta satisfacción con el servicio.`,
+        action: null,
+        actionText: null
+      });
+    }
+
+    return insights;
+  }
+
+  ejecutarAccion(accion: string): void {
+    switch (accion) {
+      case 'ver_urgentes':
+        this.verReparacionesUrgentes();
+        break;
+      case 'optimizar_procesos':
+        console.log('Mostrar estrategias de optimización');
+        break;
+      case 'estrategias_ingresos':
+        console.log('Mostrar estrategias para aumentar ingresos');
+        break;
+      default:
+        console.log('Acción no implementada:', accion);
+    }
+  }
+
+  // Métodos para modal de reparaciones urgentes
+  verReparacionesUrgentes(): void {
+    const modalElement = document.getElementById('urgentesModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  getReparacionesUrgentesDetalle(): any[] {
+    return this.reparaciones.filter(r => 
+      r.activo && r.estado === 'En taller' && this.getDiasEnTaller(r) > 7
+    );
+  }
+
+  cerrarModal(): void {
+    // Método para cerrar modales
+  }
+
+  // Métodos de exportación y actualización
+  exportarEstadisticas(): void {
+    const stats = this.getEstadisticasGenerales();
+    const csvHeaders = [
+      'Métrica', 'Valor', 'Año', 'Fecha Exportación'
+    ];
+    
+    const csvData = [
+      ['Total Reparaciones', stats.totalReparaciones, this.selectedYear, new Date().toLocaleDateString()],
+      ['En Taller', this.getReparacionesEnTaller(), this.selectedYear, new Date().toLocaleDateString()],
+      ['Finalizadas', this.getReparacionesFinalizadas(), this.selectedYear, new Date().toLocaleDateString()],
+      ['Entregadas', this.getReparacionesEntregadas(), this.selectedYear, new Date().toLocaleDateString()],
+      ['Reparaciones Urgentes', stats.reparacionesUrgentes, this.selectedYear, new Date().toLocaleDateString()],
+      ['Ingresos Mensuales (COP)', stats.ingresosMensuales, this.selectedYear, new Date().toLocaleDateString()],
+      ['Tiempo Promedio (días)', stats.promedioTiempoReparacion, this.selectedYear, new Date().toLocaleDateString()],
+      ['Clientes Recurrentes', stats.clientesRecurrentes, this.selectedYear, new Date().toLocaleDateString()],
+      ['Técnico Más Productivo', stats.tecnicoMasProductivo, this.selectedYear, new Date().toLocaleDateString()],
+      ['Eficiencia Operacional (%)', this.getEficienciaOperacional(), this.selectedYear, new Date().toLocaleDateString()]
+    ];
+
+    const csvContent = [csvHeaders, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `estadisticas_${this.selectedYear}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  refrescarDatos(): void {
+    this.cargarReparaciones();
+    this.getAllReparacionesForStats();
+    this.renderIngresosPorTecnicoCanvas();
+  }
+
+  // Métodos de gráficos existentes (mantenidos)
   renderAllCharts(): void {
     this.renderReparacionesPorMesChart();
     this.renderComprasPorProveedorChart();
@@ -201,384 +448,206 @@ export class StatisticComponent implements OnInit {
   }
 
   renderReparacionesPorMesChart() {
-    this.repairsService.getReparacionesPorMes(this.selectedYear).subscribe(
-      (data) => {
-        console.log('Datos de reparaciones por mes:', data);
-        const dataPoints = this.mapDataToDataPoints(data || []);
-        if (!dataPoints || dataPoints.length === 0) {
-          console.log('No hay datos válidos para mostrar en la gráfica de reparaciones');
-          this.showNoData('reparacionesPorMes');
-        } else {
-          this.renderChart('reparacionesPorMes', '', dataPoints, 'column');
-        }
-      },
-      error => {
-        console.error('Error al obtener datos de reparaciones:', error);
-        this.showNoData('reparacionesPorMes');
-      }
-    );
+    const reparacionesPorMes = this.reparaciones
+      .filter(r => r.activo)
+      .reduce((acc: { [key: string]: number }, r) => {
+        const fecha = new Date(r.fechaIngreso);
+        const mes = fecha.toLocaleDateString('es-ES', { month: 'short' });
+        acc[mes] = (acc[mes] || 0) + 1;
+        return acc;
+      }, {});
+
+    const dataPoints = Object.entries(reparacionesPorMes)
+      .map(([mes, cantidad]) => ({ label: mes, y: cantidad }));
+
+    if (dataPoints.length === 0) {
+      this.showNoData('noDataReparacionesPorMes');
+      return;
+    }
+
+    this.hideNoData('noDataReparacionesPorMes');
+    this.renderChart('reparacionesPorMes', 'Reparaciones por Mes', dataPoints, this.chartTypes['reparacionesMes'] || 'line');
   }
 
   renderComprasPorProveedorChart() {
-    // Reemplazar la gráfica de proveedores por ingresos por mes
-    const meses: { label: string, anio: number, mes: number, total: number }[] = [];
-    const hoy = new Date();
-    for (let i = 0; i < 12; i++) {
-      const fecha = new Date(this.selectedYear, i, 1);
-      meses.push({
-        label: fecha.toLocaleString('es-ES', { month: 'short' }),
-        anio: fecha.getFullYear(),
-        mes: fecha.getMonth(),
-        total: 0
-      });
+    const ingresosPorMes = this.reparaciones
+      .filter(r => r.activo && r.estado === 'Entregada' && r.fechaEntrega)
+      .reduce((acc: { [key: string]: number }, r) => {
+        const fecha = new Date(r.fechaEntrega);
+        const mes = fecha.toLocaleDateString('es-ES', { month: 'short' });
+        const ingresos = (r.manoDeObra || 0) + (r.entrega || 0);
+        acc[mes] = (acc[mes] || 0) + ingresos;
+        return acc;
+      }, {});
+
+    const dataPoints = Object.entries(ingresosPorMes)
+      .map(([mes, ingresos]) => ({ label: mes, y: ingresos }));
+
+    if (dataPoints.length === 0) {
+      this.showNoData('noDataComprasPorProveedor');
+      return;
     }
-    this.reparaciones.forEach(r => {
-      if (r.estado === 'Entregada' && r.fechaEntrega) {
-        const fechaEntrega = new Date(r.fechaEntrega);
-        const mes = fechaEntrega.getMonth();
-        const anio = fechaEntrega.getFullYear();
-        const mesObj = meses.find(m => m.mes === mes && m.anio === anio);
-        if (mesObj) {
-          mesObj.total += (r.manoDeObra || 0) + (r.entrega || 0);
-        }
-      }
-    });
-    const dataPoints = meses.map(m => ({ label: m.label, y: m.total }));
-    this.renderChart('comprasPorProveedor', '', dataPoints, 'column');
+
+    this.hideNoData('noDataComprasPorProveedor');
+    this.renderChart('comprasPorProveedor', 'Ingresos por Mes', dataPoints, this.chartTypes['ingresosMes'] || 'area');
   }
 
   renderReparacionesPorTecnicoChart() {
-    this.repairsService.getReparacionesPorTecnico(this.selectedYear).subscribe(
-      (data) => {
-        const dataPoints = this.mapDataToDataPoints(data || []);
-        if (!dataPoints || dataPoints.length === 0) {
-          this.showNoData('reparacionesPorTecnico');
-        } else {
-          this.renderBarChart('reparacionesPorTecnico', '', dataPoints);
-        }
-      },
-      error => {
-        this.showNoData('reparacionesPorTecnico');
-      }
-    );
-  }
+    const reparacionesPorTecnico = this.reparaciones
+      .filter(r => r.activo && r.tecnico)
+      .reduce((acc: { [key: string]: number }, r) => {
+        acc[r.tecnico.nombre] = (acc[r.tecnico.nombre] || 0) + 1;
+        return acc;
+      }, {});
 
-  renderTiempoPromedioReparacionChart() {
-    // Implementar cuando el backend proporcione estos datos
-    const dummyData = [
-      { label: 'Ene', y: 5 }, { label: 'Feb', y: 4 },
-      { label: 'Mar', y: 6 }, { label: 'Abr', y: 4 },
-      { label: 'May', y: 5 }, { label: 'Jun', y: 7 }
-    ];
+    const dataPoints = Object.entries(reparacionesPorTecnico)
+      .map(([tecnico, cantidad]) => ({ label: tecnico, y: cantidad }));
 
-    new CanvasJS.Chart('tiempoPromedioReparacion', {
-      animationEnabled: true,
-      theme: 'light2',
-      title: {
-        text: 'Tiempo Promedio de Reparación',
-        fontSize: 16,
-        padding: 10
-      },
-      axisY: {
-        title: 'Días',
-        titleFontSize: 14
-      },
-      data: [{
-        type: 'line',
-        color: this.chartColors[0],
-        dataPoints: dummyData
-      }],
-      backgroundColor: 'transparent'
-    }).render();
-  }
+    if (dataPoints.length === 0) {
+      this.showNoData('noDataReparacionesPorTecnico');
+      return;
+    }
 
-  renderSatisfaccionClientesChart() {
-    // Implementar cuando el backend proporcione estos datos
-    const dummyData = [
-      { label: 'Muy Satisfecho', y: 65 },
-      { label: 'Satisfecho', y: 25 },
-      { label: 'Neutral', y: 7 },
-      { label: 'Insatisfecho', y: 3 }
-    ];
-
-    new CanvasJS.Chart('satisfaccionClientes', {
-      animationEnabled: true,
-      theme: 'light2',
-      title: {
-        text: 'Satisfacción del Cliente',
-        fontSize: 16,
-        padding: 10
-      },
-      data: [{
-        type: 'pie',
-        startAngle: 240,
-        indexLabelFontSize: 12,
-        dataPoints: dummyData
-      }],
-      backgroundColor: 'transparent'
-    }).render();
-  }
-
-  renderIngresosPorTipoChart() {
-    // Implementar cuando el backend proporcione estos datos
-    const dummyData = [
-      { label: 'Reparaciones', y: 70 },
-      { label: 'Repuestos', y: 20 },
-      { label: 'Otros', y: 10 }
-    ];
-
-    new CanvasJS.Chart('ingresosPorTipo', {
-      animationEnabled: true,
-      theme: 'light2',
-      title: {
-        text: 'Distribución de Ingresos',
-        fontSize: 16,
-        padding: 10
-      },
-      data: [{
-        type: 'doughnut',
-        innerRadius: '60%',
-        indexLabelFontSize: 12,
-        dataPoints: dummyData
-      }],
-      backgroundColor: 'transparent'
-    }).render();
-  }
-
-  renderTendenciaReparacionesChart() {
-    // Implementar cuando el backend proporcione estos datos
-    const dummyData = [
-      { label: 'Ene', y: 20 }, { label: 'Feb', y: 25 },
-      { label: 'Mar', y: 30 }, { label: 'Abr', y: 28 },
-      { label: 'May', y: 35 }, { label: 'Jun', y: 40 }
-    ];
-
-    new CanvasJS.Chart('tendenciaReparaciones', {
-      animationEnabled: true,
-      theme: 'light2',
-      title: {
-        text: 'Tendencia de Reparaciones',
-        fontSize: 16,
-        padding: 10
-      },
-      axisY: {
-        title: 'Cantidad',
-        titleFontSize: 14
-      },
-      data: [{
-        type: 'spline',
-        color: this.chartColors[0],
-        dataPoints: dummyData
-      }],
-      backgroundColor: 'transparent'
-    }).render();
+    this.hideNoData('noDataReparacionesPorTecnico');
+    this.renderChart('reparacionesPorTecnico', 'Reparaciones por Técnico', dataPoints, this.chartTypes['tecnicosRendimiento'] || 'column');
   }
 
   changeYear(year: number) {
     this.selectedYear = year;
-    this.renderAllCharts();
-    // Asegurar que se llame al endpoint al cambiar el año
-    this.repairsService.getIngresosPorTecnico(this.selectedYear).subscribe({
-      next: (data: any) => {
-        this.renderIngresosPorTecnicoCanvas();
-      },
-      error: () => {
-        this.ingresosTecnicoError = 'No se pudieron cargar los datos';
-        this.ingresosTecnicoLoading = false;
-        this.showNoData('ingresosPorTecnicoCanvas');
-      }
-    });
+    this.cargarReparaciones();
+    this.renderIngresosPorTecnicoCanvas();
   }
 
   private mapDataToDataPoints(data: any[]): any[] {
-    console.log('Mapeando datos:', data);
-    if (!Array.isArray(data)) {
-      console.error('Los datos no son un array:', data);
-      return [];
-    }
-
-    if (data.length === 0) {
-      console.log('Array de datos vacío');
-      return [];
-    }
-
-    const dataPoints = data.map(item => {
-      console.log('Procesando item:', item);
-      // Si el item es un objeto con una propiedad y un valor
-      if (typeof item === 'object' && item !== null) {
-        const key = Object.keys(item)[0];
-        const value = item[key];
-        console.log(`Mapeando key: ${key}, value: ${value}`);
-        if (value === null || value === undefined || isNaN(Number(value))) {
-          console.warn(`Valor inválido para ${key}:`, value);
-          return null;
-        }
-        return { 
-          label: key, 
-          y: typeof value === 'number' ? value : parseFloat(value) 
-        };
-      }
-      // Si el item tiene una estructura específica para estadísticas
-      else if (item.nombre && (item.cantidad || item.total || item.valor)) {
-        const value = item.cantidad || item.total || item.valor;
-        if (value === null || value === undefined || isNaN(Number(value))) {
-          console.warn(`Valor inválido para ${item.nombre}:`, value);
-          return null;
-        }
-        return {
-          label: item.nombre,
-          y: typeof value === 'number' ? value : parseFloat(value)
-        };
-      }
-      // Si es un valor no reconocido
-      else {
-        console.warn('Formato de datos no reconocido:', item);
-        return null;
-      }
-    }).filter(item => item !== null); // Eliminar items inválidos
-
-    console.log('DataPoints procesados:', dataPoints);
-    return dataPoints;
+    return data.map((item, index) => ({
+      label: item.label || `Item ${index + 1}`,
+      y: item.y || item.value || 0,
+      color: this.chartColors[index % this.chartColors.length]
+    }));
   }
 
   private showNoData(chartId: string): void {
-    const chartElement = document.getElementById(chartId);
-    const noDataElement = document.getElementById(`noData${chartId}`);
-    
-    if (chartElement) {
-      chartElement.style.display = 'none';
-    }
+    const noDataElement = document.getElementById(chartId);
     if (noDataElement) {
-      noDataElement.style.display = 'block';
+      noDataElement.style.display = 'flex';
     }
   }
 
   private hideNoData(chartId: string): void {
-    const chartElement = document.getElementById(chartId);
-    const noDataElement = document.getElementById(`noData${chartId}`);
-    
-    if (chartElement) {
-      chartElement.style.display = 'block';
-    }
+    const noDataElement = document.getElementById(chartId);
     if (noDataElement) {
       noDataElement.style.display = 'none';
     }
   }
 
   private handleError(error: any): void {
-    console.error('Error en la carga de datos:', error);
+    console.error('Error en gráfico:', error);
   }
 
   private renderChart(chartId: string, title: string, dataPoints: any[], type: string) {
-    if (dataPoints && dataPoints.length > 0) {
-      this.hideNoData(chartId);
-      const coloredDataPoints = dataPoints.map((dp, i) => ({
-        ...dp,
-        color: this.chartColors[i % this.chartColors.length]
-      }));
-
-      new CanvasJS.Chart(chartId, {
+    try {
+      const chart = new CanvasJS.Chart(chartId, {
         animationEnabled: true,
-        theme: 'light2',
+        theme: "light2",
         title: {
           text: title,
-          fontSize: 20,
-          padding: 10
+          fontSize: 16,
+          fontFamily: "Arial",
+          fontColor: "#2c3e50"
         },
-        axisX: {
-          title: 'Mes',
-          titleFontSize: 14,
-          labelAngle: type === 'column' ? -45 : 0
-        },
-        axisY: {
-          title: type === 'area' ? 'Monto ($)' : 'Cantidad',
-          titleFontSize: 14,
-          gridColor: '#f0f0f0',
-          prefix: type === 'area' ? '$' : ''
-        },
+        backgroundColor: "transparent",
         data: [{
           type: type,
-          dataPoints: coloredDataPoints,
-          fillOpacity: type === 'area' ? 0.3 : 1
+          color: this.chartColors[0],
+          lineColor: this.chartColors[0],
+          markerColor: this.chartColors[0],
+          dataPoints: this.mapDataToDataPoints(dataPoints)
         }],
-        backgroundColor: 'transparent'
-      }).render();
-    } else {
-      this.showNoData(chartId);
+        axisX: {
+          labelFontColor: "#6c757d",
+          lineColor: "#dee2e6",
+          tickColor: "#dee2e6"
+        },
+        axisY: {
+          labelFontColor: "#6c757d",
+          lineColor: "#dee2e6",
+          tickColor: "#dee2e6",
+          gridColor: "#f8f9fa"
+        }
+      });
+      chart.render();
+    } catch (error) {
+      this.handleError(error);
     }
   }
 
   private renderDoughnutChart(chartId: string, title: string, dataPoints: any[]) {
-    if (dataPoints && dataPoints.length > 0) {
-      this.hideNoData(chartId);
-      new CanvasJS.Chart(chartId, {
+    try {
+      const chart = new CanvasJS.Chart(chartId, {
         animationEnabled: true,
-        theme: 'light2',
+        theme: "light2",
         title: {
           text: title,
-          fontSize: 20,
-          padding: 10
+          fontSize: 16,
+          fontFamily: "Arial",
+          fontColor: "#2c3e50"
         },
-        legend: {
-          fontSize: 14,
-          verticalAlign: 'center',
-          horizontalAlign: 'right'
-        },
+        backgroundColor: "transparent",
         data: [{
-          type: 'doughnut',
+          type: "doughnut",
           startAngle: 60,
-          innerRadius: '60%',
-          indexLabelFontSize: 14,
-          showInLegend: true,
-          toolTipContent: '<b>{label}:</b> ${y} (#percent%)',
-          dataPoints: dataPoints
-        }],
-        backgroundColor: 'transparent'
-      }).render();
-    } else {
-      this.showNoData(chartId);
+          innerRadius: 60,
+          indexLabelFontSize: 12,
+          indexLabel: "{label} - #percent%",
+          toolTipContent: "<b>{label}:</b> {y} (#percent%)",
+          dataPoints: this.mapDataToDataPoints(dataPoints)
+        }]
+      });
+      chart.render();
+    } catch (error) {
+      this.handleError(error);
     }
   }
 
   private renderBarChart(chartId: string, title: string, dataPoints: any[]) {
-    if (dataPoints && dataPoints.length > 0) {
-      this.hideNoData(chartId);
-      const coloredDataPoints = dataPoints.map((dp, i) => ({
-        ...dp,
-        color: this.chartColors[i % this.chartColors.length]
-      }));
-
-      new CanvasJS.Chart(chartId, {
+    try {
+      const chart = new CanvasJS.Chart(chartId, {
         animationEnabled: true,
-        theme: 'light2',
+        theme: "light2",
         title: {
           text: title,
-          fontSize: 20,
-          padding: 10
+          fontSize: 16,
+          fontFamily: "Arial",
+          fontColor: "#2c3e50"
         },
+        backgroundColor: "transparent",
+        data: [{
+          type: "bar",
+          color: this.chartColors[0],
+          dataPoints: this.mapDataToDataPoints(dataPoints)
+        }],
         axisX: {
-          title: 'Técnico',
-          titleFontSize: 14
+          labelFontColor: "#6c757d",
+          lineColor: "#dee2e6",
+          tickColor: "#dee2e6"
         },
         axisY: {
-          title: 'Reparaciones Completadas',
-          titleFontSize: 14,
-          gridColor: '#f0f0f0'
-        },
-        data: [{
-          type: 'bar',
-          dataPoints: coloredDataPoints
-        }],
-        backgroundColor: 'transparent'
-      }).render();
-    } else {
-      this.showNoData(chartId);
+          labelFontColor: "#6c757d",
+          lineColor: "#dee2e6",
+          tickColor: "#dee2e6",
+          gridColor: "#f8f9fa"
+        }
+      });
+      chart.render();
+    } catch (error) {
+      this.handleError(error);
     }
   }
 
   initAnios() {
-    const current = new Date().getFullYear();
-    this.anios = Array.from({ length: 6 }, (_, i) => current - i);
+    for (let year = 2017; year <= new Date().getFullYear() + 1; year++) {
+      this.anios.push(year);
+    }
   }
 
   onYearChangeIngresosTecnico() {
@@ -588,67 +657,65 @@ export class StatisticComponent implements OnInit {
   renderIngresosPorTecnicoCanvas() {
     this.ingresosTecnicoLoading = true;
     this.ingresosTecnicoError = null;
-    const chartContainer = document.getElementById('ingresosPorTecnicoCanvas');
-    if (chartContainer) {
-      chartContainer.innerHTML = '';
-    }
-    this.repairsService.getIngresosPorTecnico(this.selectedYear).subscribe({
-      next: (data: any) => {
-        if (!data || data.length === 0) {
-          this.showNoData('ingresosPorTecnicoCanvas');
-          this.ingresosTecnicoLoading = false;
-          return;
-        }
-        const meses = [
-          'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-        ];
-        const datasets = data.map((tecnicoObj: any, idx: any) => ({
-          type: 'column',
-          name: tecnicoObj.tecnico,
-          showInLegend: true,
-          color: this.chartColors[idx % this.chartColors.length],
-          dataPoints: meses.map(mes => ({ 
-            label: mes, 
-            y: tecnicoObj.ingresosMensuales[mes] || 0,
-            color: this.chartColors[idx % this.chartColors.length]
-          }))
+
+    try {
+      const ingresosPorTecnico = this.reparaciones
+        .filter(r => r.activo && r.estado === 'Entregada' && r.fechaEntrega && r.tecnico)
+        .reduce((acc: { [key: string]: number }, r) => {
+          const ingresos = (r.manoDeObra || 0) + (r.entrega || 0);
+          acc[r.tecnico.nombre] = (acc[r.tecnico.nombre] || 0) + ingresos;
+          return acc;
+        }, {});
+
+      const dataPoints = Object.entries(ingresosPorTecnico)
+        .map(([tecnico, ingresos]) => ({ 
+          label: tecnico, 
+          y: ingresos 
         }));
-        new CanvasJS.Chart('ingresosPorTecnicoCanvas', {
-          animationEnabled: true,
-          theme: 'light2',
-          title: {
-            text: '',
-            fontSize: 20,
-            padding: 10
-          },
-          axisX: {
-            title: 'Mes',
-            titleFontSize: 14,
-            labelAngle: -45
-          },
-          axisY: {
-            title: 'Ingresos ($)',
-            titleFontSize: 14,
-            gridColor: '#f0f0f0',
-            prefix: '$',
-            labelFormatter: function(e: any) { return "$" + e.value.toLocaleString(); }
-          },
-          legend: {
-            fontSize: 14,
-            verticalAlign: 'top',
-            horizontalAlign: 'center'
-          },
-          data: datasets,
-          backgroundColor: 'transparent'
-        }).render();
+
+      if (dataPoints.length === 0) {
+        this.showNoData('noDataIngresosPorTecnicoCanvas');
         this.ingresosTecnicoLoading = false;
-      },
-      error: () => {
-        this.ingresosTecnicoError = 'No se pudieron cargar los datos';
-        this.ingresosTecnicoLoading = false;
-        this.showNoData('ingresosPorTecnicoCanvas');
+        return;
       }
-    });
+
+      this.hideNoData('noDataIngresosPorTecnicoCanvas');
+      
+      const chart = new CanvasJS.Chart("ingresosPorTecnicoCanvas", {
+        animationEnabled: true,
+        theme: "light2",
+        title: {
+          text: `Ingresos por Técnico - ${this.selectedYear}`,
+          fontSize: 16,
+          fontFamily: "Arial",
+          fontColor: "#2c3e50"
+        },
+        backgroundColor: "transparent",
+        data: [{
+          type: "column",
+          color: this.chartColors[1],
+          dataPoints: this.mapDataToDataPoints(dataPoints)
+        }],
+        axisX: {
+          labelFontColor: "#6c757d",
+          lineColor: "#dee2e6",
+          tickColor: "#dee2e6"
+        },
+        axisY: {
+          labelFontColor: "#6c757d",
+          lineColor: "#dee2e6",
+          tickColor: "#dee2e6",
+          gridColor: "#f8f9fa",
+          prefix: "$"
+        }
+      });
+      
+      chart.render();
+      this.ingresosTecnicoLoading = false;
+    } catch (error) {
+      console.error('Error al renderizar gráfico de ingresos por técnico:', error);
+      this.ingresosTecnicoError = 'Error al cargar los datos del gráfico';
+      this.ingresosTecnicoLoading = false;
+    }
   }
 }

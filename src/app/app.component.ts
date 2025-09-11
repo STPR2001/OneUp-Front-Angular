@@ -67,8 +67,29 @@ export class AppComponent implements OnInit {
     }
   }
 
+  closeSidebar() {
+    this.sidebarOpen = false;
+  }
+
+  isMobile(): boolean {
+    return window.innerWidth < 768;
+  }
+
   isActive(route: string): boolean {
     return this.currentRoute === route;
+  }
+
+  // Métodos para badges dinámicos
+  getTotalReparacionesActivas(): number {
+    // Simulamos datos - en producción vendría de un servicio
+    // Podrías conectar esto con tu servicio de reparaciones real
+    return 12; // Valor por defecto
+  }
+
+  getRepuestosPocoStock(): number {
+    // Simulamos datos - en producción vendría de un servicio de inventario
+    // Podrías conectar esto con tu servicio de repuestos real
+    return 3; // Valor por defecto para indicar repuestos con poco stock
   }
 
   closeDrawerOnMobile(drawer: MatSidenav) {

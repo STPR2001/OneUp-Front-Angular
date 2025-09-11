@@ -1,143 +1,216 @@
-<div class="container">
-  <h2 class="h2-title">Clientes</h2>
-  <div class="row mb-3">
-    <div class="col-md-6">
-      <input
-        type="text"
-        placeholder="Buscar por nombre..."
-        [(ngModel)]="nombre"
-        class="form-control"
-        (change)="onFilterChange()"
-      />
-    </div>
-    <div class="col-md-6 text-end">
-      <button
-        type="button"
-        class="btn btn-success"
-        data-bs-toggle="modal"
-        data-bs-target="#agregarClienteModal"
-      >
-        Agregar cliente
+<div class="dashboard-container">
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Simple Header -->
+    <div class="page-header">
+      <div class="header-titles">
+        <h1 class="main-title">Gestión de Clientes</h1>
+        <p class="subtitle">Administración y seguimiento de base de clientes</p>
+      </div>
+      <button class="btn-primary add-client" data-bs-toggle="modal" data-bs-target="#agregarClienteModal">
+        <span class="material-icons">person_add</span>
+        Nuevo Cliente
       </button>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12 table-container">
-      <table class="table table-striped">
+
+    <!-- Stats Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon clients">
+          <span class="material-icons">people</span>
+        </div>
+        <div class="stat-info">
+          <h3>Total Clientes</h3>
+          <p class="stat-number">{{getTotalClientes()}}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon points">
+          <span class="material-icons">stars</span>
+        </div>
+        <div class="stat-info">
+          <h3>Puntos Activos</h3>
+          <p class="stat-number">{{getTotalPuntos()}}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon new-clients">
+          <span class="material-icons">person_add_alt</span>
+        </div>
+        <div class="stat-info">
+          <h3>Nuevos del mes</h3>
+          <p class="stat-number">{{getClientesNuevos()}}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          [(ngModel)]="nombre"
+          (input)="onSearchInput($event)"
+        />
+      </div>
+      <div class="export-actions">
+        <button class="export-btn" (click)="exportarClientes()" title="Exportar a CSV">
+          <span class="material-icons">download</span>
+          Exportar
+        </button>
+        <button class="refresh-btn" (click)="refrescarDatos()" title="Actualizar datos">
+          <span class="material-icons">refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Clients Table View -->
+    <div class="clients-table">
+      <table *ngIf="clientes.length > 0; else noClientsTemplate">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Teléfono</th>
+            <th>Cliente</th>
+            <th>Contacto</th>
+            <th>Identificación</th>
             <th>Dirección</th>
-            <th>Cédula</th>
-            <th>Observaciones</th>
             <th>Puntos</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cliente of clientes" class="hover-row">
-            <td>{{ cliente.nombre }}</td>
-            <td>{{ cliente.email }}</td>
-            <td>{{ cliente.telefono }}</td>
-            <td>{{ cliente.direccion }}</td>
-            <td>{{ cliente.cedula }}</td>
-            <td>{{ cliente.observacion }}</td>
-            <td>{{ cliente.puntos || 0 }}</td>
-            <td>
-              <button
-                class="btn btn-primary me-2"
+          <tr *ngFor="let cliente of clientes; trackBy: trackByClienteId">
+            <td class="client-cell">
+              <div class="client-info">
+                <p class="client-name">{{cliente.nombre}}</p>
+                <p class="client-observations" *ngIf="cliente.observacion">
+                  <span class="material-icons">note</span>
+                  {{cliente.observacion}}
+                </p>
+              </div>
+            </td>
+            <td class="contact-cell">
+              <div class="contact-info">
+                <p class="client-email" *ngIf="cliente.email">
+                  <span class="material-icons">email</span>
+                  {{cliente.email}}
+                </p>
+                <p class="client-phone" *ngIf="cliente.telefono">
+                  <span class="material-icons">phone</span>
+                  {{cliente.telefono}}
+                </p>
+              </div>
+            </td>
+            <td class="id-cell">{{cliente.cedula || 'No registrada'}}</td>
+            <td class="address-cell">{{cliente.direccion || 'No registrada'}}</td>
+            <td class="points-cell">
+              <span class="points-badge" [class.no-points]="!cliente.puntos || cliente.puntos === 0">
+                <span class="material-icons">stars</span>
+                {{cliente.puntos || 0}}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button class="action-btn view" (click)="verDetallesCliente(cliente)" title="Ver detalles">
+                <span class="material-icons">visibility</span>
+              </button>
+              <button 
+                class="action-btn edit" 
                 data-bs-toggle="modal"
                 data-bs-target="#ModificarClienteModal"
-                (click)="
-                  abrirModalModificacion(
-                    cliente.id,
-                    cliente.nombre,
-                    cliente.email,
-                    cliente.telefono,
-                    cliente.cedula,
-                    cliente.direccion,
-                    cliente.observacion
-                  )
-                "
-                title="Modificar"
-              >
-                <span class="material-icons icon-small">edit</span>
+                (click)="abrirModalModificacion(cliente.id, cliente.nombre, cliente.email, cliente.telefono, cliente.cedula, cliente.direccion, cliente.observacion)"
+                title="Modificar">
+                <span class="material-icons">edit</span>
               </button>
-              <button
-                class="btn btn-danger"
-                (click)="desactivarCliente(cliente)"
-                title="Eliminar"
-              >
-                <span class="material-icons icon-small">delete</span>
+              <button class="action-btn delete" (click)="desactivarCliente(cliente)" title="Eliminar">
+                <span class="material-icons">delete</span>
               </button>
             </td>
           </tr>
         </tbody>
       </table>
 
-      <div class="d-flex justify-content-center">
+      <!-- Empty State -->
+      <ng-template #noClientsTemplate>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <span class="material-icons">people_outline</span>
+          </div>
+          <h3>No hay clientes registrados</h3>
+          <p>Comienza agregando tu primer cliente para empezar a gestionar tu base de datos.</p>
+          <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#agregarClienteModal">
+            <span class="material-icons">person_add</span>
+            Agregar primer cliente
+          </button>
+        </div>
+      </ng-template>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="clientes.length > 0">
         <button
-          class="btn btn-primary me-1"
+          class="page-btn"
           (click)="onPageChange(currentPage - 1)"
           [disabled]="currentPage === 0"
+          title="Página anterior"
         >
-          Anterior
+          <span class="material-icons">chevron_left</span>
         </button>
-        <ng-container *ngIf="totalPages > 0">
+        
+        <div class="page-numbers">
           <button
-            class="btn btn-primary me-1"
+            class="page-btn"
+            [class.active]="currentPage === 0"
             (click)="onPageChange(0)"
-            [disabled]="currentPage === 0"
+            *ngIf="totalPages > 0"
           >
             1
           </button>
+          
           <button
             *ngIf="currentPage > 1"
-            class="btn btn-primary me-1"
+            class="page-btn"
             (click)="onPageChange(currentPage - 1)"
-            [disabled]="currentPage === 1"
           >
             {{ currentPage }}
           </button>
+          
           <button
             *ngIf="currentPage != 0 && totalPages != currentPage + 1"
-            class="btn btn-primary me-1"
-            (click)="onPageChange(currentPage)"
+            class="page-btn active"
             [disabled]="true"
           >
             {{ currentPage + 1 }}
           </button>
-
+          
           <button
-            *ngIf="
-              totalPages != currentPage + 2 && totalPages >= currentPage + 2
-            "
-            class="btn btn-primary me-1"
+            *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+            class="page-btn"
             (click)="onPageChange(currentPage + 1)"
           >
             {{ currentPage + 2 }}
           </button>
+          
           <button
             *ngIf="totalPages > 1"
-            class="btn btn-primary me-1"
+            class="page-btn"
+            [class.active]="currentPage === totalPages - 1"
             (click)="onPageChange(totalPages - 1)"
-            [disabled]="currentPage === totalPages - 1"
           >
             {{ totalPages }}
           </button>
-        </ng-container>
+        </div>
+        
         <button
-          class="btn btn-primary"
+          class="page-btn"
           (click)="onPageChange(currentPage + 1)"
           [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          title="Página siguiente"
         >
-          Siguiente
+          <span class="material-icons">chevron_right</span>
         </button>
       </div>
     </div>
-  </div>
+  </main>
 </div>
 
 <!-- Modal Agregar Cliente -->
@@ -153,7 +226,10 @@
     <div class="modal-content">
       <form (ngSubmit)="agregarCliente()">
         <div class="modal-header">
-          <h2 class="modal-title text-center fs-2 h2-title">Agregar cliente</h2>
+          <div class="modal-title-container">
+            <h2 class="modal-title">Agregar cliente</h2>
+            <p class="modal-subtitle">Complete la información del nuevo cliente</p>
+          </div>
           <button
             type="button"
             class="btn-close"
@@ -163,88 +239,117 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="nombre"
-                >Nombre <span class="requerido">*</span></label
-              >
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">
+                <span class="material-icons">person</span>
+                Nombre <span class="requerido">*</span>
+              </label>
               <input
                 type="text"
                 id="nombre"
                 name="nombre"
                 [(ngModel)]="nuevoCliente.nombre"
                 required
-                class="form-control fs-5"
+                class="form-control"
+                placeholder="Ingrese el nombre completo"
               />
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="email">Email</label>
+            <div class="form-group">
+              <label for="email">
+                <span class="material-icons">email</span>
+                Email
+              </label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 [(ngModel)]="nuevoCliente.email"
-                class="form-control fs-5"
+                class="form-control"
+                placeholder="correo@ejemplo.com"
               />
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="telefono">Teléfono</label>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefono">
+                <span class="material-icons">phone</span>
+                Teléfono
+              </label>
               <input
                 type="text"
                 id="telefono"
                 name="telefono"
                 [(ngModel)]="nuevoCliente.telefono"
-                class="form-control fs-5"
+                class="form-control"
+                placeholder="Número de teléfono"
               />
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="direccion">Dirección</label>
-              <input
-                type="text"
-                id="direccion"
-                name="direccion"
-                [(ngModel)]="nuevoCliente.direccion"
-                class="form-control fs-5"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="cedula">Cédula</label>
+            <div class="form-group">
+              <label for="cedula">
+                <span class="material-icons">badge</span>
+                Cédula
+              </label>
               <input
                 type="text"
                 id="cedula"
                 name="cedula"
                 [(ngModel)]="nuevoCliente.cedula"
-                class="form-control fs-5"
-              />
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="observacion">Observaciones</label>
-              <input
-                id="observacion"
-                name="observacion"
-                [(ngModel)]="nuevoCliente.observacion"
-                class="form-control fs-5"
-                rows="3"
+                class="form-control"
+                placeholder="Número de identificación"
               />
             </div>
           </div>
-          <div *ngIf="errorAgregarCliente" class="text-danger">
-            Error al agregar el cliente.
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="direccion">
+                <span class="material-icons">location_on</span>
+                Dirección
+              </label>
+              <input
+                type="text"
+                id="direccion"
+                name="direccion"
+                [(ngModel)]="nuevoCliente.direccion"
+                class="form-control"
+                placeholder="Dirección completa"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="observacion">
+                <span class="material-icons">note</span>
+                Observaciones
+              </label>
+              <textarea
+                id="observacion"
+                name="observacion"
+                [(ngModel)]="nuevoCliente.observacion"
+                class="form-control"
+                rows="3"
+                placeholder="Notas adicionales sobre el cliente..."
+              ></textarea>
+            </div>
+          </div>
+          <div *ngIf="errorAgregarCliente" class="error-message">
+            <span class="material-icons">error</span>
+            Error al agregar el cliente. Intente nuevamente.
           </div>
         </div>
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-danger col-3 me-2"
+            class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Cerrar
+            <span class="material-icons">cancel</span>
+            Cancelar
           </button>
-          <button type="submit" class="btn btn-success col-3">Agregar</button>
+          <button type="submit" class="btn btn-primary">
+            <span class="material-icons">save</span>
+            Agregar Cliente
+          </button>
         </div>
       </form>
     </div>
@@ -264,9 +369,10 @@
     <div class="modal-content">
       <form (ngSubmit)="modificarCliente()">
         <div class="modal-header">
-          <h2 class="modal-title text-center fs-2 h2-title">
-            Modificar cliente
-          </h2>
+          <div class="modal-title-container">
+            <h2 class="modal-title">Modificar cliente</h2>
+            <p class="modal-subtitle">Actualice la información del cliente</p>
+          </div>
           <button
             type="button"
             class="btn-close"
@@ -276,94 +382,222 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="nombre"
-                >Nombre <span class="requerido">*</span></label
-              >
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">
+                <span class="material-icons">person</span>
+                Nombre <span class="requerido">*</span>
+              </label>
               <input
                 type="text"
                 id="nombre"
                 name="nombre"
                 [(ngModel)]="cliente.nombre"
                 required
-                class="form-control fs-5"
+                class="form-control"
+                placeholder="Ingrese el nombre completo"
               />
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="email">Email</label>
+            <div class="form-group">
+              <label for="email">
+                <span class="material-icons">email</span>
+                Email
+              </label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 [(ngModel)]="cliente.email"
-                required
-                class="form-control fs-5"
+                class="form-control"
+                placeholder="correo@ejemplo.com"
               />
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="telefono">Teléfono</label>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="telefono">
+                <span class="material-icons">phone</span>
+                Teléfono
+              </label>
               <input
                 type="text"
                 id="telefono"
                 name="telefono"
                 [(ngModel)]="cliente.telefono"
-                required
-                class="form-control fs-5"
+                class="form-control"
+                placeholder="Número de teléfono"
               />
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="direccion">Dirección</label>
-              <input
-                type="text"
-                id="direccion"
-                name="direccion"
-                [(ngModel)]="cliente.direccion"
-                required
-                class="form-control fs-5"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="cedula">Cédula</label>
+            <div class="form-group">
+              <label for="cedula">
+                <span class="material-icons">badge</span>
+                Cédula
+              </label>
               <input
                 type="text"
                 id="cedula"
                 name="cedula"
                 [(ngModel)]="cliente.cedula"
-                required
-                class="form-control fs-5"
-              />
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="observaciones">Observaciones</label>
-              <input
-                id="observaciones"
-                name="observaciones"
-                [(ngModel)]="cliente.observacion"
-                class="form-control fs-5"
-                rows="3"
+                class="form-control"
+                placeholder="Número de identificación"
               />
             </div>
           </div>
-          <div *ngIf="errorModificarCliente" class="text-danger">
-            Error al modificar el cliente.
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="direccion">
+                <span class="material-icons">location_on</span>
+                Dirección
+              </label>
+              <input
+                type="text"
+                id="direccion"
+                name="direccion"
+                [(ngModel)]="cliente.direccion"
+                class="form-control"
+                placeholder="Dirección completa"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="observaciones">
+                <span class="material-icons">note</span>
+                Observaciones
+              </label>
+              <textarea
+                id="observaciones"
+                name="observaciones"
+                [(ngModel)]="cliente.observacion"
+                class="form-control"
+                rows="3"
+                placeholder="Notas adicionales sobre el cliente..."
+              ></textarea>
+            </div>
+          </div>
+          <div *ngIf="errorModificarCliente" class="error-message">
+            <span class="material-icons">error</span>
+            Error al modificar el cliente. Intente nuevamente.
           </div>
         </div>
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-danger col-3 me-2"
+            class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            Cerrar
+            <span class="material-icons">cancel</span>
+            Cancelar
           </button>
-          <button type="submit" class="btn btn-success col-3">Modificar</button>
+          <button type="submit" class="btn btn-primary">
+            <span class="material-icons">save</span>
+            Guardar Cambios
+          </button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver Detalles Cliente -->
+<div
+  class="modal fade"
+  id="verDetallesClienteModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="verDetallesClienteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Detalles del cliente</h2>
+          <p class="modal-subtitle">Información completa del cliente</p>
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="cerrarModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="client-details">
+          <div class="detail-section">
+            <h4>Información Personal</h4>
+            <div class="detail-item">
+              <span class="material-icons">person</span>
+              <div>
+                <strong>Nombre:</strong>
+                <p>{{ clienteSeleccionado.nombre }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">badge</span>
+              <div>
+                <strong>Cédula:</strong>
+                <p>{{ clienteSeleccionado.cedula || 'No registrada' }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h4>Información de Contacto</h4>
+            <div class="detail-item">
+              <span class="material-icons">email</span>
+              <div>
+                <strong>Email:</strong>
+                <p>{{ clienteSeleccionado.email || 'No registrado' }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">phone</span>
+              <div>
+                <strong>Teléfono:</strong>
+                <p>{{ clienteSeleccionado.telefono || 'No registrado' }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">location_on</span>
+              <div>
+                <strong>Dirección:</strong>
+                <p>{{ clienteSeleccionado.direccion || 'No registrada' }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h4>Información Adicional</h4>
+            <div class="detail-item">
+              <span class="material-icons">stars</span>
+              <div>
+                <strong>Puntos Acumulados:</strong>
+                <p class="points-display">{{ clienteSeleccionado.puntos || 0 }} puntos</p>
+              </div>
+            </div>
+            <div class="detail-item" *ngIf="clienteSeleccionado.observacion">
+              <span class="material-icons">note</span>
+              <div>
+                <strong>Observaciones:</strong>
+                <p>{{ clienteSeleccionado.observacion }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="cerrarModal()"
+        >
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
+      </div>
     </div>
   </div>
 </div>

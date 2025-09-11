@@ -1,176 +1,319 @@
 <div class="dashboard-container">
+  <!-- Toggle Button -->
   <button
-    class="toggle-sidebar"
+    class="sidebar-toggle"
     (click)="toggleSidebar()"
-    [ngClass]="{ menu: !sidebarOpen, close: sidebarOpen }"
+    [class.collapsed]="!sidebarOpen"
+    [attr.aria-label]="sidebarOpen ? 'Cerrar menú' : 'Abrir menú'"
   >
     <span class="material-icons">{{ sidebarOpen ? "close" : "menu" }}</span>
   </button>
-  <div class="sidebar" [class.closed]="!sidebarOpen">
-    <div class="logo-container">
-      <img src="../assets/logo.png" alt="OneUp Soluciones Logo" class="logo" />
+
+  <!-- Modern Sidebar -->
+  <nav class="modern-sidebar" [class.collapsed]="!sidebarOpen" role="navigation" aria-label="Navegación principal">
+    <!-- Brand Section -->
+    <div class="brand-section">
+      <div class="logo-container">
+        <img src="../assets/logo.png" alt="OneUp Soluciones" class="brand-logo" />
+      </div>
+      <div class="brand-text" *ngIf="sidebarOpen">
+        <h3 class="brand-title">OneUp</h3>
+        <p class="brand-subtitle">Soluciones</p>
+      </div>
+      <!-- Collapsed Brand Indicator -->
+      <div class="brand-indicator" *ngIf="!sidebarOpen">
+        <span class="brand-initial">O</span>
+      </div>
     </div>
-    <ul class="SidebarList">
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/home"
-        [ngClass]="{ active: isActive('/') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon"><span class="material-icons">dashboard</span></div>
-        <div class="title">Home</div>
-      </li>
-      <li
-        *ngIf="!isLogued()"
-        class="row"
-        routerLink="/seguimiento"
-        [ngClass]="{ active: isActive('/seguimiento') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon">
-          <span class="material-icons">manage_search</span>
-        </div>
-        <div class="title">Seguimiento</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/reparaciones"
-        [ngClass]="{ active: isActive('/reparaciones') }"
-        [ngClass]="{ active: isActive('/agregarReparacion') }"
-        [ngClass]="{ active: isActive('/modificarReparacion/:id') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon"><span class="material-icons">build</span></div>
-        <div class="title">Reparaciones</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/clients"
-        [ngClass]="{ active: isActive('/clients') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon"><span class="material-icons">people_alt</span></div>
-        <div class="title">Clientes</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/repuestos"
-        [ngClass]="{ active: isActive('/repuestos') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon">
-          <span class="material-icons">app_settings_alt</span>
-        </div>
-        <div class="title">Repuestos</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/proveedores"
-        [ngClass]="{ active: isActive('/proveedores') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon"><span class="material-icons">person</span></div>
-        <div class="title">Proveedores</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/tecnicos"
-        [ngClass]="{ active: isActive('/tecnicos') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon"><span class="material-icons">engineering</span></div>
-        <div class="title">Técnicos</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/compras"
-        [ngClass]="{ active: isActive('/compras') }"
-        [ngClass]="{ active: isActive('/compras/new') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon"><span class="material-icons">shop_two</span></div>
-        <div class="title">Compras</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/equipos"
-        [ngClass]="{ active: isActive('/equipos') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon"><span class="material-icons">devices</span></div>
-        <div class="title">Equipos</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/estadisticas"
-        [ngClass]="{ active: isActive('/estadisticas') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon"><span class="material-icons">assessment</span></div>
-        <div class="title">Estadísticas</div>
-      </li>
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/restore"
-        [ngClass]="{ active: isActive('/restore') }"
-        (click)="closeSidebarOnMobile()"
-      >
-        <div class="icon">
-          <span class="material-icons">restore_from_trash</span>
-        </div>
-        <div class="title">Restauración</div>
-      </li>
-      <!--
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        routerLink="/configuracion"
-        [ngClass]="{ active: isActive('/configuracion') }"
-      >
-        <div class="icon"><span class="material-icons">settings</span></div>
-        <div class="title">Configuración</div>
-      </li>
-      -->
-      <li
-        *ngIf="isLogued()"
-        class="row"
-        data-bs-toggle="modal"
-        data-bs-target="#cerrarSesion"
-      >
-        <div class="icon"><span class="material-icons">logout</span></div>
-        <div class="title">Cerrar sesión</div>
-      </li>
-      <li
-        *ngIf="!isLogued()"
-        class="row"
-        routerLink="/login"
-        [ngClass]="{ active: isActive('/login') }"
-      >
-        <div class="icon"><span class="material-icons">logout</span></div>
-        <div class="title">Iniciar Sesión</div>
-      </li>
-    </ul>
-    <div class="sidebar-footer">
-      <a href="https://starttweb.com/" target="_blank" rel="noopener noreferrer">
-        Desarrollado por StarttWeb
-      </a>
+
+    <!-- Navigation Menu -->
+    <div class="nav-menu">
+      <!-- Main Navigation -->
+      <div class="nav-section">
+        <h4 class="nav-section-title" *ngIf="sidebarOpen && isLogued()">Principal</h4>
+        
+        <a
+          *ngIf="isLogued()"
+          class="nav-item"
+          routerLink="/home"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Dashboard' : null"
+          [attr.aria-label]="'Ir al Dashboard'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">dashboard</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Dashboard</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+
+        <a
+          *ngIf="!isLogued()"
+          class="nav-item"
+          routerLink="/seguimiento"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Seguimiento de Reparaciones' : null"
+          [attr.aria-label]="'Seguimiento de reparaciones'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">search</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Seguimiento</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+      </div>
+
+      <!-- Operations Section -->
+      <div class="nav-section" *ngIf="isLogued()">
+        <h4 class="nav-section-title" *ngIf="sidebarOpen">Operaciones</h4>
+        
+        <a
+          class="nav-item"
+          routerLink="/reparaciones"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Gestión de Reparaciones' : null"
+          [attr.aria-label]="'Gestión de reparaciones'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">build_circle</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Reparaciones</span>
+          <div class="nav-badge" *ngIf="sidebarOpen">
+            <span>{{getTotalReparacionesActivas()}}</span>
+          </div>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+
+        <a
+          class="nav-item"
+          routerLink="/compras"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Gestión de Compras' : null"
+          [attr.aria-label]="'Gestión de compras'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">shopping_cart</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Compras</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+
+        <a
+          class="nav-item"
+          routerLink="/repuestos"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Control de Inventario' : null"
+          [attr.aria-label]="'Control de inventario'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">inventory_2</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Inventario</span>
+          <div class="nav-badge warning" *ngIf="sidebarOpen && getRepuestosPocoStock() > 0">
+            <span>{{getRepuestosPocoStock()}}</span>
+          </div>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+      </div>
+
+      <!-- Management Section -->
+      <div class="nav-section" *ngIf="isLogued()">
+        <h4 class="nav-section-title" *ngIf="sidebarOpen">Gestión</h4>
+        
+        <a
+          class="nav-item"
+          routerLink="/clients"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Base de Clientes' : null"
+          [attr.aria-label]="'Base de clientes'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">groups</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Clientes</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+
+        <a
+          class="nav-item"
+          routerLink="/proveedores"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Gestión de Proveedores' : null"
+          [attr.aria-label]="'Gestión de proveedores'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">store</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Proveedores</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+
+        <a
+          class="nav-item"
+          routerLink="/tecnicos"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Personal Técnico' : null"
+          [attr.aria-label]="'Personal técnico'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">engineering</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Técnicos</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+
+        <a
+          class="nav-item"
+          routerLink="/equipos"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Catálogo de Equipos' : null"
+          [attr.aria-label]="'Catálogo de equipos'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">devices</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Equipos</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+      </div>
+
+      <!-- Analytics Section -->
+      <div class="nav-section" *ngIf="isLogued()">
+        <h4 class="nav-section-title" *ngIf="sidebarOpen">Análisis</h4>
+        
+        <a
+          class="nav-item"
+          routerLink="/estadisticas"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Estadísticas y Reportes' : null"
+          [attr.aria-label]="'Estadísticas y reportes'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">analytics</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Estadísticas</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+      </div>
+
+      <!-- System Section -->
+      <div class="nav-section" *ngIf="isLogued()">
+        <h4 class="nav-section-title" *ngIf="sidebarOpen">Sistema</h4>
+        
+        <a
+          class="nav-item"
+          routerLink="/restore"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Restauración de Datos' : null"
+          [attr.aria-label]="'Restauración de datos'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">restore</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Restauración</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+      </div>
     </div>
-  </div>
-  <div class="content" [ngClass]="{ expanded: !sidebarOpen }">
+
+    <!-- Bottom Actions -->
+    <div class="sidebar-bottom">
+      <!-- User Profile (if logged in) -->
+      <div class="user-profile" *ngIf="isLogued() && sidebarOpen">
+        <div class="user-avatar">
+          <span class="material-icons">account_circle</span>
+        </div>
+        <div class="user-info">
+          <p class="user-name">Administrador</p>
+          <p class="user-role">Gestión Técnica</p>
+        </div>
+        <div class="user-status">
+          <div class="status-indicator online"></div>
+        </div>
+      </div>
+
+      <!-- Collapsed User Avatar -->
+      <div class="user-avatar-collapsed" *ngIf="isLogued() && !sidebarOpen" 
+           [attr.title]="'Administrador - Gestión Técnica'">
+        <span class="material-icons">account_circle</span>
+        <div class="status-indicator online"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="bottom-actions">
+        <button
+          *ngIf="isLogued()"
+          class="nav-item action-item logout"
+          data-bs-toggle="modal"
+          data-bs-target="#cerrarSesion"
+          [attr.title]="!sidebarOpen ? 'Cerrar Sesión' : null"
+          [attr.aria-label]="'Cerrar sesión'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">logout</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Cerrar Sesión</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </button>
+
+        <a
+          *ngIf="!isLogued()"
+          class="nav-item action-item"
+          routerLink="/login"
+          routerLinkActive="active"
+          [attr.title]="!sidebarOpen ? 'Iniciar Sesión' : null"
+          [attr.aria-label]="'Iniciar sesión'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">login</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Iniciar Sesión</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+      </div>
+
+      <!-- Footer -->
+      <div class="sidebar-footer" *ngIf="sidebarOpen">
+        <a href="https://starttweb.com/" target="_blank" rel="noopener noreferrer">
+          <span class="material-icons">code</span>
+          <span>Desarrollado por StarttWeb</span>
+        </a>
+      </div>
+
+      <!-- Collapsed Footer -->
+      <div class="sidebar-footer-collapsed" *ngIf="!sidebarOpen">
+        <a href="https://starttweb.com/" target="_blank" rel="noopener noreferrer" 
+           [attr.title]="'Desarrollado por StarttWeb'">
+          <span class="material-icons">code</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content" [class.expanded]="!sidebarOpen">
     <router-outlet></router-outlet>
-  </div>
+  </main>
+
+  <!-- Overlay for mobile -->
+  <div class="sidebar-overlay" 
+       *ngIf="sidebarOpen && isMobile()" 
+       (click)="closeSidebar()"
+       [class.active]="sidebarOpen && isMobile()"></div>
 </div>
 
+<!-- Logout Modal -->
 <div
   class="modal fade"
   id="cerrarSesion"
@@ -180,31 +323,41 @@
 >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header border-0">
-        <h2 class="modal-title text-center w-100 fs-2">
-          ¿Seguro que quiere irse?
-        </h2>
+      <div class="modal-header">
+        <h2 class="modal-title" id="cerrarSesionLabel">Confirmar Cierre de Sesión</h2>
         <button
           type="button"
           class="btn-close"
           data-bs-dismiss="modal"
-          aria-label="Close"
-          #cerrarSesion
+          aria-label="Cerrar modal"
         ></button>
       </div>
-      <div class="modal-body text-center py-4">
-        <p>Está a punto de cerrar sesión y salir de la aplicación.</p>
+      <div class="modal-body">
+        <div class="logout-modal-content">
+          <div class="logout-icon">
+            <span class="material-icons">logout</span>
+          </div>
+          <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
+          <small class="text-muted">Se perderán todos los datos no guardados.</small>
+        </div>
       </div>
-      <div class="modal-footer justify-content-evenly border-0">
+      <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-secondary col-4"
+          class="btn btn-secondary"
           data-bs-dismiss="modal"
         >
-          Cerrar
+          <span class="material-icons">close</span>
+          Cancelar
         </button>
-        <button type="submit" (click)="logout()" class="btn btn-danger col-4">
-          Cerrar sesión
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="logout()"
+          data-bs-dismiss="modal"
+        >
+          <span class="material-icons">logout</span>
+          Cerrar Sesión
         </button>
       </div>
     </div>

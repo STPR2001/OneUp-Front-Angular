@@ -1,120 +1,358 @@
-<div class="container mt-2">
-  <h2 class="h2-title">Equipos</h2>
-  <div class="row mb-3">
-    <div class="col-md-6">
-      <input
-        type="text"
-        placeholder="Buscar por marca..."
-        [(ngModel)]="nombre"
-        class="form-control"
-        (change)="onFilterChange()"
-      />
-    </div>
-    <div class="col-md-6 text-end">
-      <button
-        type="button"
-        class="btn btn-success"
-        (click)="openAgregarEquipoModal()"
-      >
-        Agregar equipo
+<div class="dashboard-container">
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Simple Header -->
+    <div class="page-header">
+      <div class="header-titles">
+        <h1 class="main-title">Gestión de Equipos</h1>
+        <p class="subtitle">Administración del inventario de equipos tecnológicos</p>
+      </div>
+      <button class="btn-primary add-equipo" (click)="openAgregarEquipoModal()">
+        <span class="material-icons">devices</span>
+        Nuevo Equipo
       </button>
     </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon equipos">
+          <span class="material-icons">devices</span>
+        </div>
+        <div class="stat-info">
+          <h3>Total Equipos</h3>
+          <p class="stat-number">{{ getTotalEquipos() }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon tipos">
+          <span class="material-icons">category</span>
+        </div>
+        <div class="stat-info">
+          <h3>Tipos de Equipo</h3>
+          <p class="stat-number">{{ getTiposEquipoCount() }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon marcas">
+          <span class="material-icons">business</span>
+        </div>
+        <div class="stat-info">
+          <h3>Marcas Diferentes</h3>
+          <p class="stat-number">{{ getMarcasCount() }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon marca-popular">
+          <span class="material-icons">trending_up</span>
+        </div>
+        <div class="stat-info">
+          <h3>Marca Más Popular</h3>
+          <p class="stat-number">{{ getMarcaMasComun() || 'N/A' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+      <input
+        type="text"
+          placeholder="Buscar equipos por marca..."
+          (input)="onSearchInput($event)"
+          [value]="nombre"
+      />
+    </div>
+      <div class="export-actions">
+        <button class="export-btn" (click)="exportarEquipos()" title="Exportar a CSV">
+          <span class="material-icons">download</span>
+          Exportar
+        </button>
+        <button class="refresh-btn" (click)="refrescarDatos()" title="Actualizar datos">
+          <span class="material-icons">refresh</span>
+        </button>
+        <button class="view-toggle-btn" (click)="toggleViewMode()" title="Cambiar vista">
+          <span class="material-icons">{{ viewMode === 'table' ? 'view_module' : 'table_view' }}</span>
+      </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner">
+        <span class="material-icons">autorenew</span>
+      </div>
+      <p>Cargando equipos...</p>
   </div>
-  <div class="row">
-    <div class="col-md-12 table-container">
-      <table class="table table-striped">
+
+    <!-- Content Area -->
+    <div *ngIf="!isLoading">
+      <div *ngIf="equipos.length > 0; else noEquiposTemplate">
+        <!-- Table View -->
+        <div *ngIf="viewMode === 'table'" class="equipos-table">
+          <table>
         <thead>
           <tr>
-            <th>Tipo equipo</th>
+                <th>Equipo</th>
+                <th>Tipo</th>
             <th>Marca</th>
             <th>Modelo</th>
-            <th>Numero de serie</th>
+                <th>Número de Serie</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let equipo of equipos" class="hover-row">
-            <td>{{ equipo.tipo_equipo.nombre }}</td>
-            <td>{{ equipo.marca.nombre }}</td>
-            <td>{{ equipo.modelo.nombre }}</td>
-            <td>{{ equipo.numeroSerie }}</td>
-            <td>
-              <button
-                class="btn btn-primary me-2"
-                title="Modificar"
-                (click)="openModificarEquipoModal(equipo)"
-              >
-                <span class="material-icons icon-small">edit</span>
+              <tr *ngFor="let equipo of equipos; trackBy: trackByEquipoId">
+                <td class="equipo-cell">
+                  <div class="equipo-info">
+                    <div class="equipo-avatar">
+                      <span class="material-icons">{{ getEquipoIcon(equipo) }}</span>
+                    </div>
+                    <div class="equipo-details">
+                      <p class="equipo-name">{{ equipo.tipo_equipo?.nombre || 'Sin tipo' }}</p>
+                      <p class="equipo-id">ID: {{ equipo.id }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="tipo-cell">
+                  <span class="tipo-badge">
+                    <span class="material-icons">category</span>
+                    {{ equipo.tipo_equipo?.nombre || 'Sin tipo' }}
+                  </span>
+                </td>
+                <td class="marca-cell">
+                  <div class="marca-info">
+                    <span class="marca-name">{{ equipo.marca?.nombre || 'Sin marca' }}</span>
+                  </div>
+                </td>
+                <td class="modelo-cell">
+                  <span class="modelo-name">{{ equipo.modelo?.nombre || 'Sin modelo' }}</span>
+                </td>
+                <td class="serie-cell">
+                  <code class="serie-code">{{ equipo.numeroSerie || 'Sin serie' }}</code>
+                </td>
+                <td class="actions-cell">
+                  <button class="action-btn view" (click)="verDetallesEquipo(equipo)" title="Ver detalles">
+                    <span class="material-icons">visibility</span>
               </button>
               <button
-                class="btn btn-danger"
-                title="Eliminar"
-                (click)="desactivarEquipo(equipo)"
-              >
-                <span class="material-icons icon-small">delete</span>
+                    class="action-btn edit" 
+                    (click)="openModificarEquipoModal(equipo)"
+                    title="Modificar">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="action-btn delete" (click)="desactivarEquipo(equipo)" title="Desactivar">
+                    <span class="material-icons">delete</span>
               </button>
             </td>
           </tr>
         </tbody>
       </table>
+        </div>
 
-      <div class="d-flex justify-content-center">
+        <!-- Card View -->
+        <div *ngIf="viewMode === 'cards'" class="equipos-cards">
+          <div class="cards-container">
+            <div class="equipo-card" *ngFor="let equipo of equipos; trackBy: trackByEquipoId">
+              <div class="card-header">
+                <div class="equipo-icon">
+                  <span class="material-icons">{{ getEquipoIcon(equipo) }}</span>
+                </div>
+                <div class="equipo-title">
+                  <h4>{{ equipo.tipo_equipo?.nombre || 'Sin tipo' }}</h4>
+                  <p>{{ equipo.marca?.nombre || 'Sin marca' }}</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="equipo-detail">
+                  <span class="material-icons">model_training</span>
+                  <div>
+                    <strong>Modelo</strong>
+                    <p>{{ equipo.modelo?.nombre || 'Sin modelo' }}</p>
+                  </div>
+                </div>
+                <div class="equipo-detail">
+                  <span class="material-icons">confirmation_number</span>
+                  <div>
+                    <strong>Número de Serie</strong>
+                    <p><code>{{ equipo.numeroSerie || 'Sin serie' }}</code></p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button class="action-btn view" (click)="verDetallesEquipo(equipo)" title="Ver detalles">
+                  <span class="material-icons">visibility</span>
+                </button>
+                <button class="action-btn edit" (click)="openModificarEquipoModal(equipo)" title="Modificar">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="action-btn delete" (click)="desactivarEquipo(equipo)" title="Desactivar">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State Template -->
+      <ng-template #noEquiposTemplate>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <span class="material-icons">devices</span>
+          </div>
+          <h3>No hay equipos registrados</h3>
+          <p>Comienza agregando tu primer equipo para gestionar tu inventario tecnológico.</p>
+          <button class="btn-primary" (click)="openAgregarEquipoModal()">
+            <span class="material-icons">devices</span>
+            Agregar primer equipo
+          </button>
+        </div>
+      </ng-template>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="equipos.length > 0 && totalPages > 1">
         <button
-          class="btn btn-primary me-1"
+          class="page-btn"
           (click)="onPageChange(currentPage - 1)"
           [disabled]="currentPage === 0"
+          title="Página anterior"
         >
-          Anterior
+          <span class="material-icons">chevron_left</span>
         </button>
-        <ng-container *ngIf="totalPages > 0">
+        
+        <div class="page-numbers">
           <button
-            class="btn btn-primary me-1"
+            class="page-btn"
+            [class.active]="currentPage === 0"
             (click)="onPageChange(0)"
-            [disabled]="currentPage === 0"
+            *ngIf="totalPages > 0"
           >
             1
           </button>
+          
           <button
             *ngIf="currentPage > 1"
-            class="btn btn-primary me-1"
+            class="page-btn"
             (click)="onPageChange(currentPage - 1)"
-            [disabled]="currentPage === 1"
           >
             {{ currentPage }}
           </button>
+          
           <button
             *ngIf="currentPage != 0 && totalPages != currentPage + 1"
-            class="btn btn-primary me-1"
-            (click)="onPageChange(currentPage)"
+            class="page-btn active"
             [disabled]="true"
           >
             {{ currentPage + 1 }}
           </button>
 
           <button
-            *ngIf="
-              totalPages != currentPage + 2 && totalPages >= currentPage + 2
-            "
-            class="btn btn-primary me-1"
+            *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2"
+            class="page-btn"
             (click)="onPageChange(currentPage + 1)"
           >
             {{ currentPage + 2 }}
           </button>
+          
           <button
             *ngIf="totalPages > 1"
-            class="btn btn-primary me-1"
+            class="page-btn"
             (click)="onPageChange(totalPages - 1)"
             [disabled]="currentPage === totalPages - 1"
           >
             {{ totalPages }}
           </button>
-        </ng-container>
+        </div>
+        
         <button
-          class="btn btn-primary"
+          class="page-btn"
           (click)="onPageChange(currentPage + 1)"
           [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+          title="Página siguiente"
         >
-          Siguiente
+          <span class="material-icons">chevron_right</span>
+        </button>
+      </div>
+
+      <div class="pagination-info" *ngIf="equipos.length > 0">
+        <p>Página {{ currentPage + 1 }} de {{ totalPages }} ({{ getTotalEquipos() }} equipos en total)</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal para ver detalles del equipo -->
+<div class="modal fade" id="verDetallesEquipoModal" tabindex="-1" aria-labelledby="verDetallesEquipoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Detalles del Equipo</h2>
+          <p class="modal-subtitle">Información completa del equipo seleccionado</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="equipo-details" *ngIf="equipoSeleccionado.id">
+          <div class="detail-section">
+            <h4><span class="material-icons">info</span>Información General</h4>
+            <div class="detail-item">
+              <span class="material-icons">category</span>
+              <div>
+                <strong>Tipo de Equipo</strong>
+                <p>{{ equipoSeleccionado.tipo_equipo?.nombre || 'No especificado' }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">business</span>
+              <div>
+                <strong>Marca</strong>
+                <p>{{ equipoSeleccionado.marca?.nombre || 'No especificada' }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">model_training</span>
+              <div>
+                <strong>Modelo</strong>
+                <p>{{ equipoSeleccionado.modelo?.nombre || 'No especificado' }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">confirmation_number</span>
+              <div>
+                <strong>Número de Serie</strong>
+                <p><code>{{ equipoSeleccionado.numeroSerie || 'No especificado' }}</code></p>
+              </div>
+            </div>
+            <div class="detail-item" *ngIf="equipoSeleccionado.fechaCreacion">
+              <span class="material-icons">schedule</span>
+              <div>
+                <strong>Fecha de Registro</strong>
+                <p>{{ formatearFecha(equipoSeleccionado.fechaCreacion) }}</p>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons">check_circle</span>
+              <div>
+                <strong>Estado</strong>
+                <p><span class="status-badge activo">Activo</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="openModificarEquipoModal(equipoSeleccionado)" data-bs-dismiss="modal">
+          <span class="material-icons">edit</span>
+          Modificar
         </button>
       </div>
     </div>
@@ -122,33 +360,37 @@
 </div>
 
 <!--AGREGAR EQUIPO-->
-
 <ng-template #agregarEquipoModal let-modal>
   <div class="modal-content">
     <form (ngSubmit)="agregarEquipo()">
       <div class="modal-header">
-        <h2 class="text-center fs-2 h2-title">Agregar equipo</h2>
+        <div class="modal-title-container">
+          <h2 class="modal-title">Agregar Nuevo Equipo</h2>
+          <p class="modal-subtitle">Registrar un nuevo equipo en el inventario</p>
+        </div>
         <button
           type="button"
           class="btn-close"
           aria-label="Close"
           (click)="modal.dismiss('Cross click')"
-        ></button>
+        >
+          <span class="material-icons">close</span>
+        </button>
       </div>
       <div class="modal-body">
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
-            <label for="tipoEquipo" class="form-label">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tipoEquipo">
+              <span class="material-icons">category</span>
               Tipo de equipo <span class="requerido">*</span>
             </label>
 
             <div class="input-group">
-              <!-- Input con autocompletado -->
               <input
                 id="tipoEquipo"
                 name="tipoEquipo"
                 type="text"
-                class="form-control fs-5"
+                class="form-control"
                 placeholder="Buscar tipo de equipo..."
                 [(ngModel)]="nuevoEquipo.tipo_equipo"
                 (selectItem)="onTipoEquipoSeleccionado($event)"
@@ -159,7 +401,6 @@
                 required
               />
 
-              <!-- Botón para limpiar selección -->
               <button
                 type="button"
                 class="btn btn-danger ms-2"
@@ -167,9 +408,8 @@
                 *ngIf="tipoEquipoSeleccionado"
                 title="Borrar selección"
               >
-                <span class="material-icons icon-small">clear</span>
+                <span class="material-icons">clear</span>
               </button>
-            </div>
           </div>
 
           <button
@@ -180,19 +420,19 @@
             +
           </button>
         </div>
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
-            <label for="marca" class="form-label">
+
+          <div class="form-group">
+            <label for="marca">
+              <span class="material-icons">business</span>
               Marca <span class="requerido">*</span>
             </label>
 
             <div class="input-group">
-              <!-- Input con autocompletado -->
               <input
                 id="marca"
                 name="marca"
                 type="text"
-                class="form-control fs-5"
+                class="form-control"
                 placeholder="Buscar marca..."
                 [(ngModel)]="nuevoEquipo.marca"
                 (selectItem)="onMarcaSeleccionada($event)"
@@ -203,7 +443,6 @@
                 required
               />
 
-              <!-- Botón para limpiar selección -->
               <button
                 type="button"
                 class="btn btn-danger ms-2"
@@ -211,9 +450,8 @@
                 *ngIf="marcaSeleccionada"
                 title="Borrar selección"
               >
-                <span class="material-icons icon-small">clear</span>
+                <span class="material-icons">clear</span>
               </button>
-            </div>
           </div>
 
           <button
@@ -224,16 +462,20 @@
             +
           </button>
         </div>
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
-            <label for="modelo">Modelo <span class="requerido">*</span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="modelo">
+              <span class="material-icons">model_training</span>
+              Modelo <span class="requerido">*</span>
+            </label>
             <div class="input-group">
-              <!-- Input con autocompletado -->
               <input
                 id="modelo"
                 name="modelo"
                 type="text"
-                class="form-control fs-5"
+                class="form-control"
                 placeholder="Buscar modelo..."
                 [(ngModel)]="nuevoEquipo.modelo"
                 (selectItem)="onModeloSeleccionado($event)"
@@ -244,7 +486,6 @@
                 required
               />
 
-              <!-- Botón para limpiar selección -->
               <button
                 type="button"
                 class="btn btn-danger ms-2"
@@ -252,9 +493,8 @@
                 *ngIf="modeloSeleccionado"
                 title="Borrar selección"
               >
-                <span class="material-icons icon-small">clear</span>
+                <span class="material-icons">clear</span>
               </button>
-            </div>
           </div>
           <button
             type="button"
@@ -264,32 +504,42 @@
             +
           </button>
         </div>
-        <div class="mb-3">
-          <label for="numeroSerie"
-            >Numero de serie <span class="requerido">*</span></label
-          >
+
+          <div class="form-group">
+            <label for="numeroSerie">
+              <span class="material-icons">confirmation_number</span>
+              Numero de serie <span class="requerido">*</span>
+            </label>
           <input
             type="text"
             id="numeroSerie"
             name="numeroSerie"
             [(ngModel)]="nuevoEquipo.numeroSerie"
             required
-            class="form-control fs-5"
+              class="form-control"
+              placeholder="Ingrese el número de serie"
           />
+          </div>
         </div>
-        <div *ngIf="errorAgregarEquipo" class="text-danger">
+
+        <div *ngIf="errorAgregarEquipo" class="error-message">
+          <span class="material-icons">error</span>
           Error al agregar el equipo.
         </div>
       </div>
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-danger col-3 me-2"
+          class="btn btn-secondary"
           (click)="modal.dismiss('Close click')"
         >
+          <span class="material-icons">close</span>
           Cerrar
         </button>
-        <button type="submit" class="btn btn-success col-3">Agregar</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-icons">add</span>
+          Agregar
+        </button>
       </div>
     </form>
   </div>
@@ -300,26 +550,32 @@
   <div class="modal-content">
     <form (ngSubmit)="modificarEquipo()">
       <div class="modal-header">
-        <h2 class="text-center fs-2 h2-title">Modificar equipo</h2>
+        <div class="modal-title-container">
+          <h2 class="modal-title">Modificar Equipo</h2>
+          <p class="modal-subtitle">Actualizar información del equipo</p>
+        </div>
         <button
           type="button"
           class="btn-close"
           aria-label="Close"
           (click)="modal.dismiss('Cross click')"
-        ></button>
+        >
+          <span class="material-icons">close</span>
+        </button>
       </div>
       <div class="modal-body">
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
-            <label for="tipoEquipo"
-              >Tipo equipo <span class="requerido">*</span></label
-            >
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tipoEquipo">
+              <span class="material-icons">category</span>
+              Tipo equipo <span class="requerido">*</span>
+            </label>
             <select
               id="tipoEquipo"
               name="tipoEquipo"
               [(ngModel)]="equipoSeleccionado.tipo_equipo.id"
               required
-              class="form-select fs-5"
+              class="form-control"
             >
               <option
                 *ngFor="let tipoEquipo of tiposEquipo"
@@ -328,7 +584,6 @@
                 {{ tipoEquipo.nombre }}
               </option>
             </select>
-          </div>
           <button
             type="button"
             class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
@@ -337,21 +592,23 @@
             +
           </button>
         </div>
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
-            <label for="marca">Marca <span class="requerido">*</span></label>
+
+          <div class="form-group">
+            <label for="marca">
+              <span class="material-icons">business</span>
+              Marca <span class="requerido">*</span>
+            </label>
             <select
               id="marca"
               name="marca"
               [(ngModel)]="equipoSeleccionado.marca.id"
               required
-              class="form-select fs-5"
+              class="form-control"
             >
               <option *ngFor="let marca of marcas" [value]="marca.id">
                 {{ marca.nombre }}
               </option>
             </select>
-          </div>
           <button
             type="button"
             class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
@@ -360,21 +617,25 @@
             +
           </button>
         </div>
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
-            <label for="modelo">Modelo <span class="requerido">*</span></label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="modelo">
+              <span class="material-icons">model_training</span>
+              Modelo <span class="requerido">*</span>
+            </label>
             <select
               id="modelo"
               name="modelo"
               [(ngModel)]="equipoSeleccionado.modelo.id"
               required
-              class="form-select fs-5"
+              class="form-control"
             >
               <option *ngFor="let modelo of modelos" [value]="modelo.id">
                 {{ modelo.nombre }}
               </option>
             </select>
-          </div>
           <button
             type="button"
             class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
@@ -383,32 +644,42 @@
             +
           </button>
         </div>
-        <div class="mb-3">
-          <label for="numeroSerie"
-            >Numero de serie <span class="requerido">*</span></label
-          >
+
+          <div class="form-group">
+            <label for="numeroSerie">
+              <span class="material-icons">confirmation_number</span>
+              Numero de serie <span class="requerido">*</span>
+            </label>
           <input
             type="text"
             id="numeroSerie"
             name="numeroSerie"
             [(ngModel)]="equipoSeleccionado.numeroSerie"
             required
-            class="form-control fs-5"
+              class="form-control"
+              placeholder="Ingrese el número de serie"
           />
+          </div>
         </div>
-        <div *ngIf="errorModificarEquipo" class="text-danger">
+
+        <div *ngIf="errorModificarEquipo" class="error-message">
+          <span class="material-icons">error</span>
           Error al modificar el equipo.
         </div>
       </div>
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-danger col-3 me-2"
+          class="btn btn-secondary"
           (click)="modal.dismiss('Close click')"
         >
+          <span class="material-icons">close</span>
           Cerrar
         </button>
-        <button type="submit" class="btn btn-success col-3">Modificar</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-icons">save</span>
+          Modificar
+        </button>
       </div>
     </form>
   </div>
@@ -419,19 +690,25 @@
   <div class="modal-content">
     <form (ngSubmit)="agregarTipoEquipo()">
       <div class="modal-header">
-        <h2 class="text-center fs-2 h2-title">Agregar tipo de equipo</h2>
+        <div class="modal-title-container">
+          <h2 class="modal-title">Agregar Tipo de Equipo</h2>
+          <p class="modal-subtitle">Crear un nuevo tipo de equipo</p>
+        </div>
         <button
           type="button"
           class="btn-close"
           aria-label="Close"
           (click)="modal.dismiss('Cross click')"
-        ></button>
+        >
+          <span class="material-icons">close</span>
+        </button>
       </div>
       <div class="modal-body">
-        <div class="mb-3">
-          <label for="tipoEquipo"
-            >Tipo de equipo <span class="requerido">*</span></label
-          >
+        <div class="form-group full-width">
+          <label for="tipoEquipo">
+            <span class="material-icons">category</span>
+            Tipo de equipo <span class="requerido">*</span>
+          </label>
           <input
             type="text"
             id="tipoEquipo"
@@ -439,22 +716,28 @@
             [(ngModel)]="nuevoTipoEquipo.nombre"
             autofocus
             required
-            class="form-control fs-5"
+            class="form-control"
+            placeholder="Ej: Laptop, Desktop, Tablet..."
           />
         </div>
-        <div *ngIf="errorAgregarTipoEquipo" class="text-danger">
+        <div *ngIf="errorAgregarTipoEquipo" class="error-message">
+          <span class="material-icons">error</span>
           Error al agregar el tipo de equipo.
         </div>
       </div>
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-danger col-3 me-2"
+          class="btn btn-secondary"
           (click)="modal.dismiss('Close click')"
         >
+          <span class="material-icons">close</span>
           Cerrar
         </button>
-        <button type="submit" class="btn btn-success col-3">Agregar</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-icons">add</span>
+          Agregar
+        </button>
       </div>
     </form>
   </div>
@@ -465,17 +748,25 @@
   <div class="modal-content">
     <form (ngSubmit)="agregarMarca()">
       <div class="modal-header">
-        <h2 class="text-center fs-2 h2-title">Agregar marca</h2>
+        <div class="modal-title-container">
+          <h2 class="modal-title">Agregar Marca</h2>
+          <p class="modal-subtitle">Crear una nueva marca de equipo</p>
+        </div>
         <button
           type="button"
           class="btn-close"
           aria-label="Close"
           (click)="modal.dismiss('Cross click')"
-        ></button>
+        >
+          <span class="material-icons">close</span>
+        </button>
       </div>
       <div class="modal-body">
-        <div class="mb-3">
-          <label for="marca">Marca <span class="requerido">*</span></label>
+        <div class="form-group full-width">
+          <label for="marca">
+            <span class="material-icons">business</span>
+            Marca <span class="requerido">*</span>
+          </label>
           <input
             type="text"
             id="marca"
@@ -483,22 +774,28 @@
             [(ngModel)]="nuevaMarca.nombre"
             autofocus
             required
-            class="form-control fs-5"
+            class="form-control"
+            placeholder="Ej: HP, Dell, Apple..."
           />
         </div>
-        <div *ngIf="errorAgregarMarca" class="text-danger">
+        <div *ngIf="errorAgregarMarca" class="error-message">
+          <span class="material-icons">error</span>
           Error al agregar marca.
         </div>
       </div>
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-danger col-3 me-2"
+          class="btn btn-secondary"
           (click)="modal.dismiss('Close click')"
         >
+          <span class="material-icons">close</span>
           Cerrar
         </button>
-        <button type="submit" class="btn btn-success col-3">Agregar</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-icons">add</span>
+          Agregar
+        </button>
       </div>
     </form>
   </div>
@@ -509,28 +806,32 @@
   <div class="modal-content">
     <form (ngSubmit)="agregarModelo()">
       <div class="modal-header">
-        <h2 class="text-center fs-2 h2-title">Agregar modelo</h2>
+        <div class="modal-title-container">
+          <h2 class="modal-title">Agregar Modelo</h2>
+          <p class="modal-subtitle">Crear un nuevo modelo de equipo</p>
+        </div>
         <button
           type="button"
           class="btn-close"
           aria-label="Close"
           (click)="modal.dismiss('Cross click')"
-        ></button>
+        >
+          <span class="material-icons">close</span>
+        </button>
       </div>
       <div class="modal-body">
-        <div class="mb-3 d-flex align-items-center">
-          <div class="flex-grow-1">
+        <div class="form-group full-width">
             <label for="marca" class="form-label">
+            <span class="material-icons">business</span>
               Marca <span class="requerido">*</span>
             </label>
 
             <div class="input-group">
-              <!-- Input con autocompletado -->
               <input
                 id="marca"
                 name="marca"
                 type="text"
-                class="form-control fs-5"
+              class="form-control"
                 placeholder="Buscar marca..."
                 [(ngModel)]="nuevoModelo.marca"
                 (selectItem)="onMarcaSeleccionada($event)"
@@ -541,7 +842,6 @@
                 required
               />
 
-              <!-- Botón para limpiar selección -->
               <button
                 type="button"
                 class="btn btn-danger ms-2"
@@ -549,13 +849,15 @@
                 *ngIf="marcaSeleccionada"
                 title="Borrar selección"
               >
-                <span class="material-icons icon-small">clear</span>
+              <span class="material-icons">clear</span>
               </button>
-            </div>
           </div>
         </div>
-        <div class="mb-3">
-          <label for="modelo">Modelo <span class="requerido">*</span></label>
+        <div class="form-group full-width">
+          <label for="modelo">
+            <span class="material-icons">model_training</span>
+            Modelo <span class="requerido">*</span>
+          </label>
           <input
             type="text"
             id="modelo"
@@ -563,22 +865,28 @@
             [(ngModel)]="nuevoModelo.nombre"
             autofocus
             required
-            class="form-control fs-5"
+            class="form-control"
+            placeholder="Ej: ThinkPad X1, MacBook Pro..."
           />
         </div>
-        <div *ngIf="errorAgregarModelo" class="text-danger">
+        <div *ngIf="errorAgregarModelo" class="error-message">
+          <span class="material-icons">error</span>
           Error al agregar modelo.
         </div>
       </div>
       <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-danger col-3 me-2"
+          class="btn btn-secondary"
           (click)="modal.dismiss('Close click')"
         >
+          <span class="material-icons">close</span>
           Cerrar
         </button>
-        <button type="submit" class="btn btn-success col-3">Agregar</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-icons">add</span>
+          Agregar
+        </button>
       </div>
     </form>
   </div>

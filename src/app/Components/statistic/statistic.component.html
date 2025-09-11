@@ -1,176 +1,431 @@
-<div class="statistics-container">
-  <!-- Header Section -->
-  <div class="header-section">
-    <div class="title-section">
-      <h1 class="main-title">
-        <i class="material-icons">insights</i>
-        Estadísticas y análisis
-      </h1>
-      <p class="subtitle">
-        Panel completo de métricas y tendencias del negocio
-      </p>
-    </div>
-    <div class="year-selector">
-      <label for="yearInput" class="year-label">
-        <i class="material-icons">calendar_today</i>
-        Año:
-      </label>
-      <input
-        type="number"
-        id="yearInput"
-        [(ngModel)]="selectedYear"
-        (change)="changeYear(selectedYear)"
-        placeholder="YYYY"
-        min="2017"
-        max="2100"
-        class="year-input"
-      />
-    </div>
-  </div>
-
-  <!-- Estadísticas Básicas -->
-  <div class="stats-section basic-stats">
-    <div class="stat-card">
-      <i class="material-icons">build</i>
-      <div class="stat-info">
-        <span class="stat-value">{{ getReparacionesEnTaller() }}</span>
-        <span class="stat-label">En Taller</span>
-        <span class="stat-percentage">{{ (getReparacionesEnTaller() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
+<div class="dashboard-container">
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Simple Header -->
+    <div class="page-header">
+      <div class="header-titles">
+        <h1 class="main-title">Estadísticas y Análisis</h1>
+        <p class="subtitle">Panel completo de métricas y tendencias del negocio</p>
+      </div>
+      <div class="header-actions">
+        <div class="year-selector">
+          <label for="yearInput" class="year-label">
+            <span class="material-icons">calendar_today</span>
+            Año:
+          </label>
+          <input
+            type="number"
+            id="yearInput"
+            [(ngModel)]="selectedYear"
+            (change)="changeYear(selectedYear)"
+            placeholder="YYYY"
+            min="2017"
+            max="2100"
+            class="year-input"
+          />
+        </div>
+        <button class="export-btn" (click)="exportarEstadisticas()" title="Exportar estadísticas">
+          <span class="material-icons">download</span>
+          Exportar
+        </button>
+        <button class="refresh-btn" (click)="refrescarDatos()" title="Actualizar datos">
+          <span class="material-icons">refresh</span>
+        </button>
       </div>
     </div>
-    <div class="stat-card">
-      <i class="material-icons">done_all</i>
-      <div class="stat-info">
-        <span class="stat-value">{{ getReparacionesFinalizadas() }}</span>
-        <span class="stat-label">Finalizadas</span>
-        <span class="stat-percentage">{{ (getReparacionesFinalizadas() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <i class="material-icons">handshake</i>
-      <div class="stat-info">
-        <span class="stat-value">{{ getReparacionesEntregadas() }}</span>
-        <span class="stat-label">Entregadas</span>
-        <span class="stat-percentage">{{ (getReparacionesEntregadas() / getTotalReparaciones() * 100) | number:'1.0-0' }}% del total</span>
-      </div>
-    </div>
-  </div>
 
-  <!-- Estadísticas Detalladas -->
-  <div class="detailed-stats-section">
-    <div class="section-header">
-      <h2><i class="material-icons">insights</i> Estadísticas detalladas</h2>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card highlight warning" *ngIf="getEstadisticasGenerales().reparacionesUrgentes > 0">
-        <i class="material-icons">warning</i>
+    <!-- Stats Cards Principales -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon en-taller">
+          <span class="material-icons">build</span>
+        </div>
         <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().reparacionesUrgentes }}</span>
-          <span class="stat-label">Reparaciones Urgentes</span>
-          <span class="stat-description">Más de 7 días en taller</span>
+          <h3>En Taller</h3>
+          <p class="stat-number">{{getReparacionesEnTaller()}}</p>
+          <span class="stat-percentage">{{getTotalReparaciones() > 0 ? ((getReparacionesEnTaller() / getTotalReparaciones() * 100) | number:'1.0-0') : 0}}% del total</span>
         </div>
       </div>
-
-      <div class="stat-card highlight success">
-        <i class="material-icons">payments</i>
+      <div class="stat-card">
+        <div class="stat-icon finalizadas">
+          <span class="material-icons">done_all</span>
+        </div>
         <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().ingresosMensuales | currency }}</span>
-          <span class="stat-label">Ingresos del Mes</span>
-          <span class="stat-description">De reparaciones entregadas</span>
+          <h3>Finalizadas</h3>
+          <p class="stat-number">{{getReparacionesFinalizadas()}}</p>
+          <span class="stat-percentage">{{getTotalReparaciones() > 0 ? ((getReparacionesFinalizadas() / getTotalReparaciones() * 100) | number:'1.0-0') : 0}}% del total</span>
         </div>
       </div>
-
-      <div class="stat-card highlight info">
-        <i class="material-icons">schedule</i>
+      <div class="stat-card">
+        <div class="stat-icon entregadas">
+          <span class="material-icons">handshake</span>
+        </div>
         <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().promedioTiempoReparacion }}</span>
-          <span class="stat-label">Días Promedio</span>
-          <span class="stat-description">Tiempo promedio de reparación</span>
+          <h3>Entregadas</h3>
+          <p class="stat-number">{{getReparacionesEntregadas()}}</p>
+          <span class="stat-percentage">{{getTotalReparaciones() > 0 ? ((getReparacionesEntregadas() / getTotalReparaciones() * 100) | number:'1.0-0') : 0}}% del total</span>
         </div>
       </div>
-
-      <div class="stat-card highlight primary">
-        <i class="material-icons">people</i>
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <span class="material-icons">inventory</span>
+        </div>
         <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().clientesRecurrentes }}</span>
-          <span class="stat-label">Clientes Recurrentes</span>
-          <span class="stat-description">Con más de una reparación</span>
-        </div>
-      </div>
-
-      <div class="stat-card highlight success">
-        <i class="material-icons">engineering</i>
-        <div class="stat-info">
-          <span class="stat-value">{{ getEstadisticasGenerales().tecnicoMasProductivo }}</span>
-          <span class="stat-label">Técnico más Productivo</span>
-          <span class="stat-description">Mayor número de reparaciones completadas</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Gráficos -->
-  <div class="charts-grid">
-    <!-- Reparaciones Section -->
-    <div class="stats-section">
-      <h2 class="section-title">
-        <i class="material-icons">build</i>
-        Reparaciones por mes
-      </h2>
-      <div class="chart-container">
-        <div id="reparacionesPorMes" class="chart"></div>
-        <div id="noDataReparacionesPorMes" class="no-data">
-          <i class="material-icons">info</i>
-          <p>No hay reparaciones registradas para el año {{ selectedYear }}</p>
+          <h3>Total Reparaciones</h3>
+          <p class="stat-number">{{getTotalReparaciones()}}</p>
+          <span class="stat-percentage">Año {{selectedYear}}</span>
         </div>
       </div>
     </div>
 
-    <!-- Técnicos Section -->
-    <div class="stats-section">
-      <h2 class="section-title">
-        <i class="material-icons">engineering</i>
-        Reparaciones por técnico
-      </h2>
-      <div class="chart-container">
-        <div id="reparacionesPorTecnico" class="chart"></div>
-        <div id="noDataReparacionesPorTecnico" class="no-data">
-          <i class="material-icons">info</i>
-          <p>No hay reparaciones asignadas a técnicos para el año {{ selectedYear }}</p>
+    <!-- Estadísticas Detalladas -->
+    <div class="detailed-stats-section">
+      <div class="section-header">
+        <h2>
+          <span class="material-icons">analytics</span>
+          Métricas Avanzadas
+        </h2>
+      </div>
+
+      <div class="advanced-stats-grid">
+        <!-- Reparaciones Urgentes -->
+        <div class="advanced-stat-card urgentes" *ngIf="getEstadisticasGenerales().reparacionesUrgentes > 0">
+          <div class="advanced-stat-header">
+            <span class="material-icons">warning</span>
+            <div class="stat-title">
+              <h4>Reparaciones Urgentes</h4>
+              <p>Más de 7 días en taller</p>
+            </div>
+          </div>
+          <div class="stat-value-large">{{getEstadisticasGenerales().reparacionesUrgentes}}</div>
+          <div class="stat-action">
+            <button class="action-link" (click)="verReparacionesUrgentes()">
+              <span class="material-icons">visibility</span>
+              Ver urgentes
+            </button>
+          </div>
+        </div>
+
+        <!-- Ingresos Mensuales -->
+        <div class="advanced-stat-card ingresos">
+          <div class="advanced-stat-header">
+            <span class="material-icons">payments</span>
+            <div class="stat-title">
+              <h4>Ingresos del Mes</h4>
+              <p>De reparaciones entregadas</p>
+            </div>
+          </div>
+          <div class="stat-value-large">{{formatearMoneda(getEstadisticasGenerales().ingresosMensuales)}}</div>
+          <div class="stat-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getProgresoIngresos()"></div>
+            </div>
+            <span class="progress-text">{{getProgresoIngresos()}}% del objetivo</span>
+          </div>
+        </div>
+
+        <!-- Tiempo Promedio -->
+        <div class="advanced-stat-card tiempo">
+          <div class="advanced-stat-header">
+            <span class="material-icons">schedule</span>
+            <div class="stat-title">
+              <h4>Tiempo Promedio</h4>
+              <p>Días de reparación</p>
+            </div>
+          </div>
+          <div class="stat-value-large">{{getEstadisticasGenerales().promedioTiempoReparacion}}</div>
+          <div class="stat-trend">
+            <span class="material-icons" [ngClass]="getTrendIcon('tiempo')">{{getTrendIcon('tiempo')}}</span>
+            <span [ngClass]="getTrendClass('tiempo')">{{getTrendText('tiempo')}}</span>
+          </div>
+        </div>
+
+        <!-- Clientes Recurrentes -->
+        <div class="advanced-stat-card clientes">
+          <div class="advanced-stat-header">
+            <span class="material-icons">people</span>
+            <div class="stat-title">
+              <h4>Clientes Recurrentes</h4>
+              <p>Con más de una reparación</p>
+            </div>
+          </div>
+          <div class="stat-value-large">{{getEstadisticasGenerales().clientesRecurrentes}}</div>
+          <div class="stat-additional">
+            <span class="additional-info">{{getFidelizacionPorcentaje()}}% de fidelización</span>
+          </div>
+        </div>
+
+        <!-- Técnico Más Productivo -->
+        <div class="advanced-stat-card tecnico">
+          <div class="advanced-stat-header">
+            <span class="material-icons">engineering</span>
+            <div class="stat-title">
+              <h4>Técnico Destacado</h4>
+              <p>Mayor productividad</p>
+            </div>
+          </div>
+          <div class="stat-value-large text-name">{{getEstadisticasGenerales().tecnicoMasProductivo}}</div>
+          <div class="stat-badge">
+            <span class="badge-destacado">⭐ Más productivo</span>
+          </div>
+        </div>
+
+        <!-- Eficiencia Operacional -->
+        <div class="advanced-stat-card eficiencia">
+          <div class="advanced-stat-header">
+            <span class="material-icons">speed</span>
+            <div class="stat-title">
+              <h4>Eficiencia Operacional</h4>
+              <p>Índice de rendimiento</p>
+            </div>
+          </div>
+          <div class="stat-value-large">{{getEficienciaOperacional()}}%</div>
+          <div class="efficiency-meter">
+            <div class="meter-fill" [style.width.%]="getEficienciaOperacional()"></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Ingresos por Mes Section (antes era Proveedores) -->
-    <div class="stats-section">
-      <h2 class="section-title">
-        <i class="material-icons">payments</i>
-        Ingresos por mes
-      </h2>
-      <div class="chart-container">
-        <div id="comprasPorProveedor" class="chart"></div>
-        <div id="noDataComprasPorProveedor" class="no-data">
-          <i class="material-icons">info</i>
-          <p>No hay ingresos registrados para el año {{ selectedYear }}</p>
+    <!-- Filtros para Charts -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label>
+          <span class="material-icons">filter_alt</span>
+          Tipo de Vista
+        </label>
+        <select [(ngModel)]="vistaSeleccionada" (change)="onVistaChange()" class="form-select">
+          <option value="todos">Todos los gráficos</option>
+          <option value="reparaciones">Reparaciones</option>
+          <option value="tecnicos">Técnicos</option>
+          <option value="ingresos">Ingresos</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>
+          <span class="material-icons">date_range</span>
+          Período
+        </label>
+        <select [(ngModel)]="periodoSeleccionado" (change)="onPeriodoChange()" class="form-select">
+          <option value="mensual">Mensual</option>
+          <option value="trimestral">Trimestral</option>
+          <option value="anual">Anual</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-section" [ngClass]="'vista-' + vistaSeleccionada">
+      
+      <!-- Reparaciones Charts -->
+      <div class="chart-group reparaciones-group" *ngIf="vistaSeleccionada === 'todos' || vistaSeleccionada === 'reparaciones'">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>
+              <span class="material-icons">build</span>
+              Reparaciones por Mes
+            </h3>
+            <div class="chart-actions">
+              <button class="chart-action-btn" (click)="toggleChartType('reparacionesMes')" title="Cambiar tipo de gráfico">
+                <span class="material-icons">{{getChartTypeIcon('reparacionesMes')}}</span>
+              </button>
+              <button class="chart-action-btn" (click)="downloadChart('reparacionesMes')" title="Descargar gráfico">
+                <span class="material-icons">download</span>
+              </button>
+            </div>
+          </div>
+          <div class="chart-content">
+            <div id="reparacionesPorMes" class="chart"></div>
+            <div id="noDataReparacionesPorMes" class="no-data">
+              <span class="material-icons">info</span>
+              <h4>Sin datos disponibles</h4>
+              <p>No hay reparaciones registradas para el año {{selectedYear}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Técnicos Charts -->
+      <div class="chart-group tecnicos-group" *ngIf="vistaSeleccionada === 'todos' || vistaSeleccionada === 'tecnicos'">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>
+              <span class="material-icons">engineering</span>
+              Rendimiento por Técnico
+            </h3>
+            <div class="chart-actions">
+              <button class="chart-action-btn" (click)="toggleChartType('tecnicosRendimiento')" title="Cambiar tipo de gráfico">
+                <span class="material-icons">{{getChartTypeIcon('tecnicosRendimiento')}}</span>
+              </button>
+              <button class="chart-action-btn" (click)="downloadChart('tecnicosRendimiento')" title="Descargar gráfico">
+                <span class="material-icons">download</span>
+              </button>
+            </div>
+          </div>
+          <div class="chart-content">
+            <div id="reparacionesPorTecnico" class="chart"></div>
+            <div id="noDataReparacionesPorTecnico" class="no-data">
+              <span class="material-icons">info</span>
+              <h4>Sin datos disponibles</h4>
+              <p>No hay reparaciones asignadas a técnicos para el año {{selectedYear}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ingresos Charts -->
+      <div class="chart-group ingresos-group" *ngIf="vistaSeleccionada === 'todos' || vistaSeleccionada === 'ingresos'">
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>
+              <span class="material-icons">payments</span>
+              Ingresos Mensuales
+            </h3>
+            <div class="chart-actions">
+              <button class="chart-action-btn" (click)="toggleChartType('ingresosMes')" title="Cambiar tipo de gráfico">
+                <span class="material-icons">{{getChartTypeIcon('ingresosMes')}}</span>
+              </button>
+              <button class="chart-action-btn" (click)="downloadChart('ingresosMes')" title="Descargar gráfico">
+                <span class="material-icons">download</span>
+              </button>
+            </div>
+          </div>
+          <div class="chart-content">
+            <div id="comprasPorProveedor" class="chart"></div>
+            <div id="noDataComprasPorProveedor" class="no-data">
+              <span class="material-icons">info</span>
+              <h4>Sin datos disponibles</h4>
+              <p>No hay ingresos registrados para el año {{selectedYear}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>
+              <span class="material-icons">bar_chart</span>
+              Ingresos por Técnico
+            </h3>
+            <div class="chart-actions">
+              <button class="chart-action-btn" (click)="toggleChartType('ingresosTecnico')" title="Cambiar tipo de gráfico">
+                <span class="material-icons">{{getChartTypeIcon('ingresosTecnico')}}</span>
+              </button>
+              <button class="chart-action-btn" (click)="downloadChart('ingresosTecnico')" title="Descargar gráfico">
+                <span class="material-icons">download</span>
+              </button>
+            </div>
+          </div>
+          <div class="chart-content">
+            <div *ngIf="ingresosTecnicoLoading" class="loading-state">
+              <span class="material-icons spinning">refresh</span>
+              <p>Cargando datos...</p>
+            </div>
+            <div *ngIf="ingresosTecnicoError" class="error-state">
+              <span class="material-icons">error</span>
+              <p>{{ingresosTecnicoError}}</p>
+              <button class="retry-btn" (click)="renderIngresosPorTecnicoCanvas()">
+                <span class="material-icons">refresh</span>
+                Reintentar
+              </button>
+            </div>
+            <div id="ingresosPorTecnicoCanvas" class="chart"></div>
+            <div id="noDataIngresosPorTecnicoCanvas" class="no-data">
+              <span class="material-icons">info</span>
+              <h4>Sin datos disponibles</h4>
+              <p>No hay datos de ingresos por técnico para el año {{selectedYear}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Resumen y Conclusiones -->
+    <div class="insights-section">
+      <div class="section-header">
+        <h2>
+          <span class="material-icons">lightbulb</span>
+          Insights y Recomendaciones
+        </h2>
+      </div>
+      <div class="insights-grid">
+        <div class="insight-card" *ngFor="let insight of getInsights()">
+          <div class="insight-icon" [ngClass]="insight.type">
+            <span class="material-icons">{{insight.icon}}</span>
+          </div>
+          <div class="insight-content">
+            <h4>{{insight.title}}</h4>
+            <p>{{insight.description}}</p>
+            <div class="insight-action" *ngIf="insight.action">
+              <button class="insight-btn" (click)="ejecutarAccion(insight.action)">
+                {{insight.actionText}}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Ingresos por Técnico (CanvasJS) -->
-    <div class="stats-section">
-      <h2 class="section-title">
-        <i class="material-icons">bar_chart</i>
-        Ingresos mensuales por técnico
-      </h2>
-      <div *ngIf="ingresosTecnicoLoading" class="loading">Cargando datos...</div>
-      <div *ngIf="ingresosTecnicoError" class="error">{{ ingresosTecnicoError }}</div>
-      <div class="chart-container">
-        <div id="ingresosPorTecnicoCanvas" class="chart"></div>
-        <div id="noDataIngresosPorTecnicoCanvas" class="no-data">
-          <i class="material-icons">info</i>
-          <p>No hay datos de ingresos por técnico para el año {{ selectedYear }}</p>
+  </main>
+</div>
+
+<!-- Modal Ver Reparaciones Urgentes -->
+<div
+  class="modal fade"
+  id="urgentesModal"
+  tabindex="-1"
+  aria-labelledby="urgentesModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Reparaciones Urgentes</h2>
+          <p class="modal-subtitle">Más de 7 días en taller</p>
         </div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="cerrarModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="urgentes-list">
+          <div class="urgente-item" *ngFor="let reparacion of getReparacionesUrgentesDetalle()">
+            <div class="urgente-info">
+              <div class="urgente-cliente">
+                <span class="material-icons">person</span>
+                <strong>{{reparacion.cliente.nombre}}</strong>
+              </div>
+              <div class="urgente-equipo">
+                <span class="material-icons">devices</span>
+                {{reparacion.equipo.marca}} {{reparacion.equipo.modelo}}
+              </div>
+              <div class="urgente-ingreso">
+                <span class="material-icons">calendar_today</span>
+                Ingreso: {{formatDate(reparacion.fechaIngreso)}}
+              </div>
+            </div>
+            <div class="urgente-estado">
+              <span class="dias-badge">{{getDiasEnTaller(reparacion)}} días</span>
+              <span class="estado-badge urgente">{{reparacion.estado}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="cerrarModal()"
+        >
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
       </div>
     </div>
   </div>

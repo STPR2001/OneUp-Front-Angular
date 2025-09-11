@@ -1,23 +1,26 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ClientsService } from 'src/app/services/clients.service';
 import { Router } from '@angular/router';
-import { tap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { tap, catchError, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { of, Subject, Subscription } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-clients',
   templateUrl: './clients.component.html',
   styleUrls: ['./clients.component.css'],
 })
-export class ClientsComponent implements OnInit {
+export class ClientsComponent implements OnInit, OnDestroy {
   @ViewChild('agregarClienteModal') modalCloseAdd: any;
   @ViewChild('ModificarClienteModal') modalCloseUpdate: any;
 
   nuevoCliente: any = {
+    nombre: '',
     email: '',
     cedula: '',
     direccion: '',
@@ -25,6 +28,7 @@ export class ClientsComponent implements OnInit {
     telefono: '',
   };
   clientes: any[] = [];
+  allClientes: any[] = []; // Array con todos los clientes para estadísticas
   clienteSeleccionado: any = {};
   searchTerm: string = '';
   errorAgregarCliente = false;
@@ -34,6 +38,10 @@ export class ClientsComponent implements OnInit {
   pageSize: number = 10;
   totalPages: number = 0;
   nombre: string = '';
+
+  // Para búsqueda con debounce
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,6 +53,31 @@ export class ClientsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getClientes();
+    this.getAllClientesForStats();
+    this.setupSearchDebounce();
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+  }
+
+  private setupSearchDebounce(): void {
+    this.searchSubscription = this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(searchTerm => {
+        this.nombre = searchTerm;
+        this.currentPage = 0;
+        this.getClientes();
+      });
+  }
+
+  onSearchInput(event: any): void {
+    this.searchSubject.next(event.target.value);
   }
 
   getClientes(): void {
@@ -61,6 +94,103 @@ export class ClientsComponent implements OnInit {
       );
   }
 
+  getAllClientesForStats(): void {
+    // Obtener todos los clientes para las estadísticas
+    this.clientsService
+      .getClientesActivos(0, 1000, '') // Obtener muchos clientes para estadísticas
+      .subscribe(
+        (data) => {
+          this.allClientes = data.content;
+        },
+        (error) => {
+          console.error('Error al obtener clientes para estadísticas:', error);
+        }
+      );
+  }
+
+  getTotalClientes(): number {
+    return this.allClientes.length;
+  }
+
+  getTotalPuntos(): number {
+    return this.allClientes.reduce((total, cliente) => total + (cliente.puntos || 0), 0);
+  }
+
+  getClientesNuevos(): number {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    
+    return this.allClientes.filter(cliente => {
+      if (cliente.fechaCreacion) {
+        const fechaCreacion = new Date(cliente.fechaCreacion);
+        return fechaCreacion.getMonth() === currentMonth && 
+               fechaCreacion.getFullYear() === currentYear;
+      }
+      return false;
+    }).length;
+  }
+
+  trackByClienteId(index: number, cliente: any): any {
+    return cliente.id;
+  }
+
+  verDetallesCliente(cliente: any): void {
+    this.clienteSeleccionado = { ...cliente };
+    const modalElement = document.getElementById('verDetallesClienteModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  cerrarModal(): void {
+    this.clienteSeleccionado = {};
+  }
+
+  exportarClientes(): void {
+    if (this.clientes.length === 0) {
+      return;
+    }
+
+    const csvHeaders = ['Nombre', 'Email', 'Teléfono', 'Cédula', 'Dirección', 'Puntos', 'Observaciones'];
+    const csvData = this.clientes.map(cliente => [
+      cliente.nombre || '',
+      cliente.email || '',
+      cliente.telefono || '',
+      cliente.cedula || '',
+      cliente.direccion || '',
+      cliente.puntos || 0,
+      cliente.observacion || ''
+    ]);
+
+    const csvContent = [csvHeaders, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `clientes_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  refrescarDatos(): void {
+    this.getClientes();
+    this.getAllClientesForStats();
+  }
+
+  formatearMoneda(valor: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP'
+    }).format(valor);
+  }
+
   desactivarCliente(cliente: any): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent);
     dialogRef.afterClosed().subscribe((result) => {
@@ -71,6 +201,7 @@ export class ClientsComponent implements OnInit {
             tap(() => {
               console.log('Cliente desactivado exitosamente');
               this.getClientes();
+              this.getAllClientesForStats();
             }),
             catchError((error) => {
               console.error('Error al desactivar cliente:', error);
@@ -97,12 +228,21 @@ export class ClientsComponent implements OnInit {
   }
 
   agregarCliente(): void {
+    if (!this.nuevoCliente.nombre || this.nuevoCliente.nombre.trim() === '') {
+      this.errorAgregarCliente = true;
+      setTimeout(() => {
+        this.errorAgregarCliente = false;
+      }, 5000);
+      return;
+    }
+
     this.clientsService
       .agregarCliente(this.nuevoCliente)
       .pipe(
         tap(() => {
           console.log('Cliente agregado exitosamente');
           this.nuevoCliente = {
+            nombre: '',
             email: '',
             cedula: '',
             direccion: '',
@@ -110,6 +250,7 @@ export class ClientsComponent implements OnInit {
             telefono: '',
           };
           this.getClientes();
+          this.getAllClientesForStats();
           this.modalCloseAdd.nativeElement.click();
         }),
         catchError((error) => {
@@ -125,6 +266,14 @@ export class ClientsComponent implements OnInit {
   }
 
   modificarCliente(): void {
+    if (!this.cliente.nombre || this.cliente.nombre.trim() === '') {
+      this.errorModificarCliente = true;
+      setTimeout(() => {
+        this.errorModificarCliente = false;
+      }, 5000);
+      return;
+    }
+
     this.clientsService
       .modificarCliente(this.cliente)
       .pipe(
@@ -132,6 +281,7 @@ export class ClientsComponent implements OnInit {
           console.log('Cliente modificado exitosamente');
           this.router.navigate(['/clients']);
           this.getClientes();
+          this.getAllClientesForStats();
           this.modalCloseUpdate.nativeElement.click();
         }),
         catchError((error) => {
@@ -171,6 +321,7 @@ export class ClientsComponent implements OnInit {
         this.clientsService.eliminarCliente(id).subscribe(
           () => {
             this.getClientes();
+            this.getAllClientesForStats();
           },
           (error) => {
             console.error('Error al eliminar cliente', error);
