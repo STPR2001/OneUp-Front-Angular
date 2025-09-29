@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { RepairsService } from 'src/app/services/repairs.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TecnicsService } from 'src/app/services/tecnics.service';
 import { ClientsService } from 'src/app/services/clients.service';
 import { EquipoService } from 'src/app/services/equipo.service';
@@ -12,6 +12,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { AddRepairComponent } from './add-repair/add-repair.component';
+import { ModifyRepairComponent } from './modify-repair/modify-repair.component';
 import * as QRCode from 'qrcode';
 import { PointsService } from '../../services/points.service';
 
@@ -27,6 +29,9 @@ export class RepairsComponent implements OnInit, OnDestroy {
   
   reparaciones: any[] = [];
   tecnicos: any[] = [];
+  // UI messages (estilo igual a Productos)
+  repairMessage: string | null = null;
+  isRepairSuccess: boolean = true;
   repuestos: any[] = [];
   equipos: any[] = [];
   clientes: any[] = [];
@@ -38,7 +43,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
   usarPuntos: boolean = false;
   puntosAUsar: number = 0;
   valorPunto: number = 5;
-  viewMode: 'cards' | 'table' = 'cards';
+  viewMode: 'cards' | 'table' = 'table';
   darkMode: boolean = false;
   
   reparacionSeleccionada: any = {
@@ -58,7 +63,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
   };
   
   searchTerm: string = '';
-  estadoFiltro: string = 'Todos';
+  estadoFiltro: string = 'En taller';
   estados: string[] = ['Todos', 'En taller', 'Finalizada', 'Entregada'];
   
   nuevaReparacion: any = {
@@ -118,6 +123,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
     private equipoService: EquipoService,
     private repuestosService: RepuestosService,
     private router: Router,
+    private route: ActivatedRoute,
     public dialog: MatDialog,
     private pointsService: PointsService
   ) {
@@ -132,6 +138,29 @@ export class RepairsComponent implements OnInit, OnDestroy {
     this.obtenerClientes();
     this.obtenerEquipos();
     this.obtenerRepuestos();
+
+    // Si viene desde el dashboard con query param, abrir el popup automáticamente
+    this.route.queryParamMap.subscribe(params => {
+      const openAdd = params.get('openAdd');
+      if (openAdd === '1') {
+        // Limpiar el query param de la URL después de abrir
+        setTimeout(() => {
+          this.abrirAgregarReparacion();
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { openAdd: null },
+            queryParamsHandling: 'merge',
+            replaceUrl: true
+          });
+        }, 0);
+      }
+
+      // Si viene q=#ID, prefijar el buscador por número de reparación
+      const q = params.get('q');
+      if (q && q.startsWith('#')) {
+        this.searchTerm = q.substring(1);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -150,10 +179,16 @@ export class RepairsComponent implements OnInit, OnDestroy {
   }
 
   private loadAllReparaciones(): void {
-    this.repairsService.getReparacionesActivas(0, 1000, '', '').subscribe(
-      (data) => {
-        this.allReparaciones = data.content;
-        this.filterReparaciones();
+    // Optimización: paginar en backend; por defecto solo "En taller"
+    const estado = this.estadoFiltro === 'Todos' ? undefined : this.estadoFiltro;
+    const nombre = (this.nombreCliente || '').trim() || undefined;
+    this.repairsService.getReparacionesActivas(0, this.pageSize, nombre, estado).subscribe(
+      (page) => {
+        const content = (page && page.content) ? page.content : [];
+        this.allReparaciones = content;
+        this.totalPages = (page && page.totalPages) ? page.totalPages : 1;
+        this.currentPage = (page && page.number) ? page.number : 0;
+        this.reparaciones = content;
       },
       (error) => {
         console.error('Error al obtener reparaciones:', error);
@@ -161,27 +196,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private filterReparaciones(): void {
-    let filtered = [...this.allReparaciones];
-    
-    const searchTerm = this.nombreCliente || '';
-    if (searchTerm.trim() !== '') {
-      filtered = filtered.filter(repair => 
-        repair.cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (this.estadoFiltro !== 'Todos') {
-      filtered = filtered.filter(repair => repair.estado === this.estadoFiltro);
-    }
-
-    this.filteredReparaciones = filtered;
-    
-    const startIndex = this.currentPage * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.reparaciones = this.filteredReparaciones.slice(startIndex, endIndex);
-    this.totalPages = Math.ceil(this.filteredReparaciones.length / this.pageSize);
-  }
+  private filterReparaciones(): void { this.loadAllReparaciones(); }
 
   onSearchInput(event: any): void {
     const searchValue = event.target.value || '';
@@ -197,7 +212,44 @@ export class RepairsComponent implements OnInit, OnDestroy {
 
   onPageChange(page: number): void {
     this.currentPage = page;
-    this.filterReparaciones();
+    // Consulta la página pedida
+    const estado = this.estadoFiltro === 'Todos' ? undefined : this.estadoFiltro;
+    const nombre = (this.nombreCliente || '').trim() || undefined;
+    this.repairsService.getReparacionesActivas(page, this.pageSize, nombre, estado).subscribe(
+      (pageData) => {
+        this.reparaciones = (pageData && pageData.content) ? pageData.content : [];
+        this.totalPages = (pageData && pageData.totalPages) ? pageData.totalPages : 1;
+      }
+    );
+  }
+
+  abrirAgregarReparacion(): void {
+    const dialogRef = this.dialog.open(AddRepairComponent, {
+      width: '900px',
+      panelClass: 'app-dialog',
+      disableClose: true,
+    });
+    dialogRef.afterClosed().subscribe((res) => {
+      if (res && res.refresh) {
+        this.currentPage = 0;
+        this.loadAllReparaciones();
+        this.isRepairSuccess = true;
+        this.repairMessage = 'Reparación agregada exitosamente';
+        this.clearRepairMessage();
+      }
+    });
+  }
+
+  abrirModificarReparacion(reparacion: any): void {
+    const dialogRef = this.dialog.open(ModifyRepairComponent, {
+      width: '900px',
+      panelClass: 'app-dialog',
+      disableClose: true,
+      data: { id: reparacion.id },
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      this.loadAllReparaciones();
+    });
   }
 
   desactivarReparacion(reparacion: any): void {
@@ -211,6 +263,9 @@ export class RepairsComponent implements OnInit, OnDestroy {
             tap(() => {
               console.log('Reparacion desactivada exitosamente');
               this.loadAllReparaciones();
+              this.isRepairSuccess = true;
+              this.repairMessage = 'Reparación desactivada exitosamente';
+              this.clearRepairMessage();
             }),
             catchError((error) => {
               console.error('Error al desactivar reparacion:', error);
@@ -229,10 +284,17 @@ export class RepairsComponent implements OnInit, OnDestroy {
       if (result) {
         this.repairsService.eliminarReparacion(id).subscribe(
           () => {
+            this.currentPage = 0;
             this.loadAllReparaciones();
+            this.isRepairSuccess = true;
+            this.repairMessage = 'Reparación eliminada exitosamente';
+            this.clearRepairMessage();
           },
           (error) => {
             console.error('Error al eliminar reparacion', error);
+            this.isRepairSuccess = false;
+            this.repairMessage = 'Error al eliminar la reparación';
+            this.clearRepairMessage();
           }
         );
       }
@@ -349,12 +411,18 @@ export class RepairsComponent implements OnInit, OnDestroy {
         () => {
           console.log('Nota agregada correctamente');
           this.loadAllReparaciones();
+          this.isRepairSuccess = true;
+          this.repairMessage = 'Nota agregada exitosamente';
+          this.clearRepairMessage();
           if (this.modalCloseUpdate) {
             this.modalCloseUpdate.nativeElement.click();
           }
         },
         (error) => {
           this.errorAgregarNotaReparacion = true;
+          this.isRepairSuccess = false;
+          this.repairMessage = 'Error al agregar la nota';
+          this.clearRepairMessage();
           console.error('Error al agregar nota a la reparación', error);
         }
       );
@@ -526,11 +594,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
     pdf.text(`${reparacion.cliente.nombre}`, 15, y);
     y += lineHeight;
 
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Dir:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.cliente.direccion || '---'}`, 15, y);
-    y += lineHeight;
+    // Dirección removida para todos los tickets
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Cel:', 2, y);
@@ -541,12 +605,6 @@ export class RepairsComponent implements OnInit, OnDestroy {
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Equipo:', 2, y);
-    y += lineHeight;
-
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('NS:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.equipo.numeroSerie}`, 15, y);
     y += lineHeight;
 
     pdf.setFont('Helvetica', 'bold');
@@ -581,63 +639,55 @@ export class RepairsComponent implements OnInit, OnDestroy {
     y += informeLines.length * lineHeight;
     y += 2;
 
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Fecha entrega:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${this.formatDate2(new Date())}`, 30, y);
-    y += lineHeight;
-    y += 2;
-
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Costos:', 2, y);
-    y += lineHeight;
-
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Costo MO:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(`$ ${reparacion.manoDeObra}`, 25, y);
-    y += lineHeight;
-
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Costo reps.:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(this.formatMoney(reparacion.entrega || 0), 25, y);
-    y += lineHeight;
-
-    if (this.usarPuntos && this.puntosAUsar > 0) {
+    // Mostrar secciones solo si la reparación está ENTREGADA
+    const isEntregadaPrint = String(reparacion.estado || '').toLowerCase() === 'entregada';
+    if (isEntregadaPrint) {
+      // Fecha de entrega
       pdf.setFont('Helvetica', 'bold');
-      pdf.text('Puntos usados:', 2, y);
+      pdf.text('Fecha entrega:', 2, y);
       pdf.setFont('Helvetica', 'normal');
-      pdf.text(`${this.puntosAUsar}`, 25, y);
+      const fechaEnt = reparacion.fechaEntrega ? new Date(reparacion.fechaEntrega) : new Date();
+      pdf.text(`${this.formatDate2(fechaEnt)}`, 30, y);
+      y += lineHeight;
+      y += 2;
+
+      // Costos detallados removidos para todos los tickets; se mostrará solo el total más abajo
+
+      if (this.usarPuntos && this.puntosAUsar > 0) {
+        pdf.setFont('Helvetica', 'bold');
+        pdf.text('Puntos usados:', 2, y);
+        pdf.setFont('Helvetica', 'normal');
+        pdf.text(`${this.puntosAUsar}`, 25, y);
+        y += lineHeight;
+
+        pdf.setFont('Helvetica', 'bold');
+        pdf.text('Descuento:', 2, y);
+        pdf.setFont('Helvetica', 'normal');
+        pdf.text(this.formatMoney(this.puntosAUsar * this.valorPunto), 25, y);
+        y += lineHeight;
+      }
+
+      // Totales y puntos
+      pdf.setFont('Helvetica', 'bold');
+      pdf.text('Costo total:', 2, y);
+      pdf.setFont('Helvetica', 'normal');
+      pdf.text(this.formatMoney(this.getTotal()), 25, y);
       y += lineHeight;
 
       pdf.setFont('Helvetica', 'bold');
-      pdf.text('Descuento:', 2, y);
+      pdf.text('Puntos gen:', 2, y);
       pdf.setFont('Helvetica', 'normal');
-      pdf.text(this.formatMoney(this.puntosAUsar * this.valorPunto), 25, y);
+      const puntosGeneradosImp = this.calcularPuntosDesdePesos((reparacion.manoDeObra || 0) + (reparacion.entrega || 0));
+      pdf.text(`${puntosGeneradosImp}`, 25, y);
+      y += lineHeight;
+
+      pdf.setFont('Helvetica', 'bold');
+      pdf.text('Total puntos:', 2, y);
+      pdf.setFont('Helvetica', 'normal');
+      const totalPuntosImp = reparacion.cliente.puntos || 0;
+      pdf.text(`${totalPuntosImp} ($${totalPuntosImp * 5})`, 25, y);
       y += lineHeight;
     }
-
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Costo total:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(`$ ${this.getTotal()}`, 25, y);
-    y += lineHeight;
-
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Puntos gen:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    const puntosGenerados = reparacion.estado === 'Entregada' ? 
-      this.calcularPuntosDesdePesos(reparacion.manoDeObra + reparacion.entrega) : 0;
-    pdf.text(`${puntosGenerados}`, 25, y);
-    y += lineHeight;
-
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Total puntos:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    const totalPuntos = reparacion.cliente.puntos || 0;
-    pdf.text(`${totalPuntos} ($${totalPuntos * 5})`, 25, y);
-    y += lineHeight;
 
     pdf.setFontSize(6);
     pdf.setFont('Helvetica', 'italic');
@@ -742,12 +792,6 @@ export class RepairsComponent implements OnInit, OnDestroy {
     y += lineHeight;
 
     pdf.setFont('Helvetica', 'bold');
-    pdf.text('Dir:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.cliente.direccion || '---'}`, 15, y);
-    y += lineHeight;
-
-    pdf.setFont('Helvetica', 'bold');
     pdf.text('Cel:', 2, y);
     pdf.setFont('Helvetica', 'normal');
     pdf.text(`${reparacion.cliente.telefono}`, 15, y);
@@ -758,11 +802,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
     pdf.text('Equipo:', 2, y);
     y += lineHeight;
 
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('NS:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(`${reparacion.equipo.numeroSerie}`, 15, y);
-    y += lineHeight;
+    // NS removido del ticket de finalización
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Tipo eq:', 2, y);
@@ -807,17 +847,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
     pdf.text('Costos:', 2, y);
     y += lineHeight;
 
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Costo MO:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(formatMoney(reparacion.manoDeObra || 0), 25, y);
-    y += lineHeight;
-
-    pdf.setFont('Helvetica', 'bold');
-    pdf.text('Costo reps.:', 2, y);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.text(formatMoney(reparacion.entrega || 0), 25, y);
-    y += lineHeight;
+    // Costos detallados removidos; se mostrará solo el total
 
     if (this.usarPuntos && this.puntosAUsar > 0) {
       pdf.setFont('Helvetica', 'bold');
@@ -836,9 +866,8 @@ export class RepairsComponent implements OnInit, OnDestroy {
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Costo total:', 2, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.text(`$ ${this.getTotal()}`, 25, y);
+    pdf.text(formatMoney(this.getTotal()), 25, y);
     y += lineHeight;
-    y += 2;
 
     pdf.setFont('Helvetica', 'bold');
     pdf.text('Puntos gen:', 2, y);
@@ -955,6 +984,9 @@ export class RepairsComponent implements OnInit, OnDestroy {
           tap(() => {
             console.log('Reparación finalizada exitosamente');
             this.loadAllReparaciones();
+            this.isRepairSuccess = true;
+            this.repairMessage = 'Reparación finalizada exitosamente';
+            this.clearRepairMessage();
             setTimeout(() => {
               this.generarPDFPrueba2SinNotaFinal(this.reparacionSeleccionada);
               this.modalCloseAdd.nativeElement.click();
@@ -983,6 +1015,18 @@ export class RepairsComponent implements OnInit, OnDestroy {
 
   formatMoney(amount: number): string {
     return `$ ${amount.toFixed(2)}`;
+  }
+
+  // Cost helpers for details modal
+  getCostoTotal(reparacion: any): number {
+    const mo = Number(reparacion?.manoDeObra || 0);
+    const rep = Number(reparacion?.entrega || 0);
+    return mo + rep;
+  }
+
+  getTotalFinal(reparacion: any): number {
+    const descuento = Number(reparacion?.descuentoPuntos || 0);
+    return Math.max(0, this.getCostoTotal(reparacion) - descuento);
   }
 
   getPendingCount(): number {
@@ -1020,5 +1064,11 @@ export class RepairsComponent implements OnInit, OnDestroy {
     if (savedDarkMode !== null) {
       this.darkMode = savedDarkMode === 'true';
     }
+  }
+
+  private clearRepairMessage(): void {
+    setTimeout(() => {
+      this.repairMessage = null;
+    }, 5000);
   }
 }

@@ -25,11 +25,14 @@ import { StatisticComponent } from './Components/statistic/statistic.component';
 import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
 import { SeguimientoComponent } from './Components/seguimiento/seguimiento.component';
 import { RestoreDataComponent } from './Components/restore-data/restore-data.component';
+import { ProductsComponent } from './Components/products/products.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { AccessDeniedComponent } from './Components/access-denied/access-denied.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +53,9 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     StatisticComponent,
     SeguimientoComponent,
     RestoreDataComponent,
+    ProductsComponent,
     ConfirmDialogComponent,
+    AccessDeniedComponent,
   ],
   imports: [
     BrowserModule,
@@ -65,7 +70,11 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     MatButtonModule,
     MatSnackBarModule,
   ],
-  providers: [AuthGuard],
+  providers: [
+    AuthGuard,
+    { provide: MatDialogRef, useValue: null },
+    { provide: MAT_DIALOG_DATA, useValue: {} },
+  ],
 
   bootstrap: [AppComponent],
 })

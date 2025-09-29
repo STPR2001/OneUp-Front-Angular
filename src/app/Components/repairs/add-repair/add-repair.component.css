@@ -15,6 +15,14 @@
   margin-top: 0px !important;
 }
 
+/* Encabezado y layout estilo modal limpio */
+.card {
+  border-radius: 12px;
+}
+.card-body {
+  padding-top: 10px;
+}
+
 /*MODALES */
 
 .modal-content {

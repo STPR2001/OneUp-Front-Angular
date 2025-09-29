@@ -55,6 +55,32 @@ export class ClientsComponent implements OnInit, OnDestroy {
     this.getClientes();
     this.getAllClientesForStats();
     this.setupSearchDebounce();
+
+    // Abrir modal automáticamente si viene con query param desde el dashboard
+    this.route.queryParamMap.subscribe(params => {
+      const openAdd = params.get('openAdd');
+      if (openAdd === '1') {
+        setTimeout(() => {
+          const btn = document.querySelector('[data-bs-target="#agregarClienteModal"]') as HTMLElement;
+          if (btn) {
+            btn.click();
+          } else {
+            const modalEl = document.getElementById('agregarClienteModal');
+            if (modalEl) {
+              const modal = new (window as any).bootstrap.Modal(modalEl);
+              modal.show();
+            }
+          }
+          // Limpiar el query param
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { openAdd: null },
+            queryParamsHandling: 'merge',
+            replaceUrl: true
+          });
+        }, 0);
+      }
+    });
   }
 
   ngOnDestroy(): void {

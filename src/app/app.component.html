@@ -104,6 +104,21 @@
 
         <a
           class="nav-item"
+          routerLink="/productos"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Gestión de Productos y Ventas' : null"
+          [attr.aria-label]="'Gestión de productos y ventas'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">store</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Productos</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
+
+        <a
+          class="nav-item"
           routerLink="/repuestos"
           routerLinkActive="active"
           (click)="closeSidebarOnMobile()"
@@ -186,8 +201,8 @@
         </a>
       </div>
 
-      <!-- Analytics Section -->
-      <div class="nav-section" *ngIf="isLogued()">
+      <!-- Analytics Section - Solo ADMIN -->
+      <div class="nav-section" *ngIf="isLogued() && canAccessAdminSections()">
         <h4 class="nav-section-title" *ngIf="sidebarOpen">Análisis</h4>
         
         <a
@@ -206,9 +221,24 @@
         </a>
       </div>
 
-      <!-- System Section -->
-      <div class="nav-section" *ngIf="isLogued()">
+      <!-- System Section - Solo ADMIN -->
+      <div class="nav-section" *ngIf="isLogued() && canAccessAdminSections()">
         <h4 class="nav-section-title" *ngIf="sidebarOpen">Sistema</h4>
+        
+        <a
+          class="nav-item"
+          routerLink="/configuracion"
+          routerLinkActive="active"
+          (click)="closeSidebarOnMobile()"
+          [attr.title]="!sidebarOpen ? 'Configuración del Sistema' : null"
+          [attr.aria-label]="'Configuración del sistema'"
+        >
+          <div class="nav-icon">
+            <span class="material-icons">settings</span>
+          </div>
+          <span class="nav-text" *ngIf="sidebarOpen">Configuración</span>
+          <div class="nav-indicator" *ngIf="!sidebarOpen"></div>
+        </a>
         
         <a
           class="nav-item"
@@ -232,11 +262,11 @@
       <!-- User Profile (if logged in) -->
       <div class="user-profile" *ngIf="isLogued() && sidebarOpen">
         <div class="user-avatar">
-          <span class="material-icons">account_circle</span>
+          <span class="material-icons">{{ isAdmin() ? 'admin_panel_settings' : 'engineering' }}</span>
         </div>
         <div class="user-info">
-          <p class="user-name">Administrador</p>
-          <p class="user-role">Gestión Técnica</p>
+          <p class="user-name">{{ authService.getUsername() }}</p>
+          <p class="user-role">{{ isAdmin() ? 'Administrador' : 'Técnico' }}</p>
         </div>
         <div class="user-status">
           <div class="status-indicator online"></div>
@@ -245,8 +275,8 @@
 
       <!-- Collapsed User Avatar -->
       <div class="user-avatar-collapsed" *ngIf="isLogued() && !sidebarOpen" 
-           [attr.title]="'Administrador - Gestión Técnica'">
-        <span class="material-icons">account_circle</span>
+           [attr.title]="authService.getUsername() + ' - ' + (isAdmin() ? 'Administrador' : 'Técnico')">
+        <span class="material-icons">{{ isAdmin() ? 'admin_panel_settings' : 'engineering' }}</span>
         <div class="status-indicator online"></div>
       </div>
 

@@ -410,15 +410,15 @@
               >
                 <span class="material-icons">clear</span>
               </button>
-          </div>
-
-          <button
-            type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
-            (click)="openAgregarTipoEquipoModal()"
-          >
-            +
-          </button>
+              <button
+                type="button"
+                class="btn btn-success ms-2 btnAdd"
+                (click)="openAgregarTipoEquipoModal()"
+                title="Agregar tipo"
+              >
+                +
+              </button>
+            </div>
         </div>
 
           <div class="form-group">
@@ -452,15 +452,15 @@
               >
                 <span class="material-icons">clear</span>
               </button>
-          </div>
-
-          <button
-            type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
-            (click)="openAgregarMarcaModal()"
-          >
-            +
-          </button>
+              <button
+                type="button"
+                class="btn btn-success ms-2 btnAdd"
+                (click)="openAgregarMarcaModal()"
+                title="Agregar marca"
+              >
+                +
+              </button>
+            </div>
         </div>
         </div>
 
@@ -495,14 +495,15 @@
               >
                 <span class="material-icons">clear</span>
               </button>
+              <button
+                type="button"
+                class="btn btn-success ms-2 btnAdd"
+                (click)="openAgregarModeloModal()"
+                title="Agregar modelo"
+              >
+                +
+              </button>
           </div>
-          <button
-            type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
-            (click)="openAgregarModeloModal()"
-          >
-            +
-          </button>
         </div>
 
           <div class="form-group">
@@ -545,7 +546,7 @@
   </div>
 </ng-template>
 
-<!-- modal modificar equipo -->
+<!-- modal modificar equipo (estilo unificado como Agregar) -->
 <ng-template #modificarEquipoModal let-modal>
   <div class="modal-content">
     <form (ngSubmit)="modificarEquipo()">
@@ -554,111 +555,59 @@
           <h2 class="modal-title">Modificar Equipo</h2>
           <p class="modal-subtitle">Actualizar información del equipo</p>
         </div>
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          (click)="modal.dismiss('Cross click')"
-        >
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
           <span class="material-icons">close</span>
         </button>
       </div>
       <div class="modal-body">
         <div class="form-row">
           <div class="form-group">
-            <label for="tipoEquipo">
+            <label for="tipoEquipoEdit">
               <span class="material-icons">category</span>
-              Tipo equipo <span class="requerido">*</span>
+              Tipo de equipo <span class="requerido">*</span>
             </label>
-            <select
-              id="tipoEquipo"
-              name="tipoEquipo"
-              [(ngModel)]="equipoSeleccionado.tipo_equipo.id"
-              required
-              class="form-control"
-            >
-              <option
-                *ngFor="let tipoEquipo of tiposEquipo"
-                [value]="tipoEquipo.id"
-              >
-                {{ tipoEquipo.nombre }}
-              </option>
-            </select>
-          <button
-            type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
-            (click)="openAgregarTipoEquipoModal()"
-          >
-            +
-          </button>
-        </div>
+            <div class="input-group">
+              <select id="tipoEquipoEdit" name="tipoEquipoEdit" [(ngModel)]="equipoSeleccionado.tipo_equipo.id" required class="form-control">
+                <option *ngFor="let tipoEquipo of tiposEquipo" [value]="tipoEquipo.id">{{ tipoEquipo.nombre }}</option>
+              </select>
+              <button type="button" class="btn btn-success ms-2 btnAdd" (click)="openAgregarTipoEquipoModal()" title="Agregar tipo">+</button>
+            </div>
+          </div>
 
           <div class="form-group">
-            <label for="marca">
+            <label for="marcaEdit">
               <span class="material-icons">business</span>
               Marca <span class="requerido">*</span>
             </label>
-            <select
-              id="marca"
-              name="marca"
-              [(ngModel)]="equipoSeleccionado.marca.id"
-              required
-              class="form-control"
-            >
-              <option *ngFor="let marca of marcas" [value]="marca.id">
-                {{ marca.nombre }}
-              </option>
-            </select>
-          <button
-            type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
-            (click)="openAgregarMarcaModal()"
-          >
-            +
-          </button>
-        </div>
+            <div class="input-group">
+              <select id="marcaEdit" name="marcaEdit" [(ngModel)]="equipoSeleccionado.marca.id" required class="form-control" (change)="onMarcaChange($event)">
+                <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
+              </select>
+              <button type="button" class="btn btn-success ms-2 btnAdd" (click)="openAgregarMarcaModal()" title="Agregar marca">+</button>
+            </div>
+          </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="modelo">
+            <label for="modeloEdit">
               <span class="material-icons">model_training</span>
               Modelo <span class="requerido">*</span>
             </label>
-            <select
-              id="modelo"
-              name="modelo"
-              [(ngModel)]="equipoSeleccionado.modelo.id"
-              required
-              class="form-control"
-            >
-              <option *ngFor="let modelo of modelos" [value]="modelo.id">
-                {{ modelo.nombre }}
-              </option>
-            </select>
-          <button
-            type="button"
-            class="btn btn-success ms-2 mb-1 align-self-end btnAdd"
-            (click)="openAgregarModeloModal()"
-          >
-            +
-          </button>
-        </div>
+            <div class="input-group">
+              <select id="modeloEdit" name="modeloEdit" [(ngModel)]="equipoSeleccionado.modelo.id" required class="form-control">
+                <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
+              </select>
+              <button type="button" class="btn btn-success ms-2 btnAdd" (click)="openAgregarModeloModal()" title="Agregar modelo">+</button>
+            </div>
+          </div>
 
           <div class="form-group">
-            <label for="numeroSerie">
+            <label for="numeroSerieEdit">
               <span class="material-icons">confirmation_number</span>
               Numero de serie <span class="requerido">*</span>
             </label>
-          <input
-            type="text"
-            id="numeroSerie"
-            name="numeroSerie"
-            [(ngModel)]="equipoSeleccionado.numeroSerie"
-            required
-              class="form-control"
-              placeholder="Ingrese el número de serie"
-          />
+            <input type="text" id="numeroSerieEdit" name="numeroSerieEdit" [(ngModel)]="equipoSeleccionado.numeroSerie" required class="form-control" placeholder="Ingrese el número de serie" />
           </div>
         </div>
 
@@ -668,17 +617,13 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="modal.dismiss('Close click')"
-        >
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Close click')">
           <span class="material-icons">close</span>
           Cerrar
         </button>
         <button type="submit" class="btn btn-primary">
           <span class="material-icons">save</span>
-          Modificar
+          Guardar cambios
         </button>
       </div>
     </form>

@@ -490,15 +490,26 @@
   margin-bottom: 2rem;
 }
 
-.charts-section.vista-todos .chart-group {
+.charts-section.vista-todos .reparaciones-group {
   grid-template-columns: 1fr;
 }
 
-.charts-section.vista-reparaciones .chart-group,
-.charts-section.vista-tecnicos .chart-group,
-.charts-section.vista-ingresos .chart-group {
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+.charts-section.vista-todos .tecnicos-group {
+  grid-template-columns: 1fr;
 }
+
+.charts-section.vista-todos .ingresos-group {
+  grid-template-columns: 1fr;
+}
+
+.charts-section.vista-todos .ingresos-tecnico-group {
+  grid-template-columns: 1fr;
+}
+
+.charts-section.vista-reparaciones .reparaciones-group { grid-template-columns: 1fr; }
+.charts-section.vista-tecnicos .tecnicos-group { grid-template-columns: 1fr; }
+.charts-section.vista-ingresos .ingresos-group { grid-template-columns: 1fr; }
+.charts-section.vista-ingresos .ingresos-tecnico-group { grid-template-columns: 1fr; }
 
 .chart-container {
   background: white;

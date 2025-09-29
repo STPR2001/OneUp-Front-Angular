@@ -1,25 +1,449 @@
-<div class="container">
-  <h2 class="h2-title">Configuración</h2>
-  <hr />
-  <div class="form-group">
-    <p>
-      Cargar marcas y modelos desde una API (Esto puede tardar unos segundos).
-    </p>
-    <div class="d-flex">
-      <button
-        class="btn btn-primary align-content-center btnCargarMarcasYModelos"
-        (click)="cargarMarcasModelos()"
-        [disabled]="isLoading"
-      >
-        Cargar marcas y modelos
-      </button>
-    </div>
-    <div *ngIf="isLoading" class="loading-indicator p-2">
-      Cargando datos, por favor espere...
-    </div>
-    <div *ngIf="successMessage" class="alert alert-success mt-3">
-      {{ successMessage }}
+<div class="config-container">
+  <!-- Header -->
+  <div class="config-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <span class="material-icons">settings</span>
+      </div>
+      <div class="header-text">
+        <h1 class="header-title">Configuración del Sistema</h1>
+        <p class="header-subtitle">Administra las configuraciones generales del sistema</p>
+      </div>
     </div>
   </div>
-  <hr />
+
+  <!-- Configuration Sections -->
+  <div class="config-content">
+    
+    <!-- Data Management Section -->
+    <div class="config-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <span class="material-icons">cloud_sync</span>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Gestión de Datos</h3>
+          <p class="section-description">Administra la sincronización y carga de datos del sistema</p>
+        </div>
+      </div>
+      
+      <div class="section-content">
+        <div class="config-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <span class="material-icons">inventory_2</span>
+            </div>
+            <div class="card-info">
+              <h4 class="card-title">Marcas y Modelos</h4>
+              <p class="card-description">Sincronizar catálogo de marcas y modelos desde la API externa</p>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="action-group">
+              <button
+                class="btn btn-primary"
+                (click)="cargarMarcasModelos()"
+                [disabled]="isLoading"
+              >
+                <span class="material-icons" *ngIf="!isLoading">sync</span>
+                <span class="material-icons spinning" *ngIf="isLoading">sync</span>
+                <span>{{ isLoading ? 'Sincronizando...' : 'Sincronizar Datos' }}</span>
+              </button>
+              
+              <div class="action-info">
+                <small class="text-muted">
+                  <span class="material-icons">info</span>
+                  Este proceso puede tardar unos segundos
+                </small>
+              </div>
+            </div>
+            
+            <!-- Loading State -->
+            <div *ngIf="isLoading" class="loading-state">
+              <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">Cargando datos, por favor espere...</p>
+                <div class="loading-progress">
+                  <div class="progress-bar"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Success/Error Messages -->
+            <div *ngIf="successMessage" class="alert" [class.alert-success]="isSuccess" [class.alert-error]="!isSuccess">
+              <div class="alert-content">
+                <span class="material-icons">{{ isSuccess ? 'check_circle' : 'error' }}</span>
+                <span class="alert-text">{{ successMessage }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Information Section -->
+    <div class="config-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <span class="material-icons">info</span>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Información del Sistema</h3>
+          <p class="section-description">Detalles técnicos y estado del sistema</p>
+        </div>
+      </div>
+      
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-header">
+              <span class="material-icons">computer</span>
+              <h4>Versión del Sistema</h4>
+            </div>
+            <div class="info-content">
+              <span class="info-value">OneUp v2.1.0</span>
+              <span class="info-label">Frontend Angular</span>
+            </div>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-header">
+              <span class="material-icons">storage</span>
+              <h4>Base de Datos</h4>
+            </div>
+            <div class="info-content">
+              <span class="info-value">Conectada</span>
+              <span class="info-label">Estado actual</span>
+            </div>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-header">
+              <span class="material-icons">schedule</span>
+              <h4>Última Sincronización</h4>
+            </div>
+            <div class="info-content">
+              <span class="info-value">{{ getLastSyncTime() }}</span>
+              <span class="info-label">Marcas y modelos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Management Section -->
+    <div class="config-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <span class="material-icons">people</span>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Gestión de Usuarios</h3>
+          <p class="section-description">Administra los usuarios del sistema y sus permisos</p>
+        </div>
+      </div>
+      
+      <div class="section-content">
+        <!-- Add New User Form -->
+        <div class="config-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <span class="material-icons">{{ editingUser ? 'edit' : 'person_add' }}</span>
+            </div>
+            <div class="card-info">
+              <h4 class="card-title">{{ editingUser ? 'Editar Usuario' : 'Agregar Nuevo Usuario' }}</h4>
+              <p class="card-description">{{ editingUser ? 'Modificar cuenta de usuario existente' : 'Crear una nueva cuenta de usuario en el sistema' }}</p>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <form id="userForm" [formGroup]="userForm" (ngSubmit)="addUser()" class="user-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="userName" class="form-label">
+                    <span class="material-icons">person</span>
+                    Nombre de Usuario
+                  </label>
+                  <input
+                    type="text"
+                    id="userName"
+                    class="form-control"
+                    formControlName="userName"
+                    placeholder="Ingrese el nombre de usuario"
+                    [class.is-invalid]="userForm.get('userName')?.invalid && userForm.get('userName')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="userForm.get('userName')?.invalid && userForm.get('userName')?.touched">
+                    <span *ngIf="userForm.get('userName')?.errors?.['required']">El nombre de usuario es requerido</span>
+                    <span *ngIf="userForm.get('userName')?.errors?.['minlength']">Mínimo 3 caracteres</span>
+                    <span *ngIf="userForm.get('userName')?.errors?.['pattern']">Solo letras, números y guiones bajos</span>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="userRole" class="form-label">
+                    <span class="material-icons">admin_panel_settings</span>
+                    Rol del Usuario
+                  </label>
+                  <select
+                    id="userRole"
+                    class="form-control"
+                    formControlName="userRole"
+                    [class.is-invalid]="userForm.get('userRole')?.invalid && userForm.get('userRole')?.touched"
+                  >
+                    <option value="" disabled>Seleccione un rol</option>
+                    <option *ngFor="let role of availableRoles" [value]="role.nombreRol">
+                      {{ getRoleDisplayName(role.nombreRol) }}
+                    </option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="userForm.get('userRole')?.invalid && userForm.get('userRole')?.touched">
+                    <span *ngIf="userForm.get('userRole')?.errors?.['required']">El rol es requerido</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="userPassword" class="form-label">
+                  <span class="material-icons">lock</span>
+                  Contraseña
+                </label>
+                <div class="password-input-group">
+                  <input
+                    [type]="showPassword ? 'text' : 'password'"
+                    id="userPassword"
+                    class="form-control"
+                    formControlName="userPassword"
+                    placeholder="Ingrese la contraseña"
+                    [class.is-invalid]="userForm.get('userPassword')?.invalid && userForm.get('userPassword')?.touched"
+                  />
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    (click)="togglePasswordVisibility()"
+                  >
+                    <span class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                  </button>
+                </div>
+                <div class="invalid-feedback" *ngIf="userForm.get('userPassword')?.invalid && userForm.get('userPassword')?.touched">
+                  <span *ngIf="userForm.get('userPassword')?.errors?.['required']">La contraseña es requerida</span>
+                  <span *ngIf="userForm.get('userPassword')?.errors?.['minlength']">Mínimo 6 caracteres</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="confirmPassword" class="form-label">
+                  <span class="material-icons">lock_outline</span>
+                  Confirmar Contraseña
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  class="form-control"
+                  formControlName="confirmPassword"
+                  placeholder="Confirme la contraseña"
+                  [class.is-invalid]="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched"
+                />
+                <div class="invalid-feedback" *ngIf="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched">
+                  <span *ngIf="userForm.get('confirmPassword')?.errors?.['required']">Confirme la contraseña</span>
+                  <span *ngIf="userForm.get('confirmPassword')?.errors?.['passwordMismatch']">Las contraseñas no coinciden</span>
+                </div>
+              </div>
+              
+              <div class="form-actions">
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="userForm.invalid || isAddingUser"
+                >
+                  <span class="material-icons" *ngIf="!isAddingUser">person_add</span>
+                  <span class="material-icons spinning" *ngIf="isAddingUser">sync</span>
+                  <span>{{ isAddingUser ? (editingUser ? 'Actualizando...' : 'Agregando...') : (editingUser ? 'Actualizar Usuario' : 'Agregar Usuario') }}</span>
+                </button>
+                
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="resetUserForm()"
+                >
+                  <span class="material-icons">clear</span>
+                  Limpiar
+                </button>
+              </div>
+            </form>
+            
+            <!-- Success/Error Messages -->
+            <div *ngIf="userMessage" class="alert" [class.alert-success]="isUserSuccess" [class.alert-error]="!isUserSuccess">
+              <div class="alert-content">
+                <span class="material-icons">{{ isUserSuccess ? 'check_circle' : 'error' }}</span>
+                <span class="alert-text">{{ userMessage }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Users List -->
+        <div class="config-card" *ngIf="users.length > 0">
+          <div class="card-header">
+            <div class="card-icon">
+              <span class="material-icons">group</span>
+            </div>
+            <div class="card-info">
+              <h4 class="card-title">Usuarios del Sistema</h4>
+              <p class="card-description">Lista de usuarios registrados y sus roles</p>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="users-list">
+              <div class="user-item" *ngFor="let user of users; trackBy: trackByUserId">
+                <div class="user-info">
+                  <div class="user-avatar">
+                    <span class="material-icons">{{ getRoleIcon(getUserMainRole(user)) }}</span>
+                  </div>
+                  <div class="user-details">
+                    <h5 class="user-name">{{ user.nombreUsuario }}</h5>
+                    <p class="user-role">{{ getRoleDisplayName(getUserMainRole(user)) }}</p>
+                  </div>
+                </div>
+                
+                <div class="user-status">
+                  <span class="status-badge" [class]="'status-' + (user.activo ? 'active' : 'inactive')">
+                    {{ user.activo ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </div>
+                
+                <div class="user-actions">
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    (click)="editUser(user)"
+                    [attr.title]="'Editar usuario'"
+                  >
+                    <span class="material-icons">edit</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    class="btn-icon danger"
+                    (click)="confirmDeleteUser(user)"
+                    [disabled]="!canDeleteUser(user)"
+                    [attr.title]="isCurrentUser(user) ? 'No puedes eliminar tu propia cuenta' : 'Eliminar usuario'"
+                    [class.disabled]="!canDeleteUser(user)"
+                  >
+                    <span class="material-icons">{{ isCurrentUser(user) ? 'block' : 'delete' }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="users.length === 0">
+          <div class="empty-icon">
+            <span class="material-icons">group_off</span>
+          </div>
+          <h4>No hay usuarios registrados</h4>
+          <p>Agrega el primer usuario para comenzar a gestionar el acceso al sistema</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Maintenance Section -->
+    <div class="config-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <span class="material-icons">build</span>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Mantenimiento</h3>
+          <p class="section-description">Herramientas de mantenimiento y optimización</p>
+        </div>
+      </div>
+      
+      <div class="section-content">
+        <div class="maintenance-actions">
+          <div class="maintenance-card">
+            <div class="maintenance-header">
+              <span class="material-icons">cached</span>
+              <div>
+                <h4>Limpiar Caché</h4>
+                <p>Elimina archivos temporales y optimiza el rendimiento</p>
+              </div>
+            </div>
+            <button class="btn btn-outline-primary" (click)="clearCache()">
+              <span class="material-icons">delete_sweep</span>
+              Limpiar
+            </button>
+          </div>
+          
+          <div class="maintenance-card">
+            <div class="maintenance-header">
+              <span class="material-icons">refresh</span>
+              <div>
+                <h4>Recargar Configuración</h4>
+                <p>Recarga la configuración del sistema desde el servidor</p>
+              </div>
+            </div>
+            <button class="btn btn-outline-secondary" (click)="reloadConfig()">
+              <span class="material-icons">refresh</span>
+              Recargar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<!-- Modal de confirmación para eliminar usuario -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="cancelDelete()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-icon danger">
+        <span class="material-icons">warning</span>
+      </div>
+      <h3 class="modal-title">Eliminar Usuario</h3>
+      <button class="modal-close-btn" (click)="cancelDelete()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="modal-content" *ngIf="userToDelete">
+      <div class="user-info-card">
+        <div class="user-avatar">
+          <span class="material-icons">{{ getRoleIcon(getUserMainRole(userToDelete)) }}</span>
+        </div>
+        <div class="user-details">
+          <h4 class="user-name">{{ userToDelete.nombreUsuario }}</h4>
+          <p class="user-role">{{ getRoleDisplayName(getUserMainRole(userToDelete)) }}</p>
+          <span class="status-badge" [class]="'status-' + (userToDelete.activo ? 'active' : 'inactive')">
+            {{ userToDelete.activo ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="warning-message">
+        <div class="warning-icon">
+          <span class="material-icons">error_outline</span>
+        </div>
+        <div class="warning-text">
+          <p><strong>¿Está seguro de que desea eliminar este usuario?</strong></p>
+          <p>Esta acción <strong>NO se puede deshacer</strong> y el usuario perderá acceso permanentemente al sistema.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="cancelDelete()">
+        <span class="material-icons">close</span>
+        Cancelar
+      </button>
+      <button class="btn btn-danger" (click)="confirmDelete()">
+        <span class="material-icons">delete_forever</span>
+        Eliminar Usuario
+      </button>
+    </div>
+  </div>
 </div>

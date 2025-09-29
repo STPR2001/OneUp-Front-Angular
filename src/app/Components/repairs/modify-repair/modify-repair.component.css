@@ -54,3 +54,11 @@ label {
 .text-danger {
   margin-top: 1rem;
 }
+
+/* Encabezado y layout estilo modal limpio */
+.card {
+  border-radius: 12px;
+}
+.card-body {
+  padding-top: 10px;
+}

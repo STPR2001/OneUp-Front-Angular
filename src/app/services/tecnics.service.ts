@@ -118,6 +118,14 @@ export class TecnicsService {
       .delete<any>(url, { headers })
       .pipe(catchError(this.handleError));
   }
+
+  getEstadisticasTecnico(id: number): Observable<any> {
+    const url = `${this.apiUrl}/${id}/estadisticas`;
+    const headers = this.getHeaders();
+    return this.http
+      .get<any>(url, { headers })
+      .pipe(catchError(this.handleError));
+  }
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Error desconocido';
     if (error.error instanceof ErrorEvent) {

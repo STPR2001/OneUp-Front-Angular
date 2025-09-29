@@ -260,8 +260,8 @@
 }
 
 .action-btn.edit {
-  background: rgba(13, 110, 253, 0.1);
-  color: #0d6efd;
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
 }
 
 .action-btn.delete {
@@ -444,11 +444,32 @@
 .repairs-table {
   background: white;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
+
+/* Alerts (mismo estilo que Productos) */
+.alert {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  border: 1px solid transparent;
+  z-index: 1001;
+  min-width: 300px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.alert-content {  display: flex;  align-items: center;  gap: 0.75rem; }
+.alert-success {  background: #ecfdf5;  border-color: #a7f3d0;  color: #065f46; }
+.alert-error {  background: #fef2f2;  border-color: #fecaca;  color: #991b1b; }
+.alert-text {  font-weight: 500; }
 
 .repairs-table table {
   width: 100%;
@@ -494,6 +515,50 @@
   vertical-align: middle;
   transition: all 0.3s ease;
   font-size: 0.95rem;
+}
+
+/* Ensure dropdown menus render above table rows */
+.repairs-table .dropdown,
+.repairs-table .dropup { 
+  position: relative; 
+}
+
+.repairs-table .dropdown-menu { 
+  z-index: 9999 !important;
+  position: absolute !important;
+  background: white !important;
+  border: 1px solid #dee2e6 !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
+  min-width: 160px !important;
+}
+
+.repairs-table .dropup .dropdown-menu {
+  top: auto !important;
+  bottom: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+}
+
+.repairs-table .actions-cell { 
+  position: relative; 
+  z-index: 1000; 
+}
+
+.repairs-table tbody { 
+  position: relative; 
+  z-index: 1; 
+}
+
+.repairs-table tr { 
+  position: relative; 
+  z-index: 2;
+}
+
+/* Force dropdown to stay visible when open */
+.repairs-table .dropdown.show .dropdown-menu,
+.repairs-table .dropup.show .dropdown-menu {
+  display: block !important;
+  z-index: 10000 !important;
 }
 
 .repairs-table td:first-child {

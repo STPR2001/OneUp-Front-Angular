@@ -517,6 +517,7 @@ export class EquipmentsComponent implements OnInit, OnDestroy {
       this.agregarEquipoModal,
       {
         ariaLabelledBy: 'modal-basic-title',
+        size: 'lg',
       }
     );
   }
@@ -555,6 +556,7 @@ export class EquipmentsComponent implements OnInit, OnDestroy {
     this.equipoSeleccionado = { ...equipo };
     this.modalService.open(this.modificarEquipoModal, {
       ariaLabelledBy: 'modal-basic-title',
+      size: 'lg',
     });
   }
 

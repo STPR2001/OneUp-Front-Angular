@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialogRef } from '@angular/material/dialog';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TecnicsService } from 'src/app/services/tecnics.service';
 import { ClientsService } from 'src/app/services/clients.service';
@@ -27,6 +28,8 @@ export class AddRepairComponent implements OnInit {
   @ViewChild('agregarModeloModal') agregarModeloModal: any;
 
   agregarEquipoModalRef: NgbModalRef | undefined;
+  agregarTecnicoModalRef: NgbModalRef | undefined;
+  agregarClienteModalRef: NgbModalRef | undefined;
   agregarTipoEquipoModalRef: NgbModalRef | undefined;
   agregarMarcaModalRef: NgbModalRef | undefined;
   agregarModeloModalRef: NgbModalRef | undefined;
@@ -50,7 +53,7 @@ export class AddRepairComponent implements OnInit {
   };
   errorAgregarReparacion: boolean = false;
 
-  nuevoTecnico: any = {};
+  nuevoTecnico: any = { nombre: '', email: '', telefono: '', especialidad: '', nivel: '' };
   errorAgregarTecnico = false;
 
   nuevoCliente: any = {
@@ -99,7 +102,8 @@ export class AddRepairComponent implements OnInit {
     private modalService: NgbModal,
     private BrandService: BrandService,
     private EquipmentTypeService: EquipmentTypeService,
-    private ModelService: ModelService
+    private ModelService: ModelService,
+    public dialogRef?: MatDialogRef<AddRepairComponent>
   ) {}
 
   ngOnInit(): void {
@@ -132,7 +136,12 @@ export class AddRepairComponent implements OnInit {
             saldo: 0,
           };
           //this.setFechaActual();
-          this.router.navigate(['/reparaciones']);
+          if (this.dialogRef) {
+            // Devuelve una bandera para que el padre refresque
+            this.dialogRef.close({ refresh: true });
+          } else {
+            this.router.navigate(['/reparaciones']);
+          }
         }),
         catchError((error) => {
           console.error('Error al agregar reparación:', error);
@@ -194,9 +203,11 @@ export class AddRepairComponent implements OnInit {
     this.TecnicsService.agregarTecnico(this.nuevoTecnico)
       .pipe(
         tap(() => {
-          this.nuevoTecnico = {};
+          this.nuevoTecnico = { nombre: '', email: '', telefono: '', especialidad: '', nivel: '' };
           this.obtenerTecnicos();
-          this.modalCloseAddTecnico.nativeElement.click();
+          if (this.agregarTecnicoModalRef) {
+            this.agregarTecnicoModalRef.close();
+          }
         }),
         catchError((error) => {
           console.error('Error al agregar tecnico:', error);
@@ -223,7 +234,9 @@ export class AddRepairComponent implements OnInit {
             telefono: '',
           };
           this.obtenerClientes();
-          this.modalCloseAddCliente.nativeElement.click();
+          if (this.agregarClienteModalRef) {
+            this.agregarClienteModalRef.close();
+          }
         }),
         catchError((error) => {
           console.error('Error al agregar cliente:', error);
@@ -397,6 +410,29 @@ export class AddRepairComponent implements OnInit {
       this.agregarEquipoModal,
       {
         ariaLabelledBy: 'modal-basic-title',
+        size: 'lg',
+      }
+    );
+  }
+
+  openAgregarTecnicoModal() {
+    this.agregarTecnicoModalRef = this.modalService.open(
+      this.modalCloseAddTecnico,
+      {
+        backdrop: 'static',
+        ariaLabelledBy: 'modal-basic-title',
+        size: 'lg',
+      }
+    );
+  }
+
+  openAgregarClienteModal() {
+    this.agregarClienteModalRef = this.modalService.open(
+      this.modalCloseAddCliente,
+      {
+        backdrop: 'static',
+        ariaLabelledBy: 'modal-basic-title',
+        size: 'lg',
       }
     );
   }

@@ -273,7 +273,7 @@
         </div>
       </div>
 
-      <!-- Ingresos Charts -->
+      <!-- Ingresos Mensuales -->
       <div class="chart-group ingresos-group" *ngIf="vistaSeleccionada === 'todos' || vistaSeleccionada === 'ingresos'">
         <div class="chart-container">
           <div class="chart-header">
@@ -299,7 +299,10 @@
             </div>
           </div>
         </div>
+      </div>
 
+      <!-- Ingresos por Técnico -->
+      <div class="chart-group ingresos-tecnico-group" *ngIf="vistaSeleccionada === 'todos' || vistaSeleccionada === 'ingresos'">
         <div class="chart-container">
           <div class="chart-header">
             <h3>

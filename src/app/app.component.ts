@@ -1,5 +1,6 @@
 import { Component, ViewChild, OnInit, HostListener } from '@angular/core';
 import { AuthService } from './services/auth/auth.service';
+import { LoginService } from './services/auth/login.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
@@ -24,7 +25,12 @@ export class AppComponent implements OnInit {
       shareReplay()
     );
 
-  constructor(private authService: AuthService, private router: Router, private breakpointObserver: BreakpointObserver) {
+  constructor(
+    public authService: AuthService, // Hacer público para usar en el template
+    private loginService: LoginService,
+    private router: Router,
+    private breakpointObserver: BreakpointObserver
+  ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentRoute = event.urlAfterRedirects;
@@ -51,10 +57,29 @@ export class AppComponent implements OnInit {
     return this.authService.getAuthenticatedToken() !== '';
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.modalCerrarSesion.nativeElement.click();
-    this.router.navigate(['/login']);
+  async logout(): Promise<void> {
+    try {
+      // Limpiar la sesión
+      this.authService.logout();
+      
+      // Resetear el estado del usuario
+      this.loginService.resetUserState();
+      
+      // Cerrar el modal
+      this.modalCerrarSesion.nativeElement.click();
+      
+      // Redirigir al login y limpiar el historial de navegación
+      await this.router.navigate(['/login'], {
+        replaceUrl: true // Reemplaza la entrada actual en el historial
+      });
+      
+      // Recargar la aplicación para asegurar un estado limpio
+      window.location.reload();
+    } catch (error) {
+      console.error('Error durante el cierre de sesión:', error);
+      // Forzar redirección al login en caso de error
+      window.location.href = '/login';
+    }
   }
 
   toggleSidebar() {
@@ -98,5 +123,19 @@ export class AppComponent implements OnInit {
         drawer.close();
       }
     });
+  }
+
+  // Métodos para verificar roles en el template
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  isTecnico(): boolean {
+    return this.authService.isTecnico();
+  }
+
+  // Método para verificar si puede acceder a secciones administrativas
+  canAccessAdminSections(): boolean {
+    return this.authService.isAdmin();
   }
 }

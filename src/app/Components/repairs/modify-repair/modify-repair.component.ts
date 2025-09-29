@@ -11,6 +11,8 @@ import { ModelService } from 'src/app/services/model.service';
 import { tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Inject } from '@angular/core';
 import { Observable, debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 @Component({
@@ -28,6 +30,8 @@ export class ModifyRepairComponent implements OnInit {
   @ViewChild('agregarModeloModal') agregarModeloModal: any;
 
   agregarEquipoModalRef: NgbModalRef | undefined;
+  agregarTecnicoModalRef: NgbModalRef | undefined;
+  agregarClienteModalRef: NgbModalRef | undefined;
   agregarTipoEquipoModalRef: NgbModalRef | undefined;
   agregarMarcaModalRef: NgbModalRef | undefined;
   agregarModeloModalRef: NgbModalRef | undefined;
@@ -51,7 +55,7 @@ export class ModifyRepairComponent implements OnInit {
   };
   errorModificarReparacion = false;
 
-  nuevoTecnico: any = {};
+  nuevoTecnico: any = { nombre: '', email: '', telefono: '', especialidad: '', nivel: '' };
   errorAgregarTecnico = false;
 
   nuevoCliente: any = {
@@ -100,7 +104,9 @@ export class ModifyRepairComponent implements OnInit {
     private modalService: NgbModal,
     private BrandService: BrandService,
     private EquipmentTypeService: EquipmentTypeService,
-    private ModelService: ModelService
+    private ModelService: ModelService,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef?: MatDialogRef<ModifyRepairComponent>
   ) {}
 
   ngOnInit(): void {
@@ -108,9 +114,11 @@ export class ModifyRepairComponent implements OnInit {
     this.obtenerTecnicos();
     this.obtenerClientes();
     this.obtenerEquipos();
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.cargarReparacion(id);
+    const idByRoute = this.route.snapshot.paramMap.get('id');
+    const idByDialog = this.data?.id;
+    const finalId = idByDialog ?? idByRoute;
+    if (finalId) {
+      this.cargarReparacion(finalId);
     }
     this.getEquipos();
     this.getMarcas();
@@ -138,7 +146,11 @@ export class ModifyRepairComponent implements OnInit {
       .pipe(
         tap(() => {
           console.log('Reparación modificada exitosamente');
-          this.router.navigate(['/reparaciones']);
+          if (this.dialogRef) {
+            this.dialogRef.close(true);
+          } else {
+            this.router.navigate(['/reparaciones']);
+          }
         }),
         catchError((error) => {
           console.error('Error al modificar reparación:', error);
@@ -199,9 +211,11 @@ export class ModifyRepairComponent implements OnInit {
     this.TecnicsService.agregarTecnico(this.nuevoTecnico)
       .pipe(
         tap(() => {
-          this.nuevoTecnico = {};
+          this.nuevoTecnico = { nombre: '', email: '', telefono: '', especialidad: '', nivel: '' };
           this.obtenerTecnicos();
-          this.modalCloseAddTecnico.nativeElement.click();
+          if (this.agregarTecnicoModalRef) {
+            this.agregarTecnicoModalRef.close();
+          }
         }),
         catchError((error) => {
           console.error('Error al agregar tecnico:', error);
@@ -228,7 +242,9 @@ export class ModifyRepairComponent implements OnInit {
             telefono: '',
           };
           this.obtenerClientes();
-          this.modalCloseAddCliente.nativeElement.click();
+          if (this.agregarClienteModalRef) {
+            this.agregarClienteModalRef.close();
+          }
         }),
         catchError((error) => {
           console.error('Error al agregar cliente:', error);
@@ -400,6 +416,29 @@ export class ModifyRepairComponent implements OnInit {
       this.agregarEquipoModal,
       {
         ariaLabelledBy: 'modal-basic-title',
+        size: 'lg',
+      }
+    );
+  }
+
+  openAgregarTecnicoModal() {
+    this.agregarTecnicoModalRef = this.modalService.open(
+      this.modalCloseAddTecnico,
+      {
+        backdrop: 'static',
+        ariaLabelledBy: 'modal-basic-title',
+        size: 'lg',
+      }
+    );
+  }
+
+  openAgregarClienteModal() {
+    this.agregarClienteModalRef = this.modalService.open(
+      this.modalCloseAddCliente,
+      {
+        backdrop: 'static',
+        ariaLabelledBy: 'modal-basic-title',
+        size: 'lg',
       }
     );
   }

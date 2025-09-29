@@ -1,0 +1,770 @@
+<div class="products-container">
+  <!-- Header estilo Clientes -->
+  <div class="page-header">
+    <div class="header-titles">
+      <h1 class="main-title">Gestión de Productos</h1>
+      <p class="subtitle">Administración y control de inventario y ventas</p>
+    </div>
+    <button class="btn-primary add-client" (click)="showProductModal = true; resetProductForm()">
+      <span class="material-icons">add</span>
+      Nuevo Producto
+    </button>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'products'"
+      (click)="setActiveTab('products')"
+    >
+      <span class="material-icons">inventory</span>
+      <span>Productos</span>
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'sales'"
+      (click)="setActiveTab('sales')"
+    >
+      <span class="material-icons">point_of_sale</span>
+      <span>Ventas</span>
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'history'"
+      (click)="setActiveTab('history')"
+    >
+      <span class="material-icons">history</span>
+      <span>Historial</span>
+    </button>
+  </div>
+
+  <!-- Products Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'products'">
+    <!-- Stats similares a Clientes -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon clients">
+          <span class="material-icons">inventory_2</span>
+        </div>
+        <div class="stat-info">
+          <h3>Total Productos</h3>
+          <p class="stat-number">{{ getTotalProducts() }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon points">
+          <span class="material-icons">warehouse</span>
+        </div>
+        <div class="stat-info">
+          <h3>Stock Total</h3>
+          <p class="stat-number">{{ getTotalStock() }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon new-clients">
+          <span class="material-icons">warning</span>
+        </div>
+        <div class="stat-info">
+          <h3>Stock Bajo</h3>
+          <p class="stat-number">{{ getLowStockCount() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros estilo Clientes -->
+    <div class="filters-section">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          [(ngModel)]="productSearchTerm"
+          (input)="onPageChange(0)"
+        />
+      </div>
+      <div class="export-actions">
+        <button class="export-btn" (click)="exportProducts()" title="Exportar a CSV">
+          <span class="material-icons">download</span>
+          Exportar
+        </button>
+        <button class="refresh-btn" (click)="refreshProducts()" title="Actualizar datos">
+          <span class="material-icons">refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid" *ngIf="paginatedProducts.length > 0">
+      <div class="product-card" *ngFor="let product of paginatedProducts; trackBy: trackByProductId">
+        <div class="product-header">
+          <div class="product-category">
+            <span class="material-icons">{{ getCategoryIcon(product.category) }}</span>
+            <span>{{ getCategoryDisplayName(product.category) }}</span>
+          </div>
+          <div class="product-status" [class]="'status-' + product.status">
+            {{ product.status === 'active' ? 'Activo' : 'Inactivo' }}
+          </div>
+        </div>
+        
+        <div class="product-content">
+          <h3 class="product-name">{{ product.name }}</h3>
+          <p class="product-description">{{ product.description }}</p>
+          
+          <div class="product-info">
+            <div class="info-item">
+              <span class="info-label">Precio:</span>
+              <span class="info-value price">${{ product.price.toFixed(2) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Stock:</span>
+              <span class="info-value stock" [class.low-stock]="product.stock <= 5">
+                {{ product.stock }} unidades
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="product-actions">
+          <button class="btn-icon" (click)="editProduct(product)" title="Editar">
+            <span class="material-icons">edit</span>
+          </button>
+          <button class="btn-icon danger" (click)="deleteProduct(product)" title="Eliminar">
+            <span class="material-icons">delete</span>
+          </button>
+          <button 
+            class="btn-icon primary" 
+            (click)="addToSale(product); setActiveTab('sales')" 
+            title="Agregar a venta"
+            [disabled]="product.stock <= 0"
+          >
+            <span class="material-icons">shopping_cart_checkout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredProducts.length === 0">
+      <div class="empty-icon">
+        <span class="material-icons">inventory_2</span>
+      </div>
+      <h3>No hay productos para mostrar</h3>
+      <p *ngIf="!productSearchTerm">Agrega tu primer producto para comenzar a gestionar el inventario</p>
+      <p *ngIf="productSearchTerm">Intenta cambiar el término de búsqueda</p>
+      <button class="btn btn-primary" (click)="showProductModal = true; resetProductForm()">
+        <span class="material-icons">add</span>
+        Agregar Primer Producto
+      </button>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination" *ngIf="filteredProducts.length > 0">
+      <button
+        class="page-btn"
+        (click)="onPageChange(currentPage - 1)"
+        [disabled]="currentPage === 0"
+        title="Página anterior"
+      >
+        <span class="material-icons">chevron_left</span>
+      </button>
+
+      <div class="page-numbers">
+        <button class="page-btn" [class.active]="currentPage === 0" (click)="onPageChange(0)" *ngIf="totalPages > 0">1</button>
+        <button *ngIf="currentPage > 1" class="page-btn" (click)="onPageChange(currentPage - 1)">{{ currentPage }}</button>
+        <button *ngIf="currentPage != 0 && totalPages != currentPage + 1" class="page-btn active" [disabled]="true">{{ currentPage + 1 }}</button>
+        <button *ngIf="totalPages != currentPage + 2 && totalPages >= currentPage + 2" class="page-btn" (click)="onPageChange(currentPage + 1)">{{ currentPage + 2 }}</button>
+        <button *ngIf="totalPages > 1" class="page-btn" [class.active]="currentPage === totalPages - 1" (click)="onPageChange(totalPages - 1)">{{ totalPages }}</button>
+      </div>
+
+      <button
+        class="page-btn"
+        (click)="onPageChange(currentPage + 1)"
+        [disabled]="currentPage === totalPages - 1 || totalPages === 0"
+        title="Página siguiente"
+      >
+        <span class="material-icons">chevron_right</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sales Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'sales'">
+    <div class="sales-layout">
+      <!-- Products for Sale -->
+      <div class="products-section">
+        <h3>Productos Disponibles</h3>
+      <div class="input-group" style="margin-bottom: 0.75rem;">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Buscar para agregar a la venta..."
+          [(ngModel)]="salesSearchTerm"
+        />
+      </div>
+        <div class="products-list">
+        <div 
+            class="product-item" 
+          *ngFor="let product of filteredProductsForSale" 
+            [class.out-of-stock]="product.stock <= 0"
+            (click)="addToSale(product)"
+          >
+            <div class="item-icon">
+              <span class="material-icons">{{ getCategoryIcon(product.category) }}</span>
+            </div>
+            <div class="item-info">
+              <h4>{{ product.name }}</h4>
+              <p>${{ product.price.toFixed(2) }} - Stock: {{ product.stock }}</p>
+            </div>
+            <div class="item-action">
+              <span class="material-icons" *ngIf="product.stock > 0">add_shopping_cart</span>
+              <span class="material-icons" *ngIf="product.stock <= 0">block</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Sale -->
+      <div class="sale-section">
+        <div class="sale-header">
+          <h3>Venta Actual</h3>
+          <button 
+            class="btn btn-success" 
+            (click)="showSaleModal = true"
+            [disabled]="currentSale.length === 0"
+          >
+            <span class="material-icons">point_of_sale</span>
+            Procesar Venta
+          </button>
+        </div>
+
+        <div class="sale-items" *ngIf="currentSale.length > 0">
+          <div class="sale-item" *ngFor="let item of currentSale">
+            <div class="item-details">
+              <h4>{{ item.product.name }}</h4>
+              <p>${{ item.product.price.toFixed(2) }} c/u</p>
+            </div>
+            <div class="item-quantity">
+              <button class="qty-btn" (click)="updateQuantity(item, item.quantity - 1)">-</button>
+              <span class="quantity">{{ item.quantity }}</span>
+              <button class="qty-btn" (click)="updateQuantity(item, item.quantity + 1)">+</button>
+            </div>
+            <div class="item-total">
+              <span class="subtotal">${{ item.subtotal.toFixed(2) }}</span>
+              <button class="remove-btn" (click)="removeFromSale(item)">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sale-summary" *ngIf="currentSale.length > 0">
+          <div class="summary-row">
+            <span>Subtotal:</span>
+            <span>${{ getSaleSubtotal().toFixed(2) }}</span>
+          </div>
+          <div class="summary-row" *ngIf="getPointsDiscount() > 0">
+            <span>Descuento con puntos:</span>
+            <span class="discount">-${{ getPointsDiscount().toFixed(2) }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total:</span>
+            <span>${{ getSaleTotal().toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <div class="empty-sale" *ngIf="currentSale.length === 0">
+          <div class="empty-icon">
+            <span class="material-icons">shopping_cart</span>
+          </div>
+          <p>No hay productos en la venta actual</p>
+          <p>Selecciona productos para agregar</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'history'">
+    <div class="content-header">
+      <h2>Historial de Ventas</h2>
+    </div>
+
+    <div class="sales-history" *ngIf="salesHistory.length > 0">
+      <div class="history-item" *ngFor="let sale of salesHistory">
+        <div class="sale-info">
+          <div class="sale-id">Venta #{{ sale.id }}</div>
+          <div class="sale-date">{{ sale.date | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div class="sale-client" *ngIf="sale.client">
+            Cliente: {{ sale.client.name }} ({{ sale.client.dni }})
+          </div>
+          <div class="sale-products">
+            Productos: {{ getSaleItemsSummary(sale) }}
+          </div>
+        </div>
+        <div class="sale-details">
+          <div class="sale-items-count">{{ sale.items.length }} producto(s)</div>
+          <div class="sale-total">${{ sale.total.toFixed(2) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="salesHistory.length === 0">
+      <div class="empty-icon">
+        <span class="material-icons">receipt_long</span>
+      </div>
+      <h3>No hay ventas registradas</h3>
+      <p>Las ventas procesadas aparecerán aquí</p>
+    </div>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div *ngIf="productMessage" class="alert" [class.alert-success]="isProductSuccess" [class.alert-error]="!isProductSuccess">
+    <div class="alert-content">
+      <span class="material-icons">{{ isProductSuccess ? 'check_circle' : 'error' }}</span>
+      <span class="alert-text">{{ productMessage }}</span>
+    </div>
+  </div>
+
+  <div *ngIf="saleMessage" class="alert" [class.alert-success]="isSaleSuccess" [class.alert-error]="!isSaleSuccess">
+    <div class="alert-content">
+      <span class="material-icons">{{ isSaleSuccess ? 'check_circle' : 'error' }}</span>
+      <span class="alert-text">{{ saleMessage }}</span>
+    </div>
+  </div>
+
+  <div *ngIf="clientMessage" class="alert" [class.alert-success]="isClientSuccess" [class.alert-error]="!isClientSuccess">
+    <div class="alert-content">
+      <span class="material-icons">{{ isClientSuccess ? 'check_circle' : 'error' }}</span>
+      <span class="alert-text">{{ clientMessage }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Product Modal -->
+<div class="modal-overlay" *ngIf="showProductModal" (click)="showProductModal = false">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ editingProduct ? 'Editar Producto' : 'Agregar Producto' }}</h3>
+      <button class="modal-close" (click)="showProductModal = false">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form [formGroup]="productForm" (ngSubmit)="addProduct()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="productName" class="form-label">
+              <span class="material-icons">inventory</span>
+              Nombre del Producto
+            </label>
+            <input
+              type="text"
+              id="productName"
+              class="form-control"
+              formControlName="name"
+              placeholder="Ej: Cargador USB-C"
+              [class.is-invalid]="productForm.get('name')?.invalid && productForm.get('name')?.touched"
+            />
+            <div class="invalid-feedback" *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched">
+              <span *ngIf="productForm.get('name')?.errors?.['required']">El nombre es requerido</span>
+              <span *ngIf="productForm.get('name')?.errors?.['minlength']">Mínimo 3 caracteres</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="productCategory" class="form-label">
+              <span class="material-icons">category</span>
+              Categoría
+            </label>
+            <select
+              id="productCategory"
+              class="form-control"
+              formControlName="category"
+              [class.is-invalid]="productForm.get('category')?.invalid && productForm.get('category')?.touched"
+            >
+              <option value="" disabled>Seleccione una categoría</option>
+              <option value="producto">Producto</option>
+              <option value="accesorio">Accesorio</option>
+              <option value="servicio">Servicio</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="productForm.get('category')?.invalid && productForm.get('category')?.touched">
+              La categoría es requerida
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="productDescription" class="form-label">
+            <span class="material-icons">description</span>
+            Descripción
+          </label>
+          <textarea
+            id="productDescription"
+            class="form-control"
+            formControlName="description"
+            placeholder="Descripción detallada del producto"
+            rows="3"
+            [class.is-invalid]="productForm.get('description')?.invalid && productForm.get('description')?.touched"
+          ></textarea>
+          <div class="invalid-feedback" *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched">
+            La descripción es requerida
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="productPrice" class="form-label">
+              <span class="material-icons">attach_money</span>
+              Precio
+            </label>
+            <input
+              type="number"
+              id="productPrice"
+              class="form-control"
+              formControlName="price"
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              [class.is-invalid]="productForm.get('price')?.invalid && productForm.get('price')?.touched"
+            />
+            <div class="invalid-feedback" *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched">
+              <span *ngIf="productForm.get('price')?.errors?.['required']">El precio es requerido</span>
+              <span *ngIf="productForm.get('price')?.errors?.['min']">El precio debe ser mayor a 0</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="productStock" class="form-label">
+              <span class="material-icons">inventory_2</span>
+              Stock
+            </label>
+            <input
+              type="number"
+              id="productStock"
+              class="form-control"
+              formControlName="stock"
+              placeholder="0"
+              min="0"
+              [class.is-invalid]="productForm.get('stock')?.invalid && productForm.get('stock')?.touched"
+            />
+            <div class="invalid-feedback" *ngIf="productForm.get('stock')?.invalid && productForm.get('stock')?.touched">
+              <span *ngIf="productForm.get('stock')?.errors?.['required']">El stock es requerido</span>
+              <span *ngIf="productForm.get('stock')?.errors?.['min']">El stock no puede ser negativo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="showProductModal = false"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="productForm.invalid || isAddingProduct"
+          >
+            <span class="material-icons" *ngIf="!isAddingProduct">{{ editingProduct ? 'save' : 'add' }}</span>
+            <span class="material-icons spinning" *ngIf="isAddingProduct">sync</span>
+            <span>{{ isAddingProduct ? 'Guardando...' : (editingProduct ? 'Actualizar' : 'Agregar') }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Sale Modal -->
+<div class="modal-overlay" *ngIf="showSaleModal" (click)="showSaleModal = false">
+  <div class="modal-content large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Procesar Venta</h3>
+      <button class="modal-close" (click)="showSaleModal = false">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form [formGroup]="saleForm">
+        <!-- Client Selection -->
+        <div class="client-section">
+          <div class="client-header">
+            <h4>Información del Cliente</h4>
+            <button 
+              type="button" 
+              class="btn btn-outline-primary btn-sm"
+              (click)="toggleNewClientForm()"
+            >
+              <span class="material-icons">person_add</span>
+              {{ showNewClientForm ? 'Cancelar' : 'Nuevo Cliente' }}
+            </button>
+          </div>
+          
+          <!-- Client Search -->
+          <div class="client-search" *ngIf="!showNewClientForm">
+            <div class="form-group">
+              <label for="clientSearch" class="form-label">
+                <span class="material-icons">search</span>
+                Buscar Cliente (Opcional)
+              </label>
+              <div class="search-input-group">
+                <input
+                  type="text"
+                  id="clientSearch"
+                  class="form-control"
+                  formControlName="clientSearch"
+                  placeholder="Buscar por nombre o DNI..."
+                  (input)="onClientSearch()"
+                  (focus)="onClientSearch()"
+                />
+                <button 
+                  type="button" 
+                  class="clear-search-btn" 
+                  *ngIf="saleForm.get('clientSearch')?.value"
+                  (click)="clearClientSelection()"
+                  title="Limpiar selección"
+                >
+                  <span class="material-icons">close</span>
+                </button>
+              </div>
+              
+              <!-- Client Dropdown -->
+              <div class="client-dropdown" *ngIf="showClientDropdown && !selectedClient">
+                <div 
+                  class="client-option" 
+                  *ngFor="let client of filteredClients"
+                  (click)="selectClient(client)"
+                >
+                  <div class="option-info">
+                    <span class="client-name">{{ client.name }}</span>
+                    <span class="client-dni">DNI: {{ client.dni }}</span>
+                  </div>
+                  <div class="option-points">
+                    <span class="points-badge">{{ client.points }} pts</span>
+                  </div>
+                </div>
+                
+                <div class="no-results" *ngIf="filteredClients.length === 0 && saleForm.get('clientSearch')?.value?.length >= 2">
+                  <span class="material-icons">search_off</span>
+                  <span>No se encontraron clientes</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Selected Client Info -->
+            <div class="client-info" *ngIf="selectedClient">
+              <div class="client-card">
+                <div class="client-details">
+                  <div class="client-avatar">
+                    <span class="material-icons">person</span>
+                  </div>
+                  <div class="client-data">
+                    <h5>{{ selectedClient.name }}</h5>
+                    <p>DNI: {{ selectedClient.dni }}</p>
+                    <p class="points">{{ selectedClient.points }} puntos disponibles</p>
+                  </div>
+                </div>
+                <div class="points-toggle">
+                  <label class="checkbox-label" [class.disabled]="!selectedClient.points || selectedClient.points === 0">
+                    <input 
+                      type="checkbox" 
+                      formControlName="usePoints"
+                      [disabled]="!selectedClient.points || selectedClient.points === 0"
+                    >
+                    <span class="material-icons" style="font-size: 20px;" [style.color]="selectedClient.points > 0 ? '#10b981' : '#9ca3af'">stars</span>
+                    Usar puntos para descuento
+                    <span *ngIf="!selectedClient.points || selectedClient.points === 0" class="no-points-message">
+                      (Sin puntos disponibles)
+                    </span>
+                  </label>
+                  
+                  <div class="points-input-section" *ngIf="saleForm.get('usePoints')?.value">
+                    <label for="pointsToUse" class="form-label">
+                      <span class="material-icons" style="font-size: 16px; margin-right: 5px;">edit</span>
+                      Puntos a utilizar:
+                    </label>
+                    <input
+                      type="number"
+                      id="pointsToUse"
+                      formControlName="pointsToUse"
+                      [max]="getMaxPointsAllowed()"
+                      [min]="0"
+                      class="form-control"
+                      placeholder="Ingresa la cantidad"
+                      (blur)="validatePointsInput()"
+                      (input)="validatePointsInput()"
+                    >
+                    <small class="form-text">
+                      <span class="material-icons" style="font-size: 14px; margin-right: 3px;">info</span>
+                      Máximo: {{ getMaxPointsAllowed() }} puntos ({{ selectedClient.points }} disponibles)
+                    </small>
+                    
+                    <!-- Mensaje de error para puntos excedidos -->
+                    <div class="points-error-message" *ngIf="pointsErrorMessage">
+                      <span class="material-icons" style="font-size: 16px; margin-right: 5px;">warning</span>
+                      {{ pointsErrorMessage }}
+                    </div>
+                  </div>
+                  
+                  <div class="points-info" *ngIf="selectedClient.points > 0 && saleForm.get('usePoints')?.value && getPointsDiscount() > 0">
+                    <span class="material-icons" style="font-size: 18px; margin-right: 8px;">local_offer</span>
+                    Descuento: ${{ getPointsDiscount().toFixed(2) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- New Client Form -->
+          <div class="new-client-form" *ngIf="showNewClientForm">
+            <form [formGroup]="newClientForm" (ngSubmit)="addNewClient()">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="clientName" class="form-label">
+                    <span class="material-icons">person</span>
+                    Nombre Completo
+                  </label>
+                  <input
+                    type="text"
+                    id="clientName"
+                    class="form-control"
+                    formControlName="name"
+                    placeholder="Ej: Juan Pérez"
+                    [class.is-invalid]="newClientForm.get('name')?.invalid && newClientForm.get('name')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="newClientForm.get('name')?.invalid && newClientForm.get('name')?.touched">
+                    <span *ngIf="newClientForm.get('name')?.errors?.['required']">El nombre es requerido</span>
+                    <span *ngIf="newClientForm.get('name')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="clientDni" class="form-label">
+                    <span class="material-icons">badge</span>
+                    DNI
+                  </label>
+                  <input
+                    type="text"
+                    id="clientDni"
+                    class="form-control"
+                    formControlName="dni"
+                    placeholder="12345678"
+                    maxlength="8"
+                    [class.is-invalid]="newClientForm.get('dni')?.invalid && newClientForm.get('dni')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="newClientForm.get('dni')?.invalid && newClientForm.get('dni')?.touched">
+                    <span *ngIf="newClientForm.get('dni')?.errors?.['required']">El DNI es requerido</span>
+                    <span *ngIf="newClientForm.get('dni')?.errors?.['pattern']">DNI debe tener 7-8 dígitos</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="clientPhone" class="form-label">
+                    <span class="material-icons">phone</span>
+                    Teléfono (Opcional)
+                  </label>
+                  <input
+                    type="text"
+                    id="clientPhone"
+                    class="form-control"
+                    formControlName="phone"
+                    placeholder="1234567890"
+                    maxlength="10"
+                    [class.is-invalid]="newClientForm.get('phone')?.invalid && newClientForm.get('phone')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="newClientForm.get('phone')?.invalid && newClientForm.get('phone')?.touched">
+                    <span *ngIf="newClientForm.get('phone')?.errors?.['pattern']">Teléfono debe tener 10 dígitos</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="clientEmail" class="form-label">
+                    <span class="material-icons">email</span>
+                    Email (Opcional)
+                  </label>
+                  <input
+                    type="email"
+                    id="clientEmail"
+                    class="form-control"
+                    formControlName="email"
+                    placeholder="cliente@email.com"
+                    [class.is-invalid]="newClientForm.get('email')?.invalid && newClientForm.get('email')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="newClientForm.get('email')?.invalid && newClientForm.get('email')?.touched">
+                    <span *ngIf="newClientForm.get('email')?.errors?.['email']">Email inválido</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="new-client-actions">
+                <button
+                  type="submit"
+                  class="btn btn-success"
+                  [disabled]="newClientForm.invalid || isAddingClient"
+                >
+                  <span class="material-icons" *ngIf="!isAddingClient">person_add</span>
+                  <span class="material-icons spinning" *ngIf="isAddingClient">sync</span>
+                  <span>{{ isAddingClient ? 'Agregando...' : 'Agregar Cliente' }}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Sale Summary -->
+        <div class="sale-summary-modal">
+          <h4>Resumen de la Venta</h4>
+          <div class="summary-items">
+            <div class="summary-item" *ngFor="let item of currentSale">
+              <span>{{ item.product.name }} x{{ item.quantity }}</span>
+              <span>${{ item.subtotal.toFixed(2) }}</span>
+            </div>
+          </div>
+          
+          <div class="summary-totals">
+            <div class="total-row">
+              <span>Subtotal:</span>
+              <span>${{ getSaleSubtotal().toFixed(2) }}</span>
+            </div>
+            <div class="total-row" *ngIf="getPointsDiscount() > 0">
+              <span>Descuento con puntos:</span>
+              <span class="discount">-${{ getPointsDiscount().toFixed(2) }}</span>
+            </div>
+            <div class="total-row final">
+              <span>Total a pagar:</span>
+              <span>${{ getSaleTotal().toFixed(2) }}</span>
+            </div>
+            <!-- Las ventas no generan puntos nuevos -->
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="showSaleModal = false"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-success"
+            (click)="processSale()"
+            [disabled]="isProcessingSale"
+          >
+            <span class="material-icons" *ngIf="!isProcessingSale">point_of_sale</span>
+            <span class="material-icons spinning" *ngIf="isProcessingSale">sync</span>
+            <span>{{ isProcessingSale ? 'Procesando...' : 'Confirmar Venta' }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

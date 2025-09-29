@@ -22,6 +22,15 @@ export class LoginService {
     email: '',
   });
 
+  // Método para resetear el estado del usuario
+  resetUserState(): void {
+    this.currentUserLoginOn.next(false);
+    this.currentUserData.next({
+      id: 0,
+      email: '',
+    });
+  }
+
   constructor(private http: HttpClient) {}
 
   login(credentials: LoginRequest): Observable<any> {

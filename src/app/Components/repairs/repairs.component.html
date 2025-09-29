@@ -1,4 +1,12 @@
-<div class="dashboard-container" [class.dark-mode]="darkMode">  <!-- Main Content -->  <main class="main-content" [class.dark-mode]="darkMode">    <!-- Simple Header -->    <div class="page-header">      <div class="header-titles">        <h1 class="main-title">Gestión de Reparaciones</h1>        <p class="subtitle">Seguimiento y control de equipos en servicio técnico</p>      </div>      <div class="header-actions">        <button class="dark-mode-toggle" (click)="toggleDarkMode()" title="Cambiar modo oscuro">          <span class="material-icons">{{darkMode ? 'light_mode' : 'dark_mode'}}</span>        </button>        <button class="btn-primary add-repair" routerLink="/agregarReparacion">          <span class="material-icons">add</span>          Nueva Reparación        </button>      </div>    </div>
+<div class="dashboard-container" [class.dark-mode]="darkMode">  <!-- Main Content -->  <main class="main-content" [class.dark-mode]="darkMode">    <!-- Simple Header -->    <div class="page-header">      <div class="header-titles">        <h1 class="main-title">Gestión de Reparaciones</h1>        <p class="subtitle">Seguimiento y control de equipos en servicio técnico</p>      </div>      <div class="header-actions">        <button class="dark-mode-toggle" (click)="toggleDarkMode()" title="Cambiar modo oscuro">          <span class="material-icons">{{darkMode ? 'light_mode' : 'dark_mode'}}</span>        </button>        <button class="btn-primary add-repair" (click)="abrirAgregarReparacion()">          <span class="material-icons">add</span>          Nueva Reparación        </button>      </div>    </div>
+
+    <!-- Alerts (estilo productos) -->
+    <div *ngIf="repairMessage" class="alert" [class.alert-success]="isRepairSuccess" [class.alert-error]="!isRepairSuccess">
+      <div class="alert-content">
+        <span class="material-icons">{{ isRepairSuccess ? 'check_circle' : 'error' }}</span>
+        <span class="alert-text">{{ repairMessage }}</span>
+      </div>
+    </div>
 
     <!-- Stats Cards -->
     <div class="stats-container">
@@ -101,7 +109,7 @@
           </div>
         </div>
         <div class="repair-actions">
-          <button class="action-btn edit" [routerLink]="['/modificarReparacion', repair.id]" title="Modificar">
+          <button class="action-btn edit" (click)="abrirModificarReparacion(repair)" title="Modificar">
             <span class="material-icons">edit</span>
           </button>
           <button class="action-btn delete" (click)="desactivarReparacion(repair)" title="Eliminar">
@@ -111,7 +119,7 @@
                   (click)="abrirFinalizarReparacionModal(repair)" 
                   [disabled]="repair.estado === 'Entregada'"
                   title="Finalizar">
-            <span class="material-icons">done</span>
+            <span class="material-icons">check_circle</span>
           </button>
           <div class="dropdown">
             <button class="action-btn more" type="button" data-bs-toggle="dropdown">
@@ -169,7 +177,7 @@
               </span>
             </td>
             <td class="actions-cell">
-              <button class="action-btn edit" [routerLink]="['/modificarReparacion', repair.id]" title="Modificar">
+              <button class="action-btn edit" (click)="abrirModificarReparacion(repair)" title="Modificar">
                 <span class="material-icons">edit</span>
               </button>
               <button class="action-btn delete" (click)="desactivarReparacion(repair)" title="Eliminar">
@@ -179,13 +187,13 @@
                       (click)="abrirFinalizarReparacionModal(repair)" 
                       [disabled]="repair.estado === 'Entregada'"
                       title="Finalizar">
-                <span class="material-icons">done</span>
+                <span class="material-icons">check_circle</span>
               </button>
-              <div class="dropdown">
-                <button class="action-btn more" type="button" data-bs-toggle="dropdown">
+              <div class="dropup">
+                <button class="action-btn more" type="button" data-bs-toggle="dropdown" data-bs-display="static">
                   <span class="material-icons">more_vert</span>
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu dropdown-menu-end" data-bs-popper>
                   <li>
                     <button class="dropdown-item" (click)="verDetallesReparacion(repair)">
                       <span class="material-icons">visibility</span>
@@ -351,6 +359,22 @@
                 <strong>Código de seguimiento:</strong>
                 {{ reparacionSeleccionada.codigoSeguimiento }}
               </p>
+            </div>
+            <!-- Costos -->
+            <div class="detalle-item" *ngIf="reparacionSeleccionada.manoDeObra != null">
+              <p><strong>Costo MO:</strong> {{ formatMoney(reparacionSeleccionada.manoDeObra || 0) }}</p>
+            </div>
+            <div class="detalle-item" *ngIf="reparacionSeleccionada.entrega != null">
+              <p><strong>Costo repuestos:</strong> {{ formatMoney(reparacionSeleccionada.entrega || 0) }}</p>
+            </div>
+            <div class="detalle-item">
+              <p><strong>Costo total:</strong> {{ formatMoney(getCostoTotal(reparacionSeleccionada)) }}</p>
+            </div>
+            <div class="detalle-item" *ngIf="reparacionSeleccionada.descuentoPuntos">
+              <p><strong>Descuento por puntos:</strong> {{ formatMoney(reparacionSeleccionada.descuentoPuntos) }}</p>
+            </div>
+            <div class="detalle-item">
+              <p><strong>Total a pagar:</strong> {{ formatMoney(getTotalFinal(reparacionSeleccionada)) }}</p>
             </div>
           </div>
         </div>

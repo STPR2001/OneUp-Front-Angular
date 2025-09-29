@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
       try {
         this.loginService.login(credentials).subscribe({
           next: (userData) => {
-            this.authService.login(userData.token);
+            this.authService.login(userData.token, userData);
             
             // Manejar "Recordar usuario"
             if (rememberMe) {

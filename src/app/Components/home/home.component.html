@@ -38,7 +38,7 @@
         
         <div class="quick-actions-grid">
           <!-- Acción Principal -->
-          <div class="quick-action-card featured" routerLink="/agregarReparacion">
+          <div class="quick-action-card featured" (click)="nuevaReparacionDesdeDashboard()">
             <div class="card-header">
               <div class="action-icon primary">
                 <span class="material-icons">add_circle_outline</span>
@@ -56,7 +56,7 @@
           </div>
 
           <!-- Acciones Secundarias -->
-          <div class="quick-action-card" routerLink="/agregarCliente">
+          <div class="quick-action-card" (click)="nuevoClienteDesdeDashboard()">
             <div class="card-header">
               <div class="action-icon secondary">
                 <span class="material-icons">person_add_alt</span>
@@ -104,22 +104,6 @@
             </div>
           </div>
 
-          <div class="quick-action-card" routerLink="/clientes">
-            <div class="card-header">
-              <div class="action-icon quinary">
-                <span class="material-icons">people_alt</span>
-              </div>
-            </div>
-            <div class="card-content">
-              <h3>Base de Clientes</h3>
-              <p>Ver y gestionar clientes</p>
-              <div class="action-meta">
-                <span class="material-icons">schedule</span>
-                <span>Instantáneo</span>
-              </div>
-            </div>
-          </div>
-
           <div class="quick-action-card" routerLink="/tecnicos">
             <div class="card-header">
               <div class="action-icon senary">
@@ -139,7 +123,7 @@
 
         <!-- Acciones Adicionales -->
         <div class="additional-actions">
-          <button class="action-link" routerLink="/reportes">
+          <button class="action-link" routerLink="/estadisticas">
             <span class="material-icons">analytics</span>
             <span>Ver Reportes</span>
           </button>
@@ -147,139 +131,14 @@
             <span class="material-icons">settings</span>
             <span>Configuración</span>
           </button>
-          <button class="action-link" routerLink="/ayuda">
+          <a class="action-link" href="https://wa.me/59899969390" target="_blank" rel="noopener">
             <span class="material-icons">help_outline</span>
             <span>Centro de Ayuda</span>
-          </button>
+          </a>
         </div>
       </div>
 
-      <!-- Stats Cards -->
-      <div class="stats-container">
-        <div class="stat-card">
-          <div class="stat-icon en-taller">
-            <span class="material-icons">build</span>
-          </div>
-          <div class="stat-info">
-            <h3>En Taller</h3>
-            <p class="stat-number">{{ getReparacionesEnTaller() }}</p>
-            <p class="stat-percentage">{{ getTotalReparaciones() > 0 ? (getReparacionesEnTaller() / getTotalReparaciones() * 100 | number:'1.0-0') : 0 }}% del total</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon finalizadas">
-            <span class="material-icons">done_all</span>
-          </div>
-          <div class="stat-info">
-            <h3>Finalizadas</h3>
-            <p class="stat-number">{{ getReparacionesFinalizadas() }}</p>
-            <p class="stat-percentage">{{ getTotalReparaciones() > 0 ? (getReparacionesFinalizadas() / getTotalReparaciones() * 100 | number:'1.0-0') : 0 }}% del total</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon entregadas">
-            <span class="material-icons">handshake</span>
-          </div>
-          <div class="stat-info">
-            <h3>Entregadas</h3>
-            <p class="stat-number">{{ getReparacionesEntregadas() }}</p>
-            <p class="stat-percentage">{{ getTotalReparaciones() > 0 ? (getReparacionesEntregadas() / getTotalReparaciones() * 100 | number:'1.0-0') : 0 }}% del total</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon total">
-            <span class="material-icons">devices</span>
-          </div>
-          <div class="stat-info">
-            <h3>Total Reparaciones</h3>
-            <p class="stat-number">{{ getTotalReparaciones() }}</p>
-            <p class="stat-percentage">Equipos gestionados</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Extended Stats -->
-      <div class="extended-stats">
-        <div class="stat-card-extended urgentes" *ngIf="getEstadisticasGenerales().reparacionesUrgentes > 0">
-          <div class="stat-icon-extended">
-            <span class="material-icons">warning</span>
-          </div>
-          <div class="stat-content">
-            <h4>Reparaciones Urgentes</h4>
-            <p class="stat-value">{{ getEstadisticasGenerales().reparacionesUrgentes }}</p>
-            <p class="stat-description">Más de 7 días en taller</p>
-          </div>
-          <div class="stat-action">
-            <button class="action-btn urgente" routerLink="/reparaciones" title="Ver reparaciones urgentes">
-              <span class="material-icons">emergency</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="stat-card-extended ingresos">
-          <div class="stat-icon-extended">
-            <span class="material-icons">payments</span>
-          </div>
-          <div class="stat-content">
-            <h4>Ingresos del Mes</h4>
-            <p class="stat-value">{{ getEstadisticasGenerales().ingresosMensuales | currency:'USD':'symbol':'1.0-0' }}</p>
-            <p class="stat-description">De reparaciones entregadas</p>
-          </div>
-          <div class="stat-action">
-            <button class="action-btn ingresos" title="Ver detalle ingresos">
-              <span class="material-icons">monetization_on</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="stat-card-extended promedio">
-          <div class="stat-icon-extended">
-            <span class="material-icons">schedule</span>
-          </div>
-          <div class="stat-content">
-            <h4>Tiempo Promedio</h4>
-            <p class="stat-value">{{ getEstadisticasGenerales().promedioTiempoReparacion }} días</p>
-            <p class="stat-description">Duración promedio de reparaciones</p>
-          </div>
-          <div class="stat-action">
-            <button class="action-btn promedio" title="Ver estadísticas detalladas">
-              <span class="material-icons">analytics</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="stat-card-extended clientes">
-          <div class="stat-icon-extended">
-            <span class="material-icons">people</span>
-          </div>
-          <div class="stat-content">
-            <h4>Clientes Recurrentes</h4>
-            <p class="stat-value">{{ getEstadisticasGenerales().clientesRecurrentes }}</p>
-            <p class="stat-description">Con más de una reparación</p>
-          </div>
-          <div class="stat-action">
-            <button class="action-btn clientes" routerLink="/clientes" title="Ver clientes">
-              <span class="material-icons">person_add</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="stat-card-extended tecnico">
-          <div class="stat-icon-extended">
-            <span class="material-icons">engineering</span>
-          </div>
-          <div class="stat-content">
-            <h4>Técnico Destacado</h4>
-            <p class="stat-value">{{ getEstadisticasGenerales().tecnicoMasProductivo || 'N/A' }}</p>
-            <p class="stat-description">Mayor número de reparaciones completadas</p>
-          </div>
-          <div class="stat-action">
-            <button class="action-btn tecnico" routerLink="/tecnicos" title="Ver técnicos">
-              <span class="material-icons">star</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      
 
       <!-- Reparaciones Pendientes Section -->
       <div class="pending-section">
@@ -362,14 +221,9 @@
             </div>
 
             <div class="repair-actions">
-              <button class="action-btn view" (click)="verDetallesReparacion(reparacion)" title="Ver detalles">
-                <span class="material-icons">visibility</span>
-              </button>
-              <button class="action-btn manage" routerLink="/reparaciones" title="Gestionar reparación">
+              <button class="btn btn-primary gestionar-btn" (click)="gestionarReparacion(reparacion)">
                 <span class="material-icons">build</span>
-              </button>
-              <button class="action-btn priority" *ngIf="getDiasEnTaller(reparacion) > 7" title="Marcar como prioritaria">
-                <span class="material-icons">priority_high</span>
+                <span>Gestionar</span>
               </button>
             </div>
           </div>

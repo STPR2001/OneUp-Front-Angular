@@ -36,10 +36,97 @@ html {
   letter-spacing: -0.025em;
 }
 
+/* Estilos del diálogo para que coincida con el diseño del modal "Agregar cliente" */
+.app-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 12px;
+}
+.app-dialog .mat-mdc-dialog-content {
+  padding: 0;
+}
+.app-dialog .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: #fff;
+}
+
+/* Form modal look & feel (título, subtítulo, separadores, footer) */
+.form-modal {
+  border-radius: 16px;
+}
+.form-modal .fm-header {
+  padding: 20px 24px 12px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.form-modal .fm-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+.form-modal .fm-subtitle {
+  margin: 6px 0 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+.form-modal .fm-body {
+  padding: 16px 24px 8px 24px;
+}
+.form-modal .fm-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.label-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+.label-with-icon .material-icons {
+  font-size: 18px;
+  color: #6b7280;
+}
+.btn-icon .material-icons {
+  font-size: 18px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
 .requerido {
   color: red !important;
   font-size: 14px;
   font-weight: 900;
+}
+
+/* Shared modal + form styles to igualar Clientes modal */
+.modal-content { border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.modal-header { border-bottom: 1px solid #e9ecef; padding: 1.5rem; }
+.modal-title-container { flex: 1; }
+.modal-title { font-size: 1.5rem; font-weight: 600; color: #2c3e50; margin: 0; }
+.modal-subtitle { color: #6c757d; font-size: 0.875rem; margin: 0.25rem 0 0; }
+.modal-body { padding: 1.5rem; }
+.modal-footer { border-top: 1px solid #e9ecef; padding: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.form-group { display: flex; flex-direction: column; }
+.form-group.full-width { grid-column: 1 / -1; }
+.form-group label { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50; font-size: 0.875rem; }
+.form-group label .material-icons { font-size: 18px; color: #6c757d; }
+.form-control { padding: 0.75rem; border: 1px solid #e9ecef; border-radius: 6px; font-size: 0.875rem; transition: all 0.3s ease; background: white; }
+.form-control:focus { outline: none; border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,0.1); }
+.form-control::placeholder { color: #adb5bd; }
+textarea.form-control { resize: vertical; min-height: 80px; }
+.error-message { display: flex; align-items: center; gap: 0.5rem; color: #dc3545; font-size: 0.875rem; margin-top: 1rem; padding: 0.75rem; background: rgba(220,53,69,0.1); border-radius: 6px; }
+.error-message .material-icons { font-size: 18px; }
+.btn { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-decoration: none; }
+.btn-primary { background: #0d6efd; color: white; }
+.btn-primary:hover { background: #0056b3; transform: translateY(-1px); }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-secondary:hover { background: #545862; }
+.btn .material-icons { font-size: 18px; }
+
+@media (max-width: 1024px) {
+  .form-row { grid-template-columns: 1fr; }
+  .modal-header, .modal-body, .modal-footer { padding: 1rem; }
 }
 
 /* RESPONSIVE */

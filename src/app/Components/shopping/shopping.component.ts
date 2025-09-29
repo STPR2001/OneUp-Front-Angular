@@ -3,8 +3,12 @@ import { Router } from '@angular/router';
 import { tap, catchError, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { of, Subject, Subscription } from 'rxjs';
 import { ShoppingService } from 'src/app/services/shopping.service';
+import { ProvidersService } from 'src/app/services/providers.service';
+import { RepuestosService } from 'src/app/services/repuestos.service';
 import { ConfirmDialogComponent } from 'src/app/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 declare var bootstrap: any;
 
@@ -14,8 +18,11 @@ declare var bootstrap: any;
   styleUrls: ['./shopping.component.css'],
 })
 export class ShoppingComponent implements OnInit, OnDestroy {
-  @ViewChild('agregarCompraModal') modalCloseAdd: any;
+  @ViewChild('agregarCompraModal') agregarCompraModalTpl: any;
   @ViewChild('ModificarCompraModal') modalCloseUpdate: any;
+  @ViewChild('agregarProveedorModal') agregarProveedorModalTpl: any;
+  @ViewChild('agregarRepuestoModal') agregarRepuestoModalTpl: any;
+  @ViewChild('modificarCompraModal') modificarCompraModalTpl: any;
 
   compra: any = {};
   currentPage: number = 0;
@@ -31,7 +38,20 @@ export class ShoppingComponent implements OnInit, OnDestroy {
   startDate: string = '';
   endDate: string = '';
   today: string = '';
+  todayMaxDatetime: string = '';
   searchTerm: string = '';
+
+  compraForm!: FormGroup;
+  proveedores: any[] = [];
+  repuestosDisponibles: any[] = [];
+  agregarCompraModalRef?: NgbModalRef;
+  modificarCompraModalRef?: NgbModalRef;
+  agregarProveedorModalRef?: NgbModalRef;
+  nuevoProveedor: any = { nombre: '', direccion: '', telefono: '', email: '' };
+  errorAgregarProveedor = false;
+  agregarRepuestoModalRef?: NgbModalRef;
+  nuevoRepuesto: any = { descripcion: '', numeroDeParte: '', precioCosto: 0, precioVenta: 0, stock: 0 };
+  errorAgregarRepuesto = false;
 
   // Para búsqueda con debounce
   private searchSubject = new Subject<string>();
@@ -40,14 +60,21 @@ export class ShoppingComponent implements OnInit, OnDestroy {
   constructor(
     private shoppingService: ShoppingService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private modalService: NgbModal,
+    private providersService: ProvidersService,
+    private repuestosService: RepuestosService
   ) {}
 
   ngOnInit(): void {
     this.getCompras();
     this.getAllComprasForStats();
     this.today = this.getToday();
+    this.todayMaxDatetime = this.getTodayMaxDatetime();
     this.setupSearchDebounce();
+    this.initForm();
+    this.cargarProveedoresYRepuestos();
   }
 
   ngOnDestroy(): void {
@@ -242,6 +269,125 @@ export class ShoppingComponent implements OnInit, OnDestroy {
     document.body.removeChild(link);
   }
 
+  // Form helpers
+  initForm(): void {
+    this.compraForm = this.fb.group({
+      fecha: ['', Validators.required],
+      id_proveedor: ['', Validators.required],
+      repuestos: this.fb.array([], Validators.minLength(1)),
+      total: [{ value: '', disabled: false }, Validators.required],
+    });
+
+    // Recalcular total cuando cambien los repuestos
+    this.compraForm.get('repuestos')?.valueChanges.subscribe(() => {
+      this.recalcularTotal();
+    });
+  }
+
+  get repuestos(): FormArray { return this.compraForm.get('repuestos') as FormArray; }
+
+  agregarRepuesto(): void {
+    this.repuestos.push(
+      this.fb.group({
+        id: ['', Validators.required],
+        precio: [0, [Validators.required, Validators.min(0.01)]],
+        cant: [1, [Validators.required, Validators.min(1)]],
+      })
+    );
+  }
+
+  eliminarRepuesto(i: number): void {
+    this.repuestos.removeAt(i);
+  }
+
+  cargarProveedoresYRepuestos(): void {
+    this.providersService.getProveedoresActivosParaFormularios().subscribe((data: any) => {
+      this.proveedores = data?.content || data || [];
+    });
+    this.repuestosService.getRepuestosActivosParaFormularios().subscribe((data: any) => {
+      this.repuestosDisponibles = data?.content || data || [];
+    });
+  }
+
+  onRepuestoChange(_event: any, _index: number): void {
+    // En este contexto solo mantenemos la firma para compatibilidad del template
+  }
+
+  abrirAgregarCompra(): void {
+    if (this.repuestos.length === 0) { this.agregarRepuesto(); }
+    this.compraForm.patchValue({ fecha: this.getNowLocalDatetimeString() });
+    this.agregarCompraModalRef = this.modalService.open(this.agregarCompraModalTpl, { size: 'lg' });
+  }
+
+  abrirModificarCompra(compra: any): void {
+    // Guardamos referencia del ID a modificar
+    this.compra = { id: compra?.id };
+    // Reseteamos y cargamos datos en el mismo formulario reutilizado
+    this.compraForm.reset();
+    this.repuestos.clear();
+    const fecha = compra?.fecha ? this.getLocalDatetimeFromIso(compra.fecha) : this.getNowLocalDatetimeString();
+    const proveedorId = compra?.id_proveedor || compra?.proveedor?.id || '';
+    this.compraForm.patchValue({ fecha: fecha, id_proveedor: proveedorId, total: compra?.total || 0 });
+
+    const items = compra?.compraRepuesto || [];
+    items.forEach((it: any) => {
+      this.repuestos.push(this.fb.group({
+        id: it?.repuesto?.id ?? it?.id_repuesto ?? it?.id ?? '',
+        precio: it?.precio ?? it?.repuesto?.precioCosto ?? 0,
+        cant: it?.cant ?? it?.cantidad ?? 1,
+      }));
+    });
+    if (this.repuestos.length === 0) { this.agregarRepuesto(); }
+    this.recalcularTotal();
+    this.modificarCompraModalRef = this.modalService.open(this.modificarCompraModalTpl, { size: 'lg' });
+  }
+
+  crearCompraDesdePopup(modal: any): void {
+    if (this.compraForm.invalid) { this.compraForm.markAllAsTouched(); return; }
+    const payload = this.compraForm.value;
+    this.shoppingService.agregarCompra(payload).pipe(
+      tap(() => {
+        this.getCompras();
+        this.getAllComprasForStats();
+        modal.close();
+        this.compraForm.reset();
+        this.repuestos.clear();
+      }),
+      catchError((error) => {
+        console.error('Error al agregar compra:', error);
+        this.errorAgregarCompra = true;
+        setTimeout(() => { this.errorAgregarCompra = false; }, 5000);
+        return of(error);
+      })
+    ).subscribe();
+  }
+
+  guardarModificacionDesdePopup(modal: any): void {
+    if (this.compraForm.invalid) { this.compraForm.markAllAsTouched(); return; }
+    const payload = { id: this.compra?.id, ...this.compraForm.value };
+    this.shoppingService.modificarCompra(payload).pipe(
+      tap(() => {
+        this.getCompras();
+        this.getAllComprasForStats();
+        modal.close();
+        this.compraForm.reset();
+        this.repuestos.clear();
+      }),
+      catchError((error) => {
+        console.error('Error al modificar compra:', error);
+        this.errorModificarCompra = true;
+        setTimeout(() => { this.errorModificarCompra = false; }, 5000);
+        return of(error);
+      })
+    ).subscribe();
+  }
+
+  private recalcularTotal(): void {
+    const repuestos = this.repuestos.getRawValue() || [];
+    const total = repuestos.reduce((acc: number, r: any) => acc + (Number(r.precio) || 0) * (Number(r.cant) || 0), 0);
+    this.compraForm.get('total')?.setValue(total);
+  }
+
   refrescarDatos(): void {
     this.getCompras();
     this.getAllComprasForStats();
@@ -332,9 +478,7 @@ export class ShoppingComponent implements OnInit, OnDestroy {
           this.nuevoCompra = {};
           this.getCompras();
           this.getAllComprasForStats();
-          if (this.modalCloseAdd) {
-            this.modalCloseAdd.nativeElement.click();
-          }
+          // ya no usamos cierre por ViewChild; el nuevo popup usa NgbModal
         }),
         catchError((error) => {
           console.error('Error al agregar compra:', error);
@@ -383,5 +527,82 @@ export class ShoppingComponent implements OnInit, OnDestroy {
     const month = (today.getMonth() + 1).toString().padStart(2, '0');
     const day = today.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  private getTodayMaxDatetime(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T23:59`;
+  }
+
+  private getNowLocalDatetimeString(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  private getLocalDatetimeFromIso(iso: string): string {
+    const d = new Date(iso);
+    const year = d.getFullYear();
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  // Proveedor modal
+  openAgregarProveedorModal(): void {
+    this.nuevoProveedor = { nombre: '', direccion: '', telefono: '', email: '' };
+    this.agregarProveedorModalRef = this.modalService.open(this.agregarProveedorModalTpl, { size: 'lg' });
+  }
+
+  agregarProveedor(): void {
+    this.providersService.agregarProveedor(this.nuevoProveedor).pipe(
+      tap(() => {
+        this.cargarProveedoresYRepuestos();
+        if (this.agregarProveedorModalRef) { this.agregarProveedorModalRef.close(); }
+      }),
+      catchError((error) => {
+        console.error('Error al agregar proveedor:', error);
+        this.errorAgregarProveedor = true;
+        setTimeout(() => { this.errorAgregarProveedor = false; }, 5000);
+        return of(error);
+      })
+    ).subscribe();
+  }
+
+  // Repuesto modal
+  openAgregarRepuestoModal(): void {
+    this.nuevoRepuesto = { descripcion: '', numeroDeParte: '', precioCosto: 0, precioVenta: 0, stock: 0 };
+    this.agregarRepuestoModalRef = this.modalService.open(this.agregarRepuestoModalTpl, { size: 'lg' });
+  }
+
+  crearRepuestoDesdePopup(modal: any): void {
+    this.repuestosService.agregarRepuesto(this.nuevoRepuesto).pipe(
+      tap(() => {
+        this.cargarProveedoresYRepuestos();
+        if (this.agregarRepuestoModalRef) { this.agregarRepuestoModalRef.close(); }
+      }),
+      catchError((error) => {
+        console.error('Error al agregar repuesto:', error);
+        this.errorAgregarRepuesto = true;
+        setTimeout(() => { this.errorAgregarRepuesto = false; }, 5000);
+        return of(error);
+      })
+    ).subscribe();
+  }
+
+  calcularRentabilidadNuevoRepuesto(): number {
+    const costo = Number(this.nuevoRepuesto?.precioCosto || 0);
+    const venta = Number(this.nuevoRepuesto?.precioVenta || 0);
+    if (costo <= 0) { return 0; }
+    return Math.round(((venta - costo) / costo) * 100);
   }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RepairsService } from 'src/app/services/repairs.service';
+import { DashboardService } from 'src/app/services/dashboard.service';
 import { Router } from '@angular/router';
 import { TecnicsService } from 'src/app/services/tecnics.service';
 import { ClientsService } from 'src/app/services/clients.service';
@@ -63,7 +64,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private ClientsService: ClientsService,
     private EquipoService: EquipoService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private dashboardService: DashboardService
   ) {
     // Configurar búsqueda con debounce
     this.searchSubject.pipe(
@@ -85,17 +87,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  nuevaReparacionDesdeDashboard(): void {
+    // Navega a reparaciones con un query param para abrir el popup al cargar
+    this.router.navigate(['/reparaciones'], { queryParams: { openAdd: '1' } });
+  }
+
+  nuevoClienteDesdeDashboard(): void {
+    // Navega a clientes con un query param para abrir el popup al cargar
+    this.router.navigate(['/clients'], { queryParams: { openAdd: '1' } });
+  }
+
   // Método para cargar todos los datos
   cargarDatos(): void {
     this.isLoading = true;
+    // Carga reparaciones mínimas para la grilla y precarga summary en caché
     Promise.all([
       this.obtenerReparaciones(),
-      this.obtenerTecnicos(),
-      this.obtenerClientes(),
-      this.obtenerEquipos()
-    ]).finally(() => {
-      this.isLoading = false;
-    });
+      new Promise<void>((resolve) => {
+        this.dashboardService.getSummary().subscribe({ next: () => resolve(), error: () => resolve() });
+      })
+    ]).finally(() => { this.isLoading = false; });
   }
 
   // Método para refrescar datos
@@ -136,11 +147,21 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Navegar a Reparaciones con filtro por ID
+  gestionarReparacion(reparacion: any): void {
+    const id = reparacion?.id;
+    if (!id) {
+      this.router.navigate(['/reparaciones']);
+      return;
+    }
+    this.router.navigate(['/reparaciones'], { queryParams: { q: `#${id}` } });
+  }
+
   obtenerReparaciones(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.RepairsService.getAllReparaciones().subscribe(
+      this.RepairsService.getReparacionesActivas(0, 20, undefined, 'En taller').subscribe(
         (data) => {
-          this.reparaciones = data;
+          this.reparaciones = (data && data.content) ? data.content : (Array.isArray(data) ? data : []);
           resolve();
         },
         (error) => {
@@ -166,50 +187,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.reparacionSeleccionada = { ...reparacion };
   }
 
-  obtenerClientes(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.ClientsService.getAllClientes().subscribe(
-        (data) => {
-          this.clientes = data;
-          resolve();
-        },
-        (error) => {
-          console.error('Error al obtener clientes:', error);
-          reject(error);
-        }
-      );
-    });
-  }
+  // Ya no se cargan clientes/tecnicos/equipos en el dashboard para optimizar carga
+  obtenerClientes(): Promise<void> { return Promise.resolve(); }
 
-  obtenerTecnicos(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.TecnicsService.getAllTecnicos().subscribe(
-        (data) => {
-          this.tecnicos = data;
-          resolve();
-        },
-        (error) => {
-          console.error('Error al obtener los tecnicos:', error);
-          reject(error);
-        }
-      );
-    });
-  }
+  obtenerTecnicos(): Promise<void> { return Promise.resolve(); }
 
-  obtenerEquipos(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.EquipoService.getAllEquipos().subscribe(
-        (data) => {
-          this.equipos = data;
-          resolve();
-        },
-        (error) => {
-          console.error('Error al obtener los equipos:', error);
-          reject(error);
-        }
-      );
-    });
-  }
+  obtenerEquipos(): Promise<void> { return Promise.resolve(); }
 
   get filteredReparaciones() {
     return this.reparaciones.filter((reparacion) =>

@@ -36,6 +36,9 @@ export class TecnicsComponent implements OnInit, OnDestroy {
   pageSize: number = 10;
   totalPages: number = 0;
   nombre: string = '';
+  
+  // Cache para estadísticas de técnicos
+  private estadisticasCache: Map<number, any> = new Map();
 
   // Para búsqueda con debounce
   private searchSubject = new Subject<string>();
@@ -84,6 +87,8 @@ export class TecnicsComponent implements OnInit, OnDestroy {
         (data) => {
           this.tecnicos = data.content;
           this.totalPages = data.totalPages;
+          // Cargar estadísticas para cada técnico
+          this.cargarEstadisticasTecnicos();
         },
         (error) => {
           console.error('Error al obtener la lista de tecnicos:', error);
@@ -98,6 +103,8 @@ export class TecnicsComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           this.allTecnicos = data.content;
+          // Cargar estadísticas para todos los técnicos
+          this.cargarEstadisticasAllTecnicos();
         },
         (error) => {
           console.error('Error al obtener técnicos para estadísticas:', error);
@@ -115,9 +122,10 @@ export class TecnicsComponent implements OnInit, OnDestroy {
   }
 
   getReparacionesAsignadas(): number {
-    // Simulando reparaciones asignadas - esto debería venir del backend
-    return this.allTecnicos.reduce((total, tecnico) => 
-      total + (tecnico.reparacionesAsignadas || Math.floor(Math.random() * 15) + 1), 0);
+    return this.allTecnicos.reduce((total, tecnico) => {
+      const stats = this.estadisticasCache.get(tecnico.id);
+      return total + (stats ? stats.reparacionesAsignadas : 0);
+    }, 0);
   }
 
   getRendimientoPromedio(): number {
@@ -134,51 +142,79 @@ export class TecnicsComponent implements OnInit, OnDestroy {
 
   getEstadoClass(tecnico: any): string {
     const activo = tecnico.activo !== false;
-    const reparaciones = this.getTecnicoReparaciones(tecnico);
+    const reparacionesAsignadas = this.getTecnicoReparacionesAsignadas(tecnico);
     
     if (!activo) return 'inactivo';
-    if (reparaciones > 10) return 'muy-activo';
-    if (reparaciones > 5) return 'activo';
+    if (reparacionesAsignadas > 10) return 'muy-activo';
+    if (reparacionesAsignadas > 5) return 'activo';
     return 'disponible';
   }
 
   getEstadoIcon(tecnico: any): string {
     const activo = tecnico.activo !== false;
-    const reparaciones = this.getTecnicoReparaciones(tecnico);
+    const reparacionesAsignadas = this.getTecnicoReparacionesAsignadas(tecnico);
     
     if (!activo) return 'person_off';
-    if (reparaciones > 10) return 'trending_up';
-    if (reparaciones > 5) return 'task_alt';
+    if (reparacionesAsignadas > 10) return 'trending_up';
+    if (reparacionesAsignadas > 5) return 'task_alt';
     return 'person';
   }
 
   getEstadoText(tecnico: any): string {
     const activo = tecnico.activo !== false;
-    const reparaciones = this.getTecnicoReparaciones(tecnico);
+    const reparacionesAsignadas = this.getTecnicoReparacionesAsignadas(tecnico);
     
     if (!activo) return 'Inactivo';
-    if (reparaciones > 10) return 'Muy Activo';
-    if (reparaciones > 5) return 'Activo';
+    if (reparacionesAsignadas > 10) return 'Muy Activo';
+    if (reparacionesAsignadas > 5) return 'Activo';
     return 'Disponible';
   }
 
   getTecnicoReparaciones(tecnico: any): number {
-    // Simulando reparaciones - esto debería venir del backend
-    return tecnico.reparacionesCompletadas || Math.floor(Math.random() * 20) + 1;
+    // Total histórico de reparaciones (evita confusión con rendimiento)
+    const stats = this.estadisticasCache.get(tecnico.id);
+    return stats ? (stats.totalReparaciones ?? 0) : 0;
+  }
+
+  getTecnicoReparacionesAsignadas(tecnico: any): number {
+    // Reparaciones actualmente en taller
+    const stats = this.estadisticasCache.get(tecnico.id);
+    return stats ? (stats.reparacionesAsignadas ?? 0) : 0;
+  }
+
+  getTecnicoReparacionesCompletadas(tecnico: any): number {
+    const stats = this.estadisticasCache.get(tecnico.id);
+    return stats ? (stats.reparacionesCompletadas ?? 0) : 0;
   }
 
   getTecnicoRendimiento(tecnico: any): number {
-    // Simulando rendimiento - esto debería venir del backend
-    return tecnico.rendimiento || Math.floor(Math.random() * 40) + 60; // Entre 60-100%
+    const stats = this.estadisticasCache.get(tecnico.id);
+    return stats ? stats.rendimiento : 0;
   }
 
   getUltimaActividad(tecnico: any): string {
-    // Simulando última actividad - esto debería venir del backend
-    if (tecnico.ultimaActividad) {
-      return tecnico.ultimaActividad;
+    const stats = this.estadisticasCache.get(tecnico.id);
+    if (stats && stats.ultimaActividad) {
+      const fecha = new Date(stats.ultimaActividad);
+      const ahora = new Date();
+      const diffMs = ahora.getTime() - fecha.getTime();
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+      
+      if (diffMinutes < 60) {
+        return `Hace ${diffMinutes} min`;
+      } else if (diffHours < 24) {
+        return `Hace ${diffHours} horas`;
+      } else if (diffDays === 1) {
+        return 'Ayer';
+      } else if (diffDays < 7) {
+        return `Hace ${diffDays} días`;
+      } else {
+        return fecha.toLocaleDateString('es-UY');
+      }
     }
-    const opciones = ['Hace 1 hora', 'Hace 2 horas', 'Hoy', 'Ayer', 'Hace 2 días', 'Esta semana'];
-    return opciones[Math.floor(Math.random() * opciones.length)];
+    return 'Sin actividad';
   }
 
   verDetallesTecnico(tecnico: any): void {
@@ -362,5 +398,51 @@ export class TecnicsComponent implements OnInit, OnDestroy {
     if (tecnicoCompleto) {
       this.tecnico = { ...tecnicoCompleto };
     }
+  }
+
+  private cargarEstadisticasTecnicos(): void {
+    this.tecnicos.forEach(tecnico => {
+      if (!this.estadisticasCache.has(tecnico.id)) {
+        this.tecnicsService.getEstadisticasTecnico(tecnico.id).subscribe(
+          (stats) => {
+            this.estadisticasCache.set(tecnico.id, stats);
+          },
+          (error) => {
+            console.error(`Error al cargar estadísticas del técnico ${tecnico.id}:`, error);
+            // Establecer valores por defecto
+            this.estadisticasCache.set(tecnico.id, {
+              reparacionesAsignadas: 0,
+              reparacionesCompletadas: 0,
+              totalReparaciones: 0,
+              rendimiento: 0,
+              ultimaActividad: null
+            });
+          }
+        );
+      }
+    });
+  }
+
+  private cargarEstadisticasAllTecnicos(): void {
+    this.allTecnicos.forEach(tecnico => {
+      if (!this.estadisticasCache.has(tecnico.id)) {
+        this.tecnicsService.getEstadisticasTecnico(tecnico.id).subscribe(
+          (stats) => {
+            this.estadisticasCache.set(tecnico.id, stats);
+          },
+          (error) => {
+            console.error(`Error al cargar estadísticas del técnico ${tecnico.id}:`, error);
+            // Establecer valores por defecto
+            this.estadisticasCache.set(tecnico.id, {
+              reparacionesAsignadas: 0,
+              reparacionesCompletadas: 0,
+              totalReparaciones: 0,
+              rendimiento: 0,
+              ultimaActividad: null
+            });
+          }
+        );
+      }
+    });
   }
 }

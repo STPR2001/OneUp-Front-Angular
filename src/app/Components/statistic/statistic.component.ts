@@ -55,11 +55,9 @@ export class StatisticComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // Carga diferida mínima: solo reparaciones del año para gráficos principales
     this.cargarReparaciones();
-    this.getAllReparacionesForStats();
-    this.renderAllCharts();
     this.initAnios();
-    this.renderIngresosPorTecnicoCanvas();
   }
 
   ngOnDestroy(): void {
@@ -68,18 +66,19 @@ export class StatisticComponent implements OnInit, OnDestroy {
     }
   }
 
-    cargarReparaciones() {    this.repairsService.getAllReparaciones().subscribe(      (data) => {        this.reparaciones = data.filter((r: any) =>           new Date(r.fechaIngreso).getFullYear() === this.selectedYear        );        this.renderAllCharts();      },      (error) => {        console.error('Error al cargar reparaciones:', error);      }    );  }
-
-  getAllReparacionesForStats(): void {
-    this.repairsService.getAllReparaciones().subscribe(
-      (data) => {
-        this.allReparaciones = data;
+  cargarReparaciones() {
+    // Usar endpoint optimizado por año cuando esté disponible; fallback a /all
+    this.repairsService.getReparaciones(0, 500).subscribe(
+      (page) => {
+        const list = (page && page.content) ? page.content : (Array.isArray(page) ? page : []);
+        this.reparaciones = list.filter((r: any) => new Date(r.fechaIngreso).getFullYear() === this.selectedYear);
+        this.renderAllCharts();
       },
-      (error) => {
-        console.error('Error al obtener reparaciones para estadísticas:', error);
-      }
+      (error) => { console.error('Error al cargar reparaciones:', error); }
     );
   }
+
+  getAllReparacionesForStats(): void {}
 
   // Funciones para las estadísticas básicas
   getReparacionesEnTaller(): number {
@@ -434,62 +433,42 @@ export class StatisticComponent implements OnInit, OnDestroy {
     document.body.removeChild(link);
   }
 
-  refrescarDatos(): void {
-    this.cargarReparaciones();
-    this.getAllReparacionesForStats();
-    this.renderIngresosPorTecnicoCanvas();
-  }
+  refrescarDatos(): void { this.cargarReparaciones(); }
 
   // Métodos de gráficos existentes (mantenidos)
   renderAllCharts(): void {
     this.renderReparacionesPorMesChart();
     this.renderComprasPorProveedorChart();
     this.renderReparacionesPorTecnicoChart();
+    this.renderIngresosPorTecnicoCanvas();
   }
 
   renderReparacionesPorMesChart() {
-    const reparacionesPorMes = this.reparaciones
-      .filter(r => r.activo)
-      .reduce((acc: { [key: string]: number }, r) => {
-        const fecha = new Date(r.fechaIngreso);
-        const mes = fecha.toLocaleDateString('es-ES', { month: 'short' });
-        acc[mes] = (acc[mes] || 0) + 1;
-        return acc;
-      }, {});
-
-    const dataPoints = Object.entries(reparacionesPorMes)
-      .map(([mes, cantidad]) => ({ label: mes, y: cantidad }));
-
-    if (dataPoints.length === 0) {
-      this.showNoData('noDataReparacionesPorMes');
-      return;
-    }
-
-    this.hideNoData('noDataReparacionesPorMes');
-    this.renderChart('reparacionesPorMes', 'Reparaciones por Mes', dataPoints, this.chartTypes['reparacionesMes'] || 'line');
+    // Consumir backend agregado por año para minimizar datos transferidos
+    this.repairsService.getReparacionesPorMes(this.selectedYear).subscribe({
+      next: (rows: any[]) => {
+        const mapMes: { [k: number]: string } = {1:'ene',2:'feb',3:'mar',4:'abr',5:'may',6:'jun',7:'jul',8:'ago',9:'sep',10:'oct',11:'nov',12:'dic'};
+        const dataPoints = (rows || []).map(r => ({ label: mapMes[r.mes] || String(r.mes), y: r.cantidad || 0 }));
+        if (dataPoints.length === 0) { this.showNoData('noDataReparacionesPorMes'); return; }
+        this.hideNoData('noDataReparacionesPorMes');
+        this.renderChart('reparacionesPorMes', 'Reparaciones por Mes', dataPoints, this.chartTypes['reparacionesMes'] || 'line');
+      },
+      error: () => this.showNoData('noDataReparacionesPorMes')
+    });
   }
 
   renderComprasPorProveedorChart() {
-    const ingresosPorMes = this.reparaciones
-      .filter(r => r.activo && r.estado === 'Entregada' && r.fechaEntrega)
-      .reduce((acc: { [key: string]: number }, r) => {
-        const fecha = new Date(r.fechaEntrega);
-        const mes = fecha.toLocaleDateString('es-ES', { month: 'short' });
-        const ingresos = (r.manoDeObra || 0) + (r.entrega || 0);
-        acc[mes] = (acc[mes] || 0) + ingresos;
-        return acc;
-      }, {});
-
-    const dataPoints = Object.entries(ingresosPorMes)
-      .map(([mes, ingresos]) => ({ label: mes, y: ingresos }));
-
-    if (dataPoints.length === 0) {
-      this.showNoData('noDataComprasPorProveedor');
-      return;
-    }
-
-    this.hideNoData('noDataComprasPorProveedor');
-    this.renderChart('comprasPorProveedor', 'Ingresos por Mes', dataPoints, this.chartTypes['ingresosMes'] || 'area');
+    // Usar endpoint optimizado ingresos-por-mes
+    this.repairsService.getIngresosPorMes(this.selectedYear).subscribe({
+      next: (rows: any[]) => {
+        const mapMes: { [k: number]: string } = {1:'ene',2:'feb',3:'mar',4:'abr',5:'may',6:'jun',7:'jul',8:'ago',9:'sep',10:'oct',11:'nov',12:'dic'};
+        const dataPoints = (rows || []).map(r => ({ label: mapMes[r.mes] || String(r.mes), y: r.monto || 0 }));
+        if (dataPoints.length === 0) { this.showNoData('noDataComprasPorProveedor'); return; }
+        this.hideNoData('noDataComprasPorProveedor');
+        this.renderChart('comprasPorProveedor', 'Ingresos por Mes', dataPoints, this.chartTypes['ingresosMes'] || 'area');
+      },
+      error: () => this.showNoData('noDataComprasPorProveedor')
+    });
   }
 
   renderReparacionesPorTecnicoChart() {
@@ -659,10 +638,18 @@ export class StatisticComponent implements OnInit, OnDestroy {
     this.ingresosTecnicoError = null;
 
     try {
+      // Asegurar que el contenedor exista (por cambios de vista/ngIf)
+      const container = document.getElementById('ingresosPorTecnicoCanvas');
+      if (!container) {
+        setTimeout(() => this.renderIngresosPorTecnicoCanvas(), 100);
+        return;
+      }
+
       const ingresosPorTecnico = this.reparaciones
-        .filter(r => r.activo && r.estado === 'Entregada' && r.fechaEntrega && r.tecnico)
+        .filter(r => r.activo && r.estado === 'Entregada' && r.fechaEntrega && r.tecnico &&
+          new Date(r.fechaEntrega).getFullYear() === this.selectedYear)
         .reduce((acc: { [key: string]: number }, r) => {
-          const ingresos = (r.manoDeObra || 0) + (r.entrega || 0);
+          const ingresos = Number(r.manoDeObra || 0) + Number(r.entrega || 0);
           acc[r.tecnico.nombre] = (acc[r.tecnico.nombre] || 0) + ingresos;
           return acc;
         }, {});
@@ -692,7 +679,7 @@ export class StatisticComponent implements OnInit, OnDestroy {
         },
         backgroundColor: "transparent",
         data: [{
-          type: "column",
+          type: this.chartTypes['ingresosTecnico'] || "column",
           color: this.chartColors[1],
           dataPoints: this.mapDataToDataPoints(dataPoints)
         }],

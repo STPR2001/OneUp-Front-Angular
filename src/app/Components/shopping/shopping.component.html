@@ -7,7 +7,7 @@
         <h1 class="main-title">Gestión de Compras</h1>
         <p class="subtitle">Control y registro de compras de repuestos</p>
       </div>
-      <button class="btn-primary add-compra" routerLink="/compras/new">
+      <button class="btn-primary add-compra" (click)="abrirAgregarCompra()">
         <span class="material-icons">shopping_cart</span>
         Nueva Compra
       </button>
@@ -160,7 +160,7 @@
               <button class="action-btn view" (click)="verDetallesCompra(compra)" title="Ver detalles">
                 <span class="material-icons">visibility</span>
               </button>
-              <button class="action-btn edit" (click)="navigateToUpdateCompra(compra.id, 'Compra')" title="Editar">
+              <button class="action-btn edit" (click)="abrirModificarCompra(compra)" title="Editar">
                 <span class="material-icons">edit</span>
               </button>
               <button class="action-btn delete" (click)="desactivarCompra(compra)" title="Eliminar">
@@ -179,7 +179,7 @@
           </div>
           <h3>No hay compras registradas</h3>
           <p>Comienza registrando tu primera compra para llevar el control de inventario.</p>
-          <button class="btn-primary" routerLink="/compras/new">
+          <button class="btn-primary" (click)="abrirAgregarCompra()">
             <span class="material-icons">shopping_cart</span>
             Registrar primera compra
           </button>
@@ -253,6 +253,314 @@
     </div>
   </main>
 </div>
+
+<!-- Modal Agregar Compra (estilo uniforme) -->
+<ng-template #agregarCompraModal let-modal>
+  <div class="modal-content">
+    <form [formGroup]="compraForm" (ngSubmit)="crearCompraDesdePopup(modal)">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Registrar compra</h2>
+          <p class="modal-subtitle">Complete la información de la nueva compra</p>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fecha"><span class="material-icons">event</span> Fecha <span class="requerido">*</span></label>
+            <input type="datetime-local" id="fecha" formControlName="fecha" class="form-control" [max]="todayMaxDatetime" required />
+          </div>
+          <div class="form-group">
+            <label for="id_proveedor"><span class="material-icons">store</span> Proveedor <span class="requerido">*</span></label>
+            <div class="input-group">
+              <select id="id_proveedor" formControlName="id_proveedor" class="form-control" required>
+                <option value="" disabled selected>Seleccionar...</option>
+                <option *ngFor="let proveedor of proveedores" [value]="proveedor.id">{{ proveedor.nombre }}</option>
+              </select>
+              <button type="button" class="btn btn-success ms-2" (click)="openAgregarProveedorModal()" title="Agregar proveedor">
+                <span class="material-icons">add</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div formArrayName="repuestos">
+          <div class="form-row" *ngFor="let repuesto of repuestos.controls; let i = index" [formGroupName]="i">
+            <div class="form-group">
+              <label for="idRepuesto{{ i }}"><span class="material-icons">build</span> Repuesto <span class="requerido">*</span></label>
+              <div class="input-group">
+                <select id="idRepuesto{{ i }}" formControlName="id" class="form-control" (change)="onRepuestoChange($event, i)" required>
+                  <option value="" disabled selected>Seleccionar...</option>
+                  <option *ngFor="let r of repuestosDisponibles" [value]="r.id">{{ r.descripcion }}</option>
+                </select>
+                <button type="button" class="btn btn-danger ms-2" title="Eliminar" (click)="eliminarRepuesto(i)">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="precio{{ i }}"><span class="material-icons">attach_money</span> Precio <span class="requerido">*</span></label>
+              <input type="number" id="precio{{ i }}" formControlName="precio" class="form-control" min="0.01" step="0.01" required />
+            </div>
+            <div class="form-group">
+              <label for="cant{{ i }}"><span class="material-icons">numbers</span> Cantidad <span class="requerido">*</span></label>
+              <input type="number" id="cant{{ i }}" formControlName="cant" class="form-control" min="1" step="1" required />
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <div class="input-group">
+              <button type="button" class="btn btn-secondary" (click)="agregarRepuesto()">
+                <span class="material-icons">add</span>
+                Agregar repuesto
+              </button>
+              <button type="button" class="btn btn-success ms-2" (click)="openAgregarRepuestoModal()" title="Crear repuesto">
+                <span class="material-icons">build</span>
+                Crear repuesto
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="total"><span class="material-icons">savings</span> Total <span class="requerido">*</span></label>
+            <input type="number" id="total" formControlName="total" class="form-control" readonly />
+          </div>
+        </div>
+        <div *ngIf="errorAgregarCompra" class="error-message">
+          <span class="material-icons">error</span>
+          Error al registrar la compra.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Close click')">
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-icons">save</span>
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+<!-- Modal Modificar Compra (reutiliza mismo formulario) -->
+<ng-template #modificarCompraModal let-modal>
+  <div class="modal-content">
+    <form [formGroup]="compraForm" (ngSubmit)="guardarModificacionDesdePopup(modal)">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Modificar compra</h2>
+          <p class="modal-subtitle">Actualice la información de la compra</p>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Reutilizamos el mismo cuerpo del formulario de agregar -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fechaEdit"><span class="material-icons">event</span> Fecha <span class="requerido">*</span></label>
+            <input type="datetime-local" id="fechaEdit" formControlName="fecha" class="form-control" [max]="todayMaxDatetime" required />
+          </div>
+          <div class="form-group">
+            <label for="proveedorEdit"><span class="material-icons">store</span> Proveedor <span class="requerido">*</span></label>
+            <select id="proveedorEdit" formControlName="id_proveedor" class="form-control" required>
+              <option value="" disabled>Seleccionar...</option>
+              <option *ngFor="let proveedor of proveedores" [value]="proveedor.id">{{ proveedor.nombre }}</option>
+            </select>
+          </div>
+        </div>
+        <div formArrayName="repuestos">
+          <div class="form-row" *ngFor="let repuesto of repuestos.controls; let i = index" [formGroupName]="i">
+            <div class="form-group">
+              <label for="idRepuestoEdit{{ i }}"><span class="material-icons">build</span> Repuesto <span class="requerido">*</span></label>
+              <div class="input-group">
+                <select id="idRepuestoEdit{{ i }}" formControlName="id" class="form-control" required>
+                  <option value="" disabled>Seleccionar...</option>
+                  <option *ngFor="let r of repuestosDisponibles" [value]="r.id">{{ r.descripcion }}</option>
+                </select>
+                <button type="button" class="btn btn-danger ms-2" title="Eliminar" (click)="eliminarRepuesto(i)">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="precioEdit{{ i }}"><span class="material-icons">attach_money</span> Precio <span class="requerido">*</span></label>
+              <input type="number" id="precioEdit{{ i }}" formControlName="precio" class="form-control" min="0.01" step="0.01" required />
+            </div>
+            <div class="form-group">
+              <label for="cantEdit{{ i }}"><span class="material-icons">numbers</span> Cantidad <span class="requerido">*</span></label>
+              <input type="number" id="cantEdit{{ i }}" formControlName="cant" class="form-control" min="1" step="1" required />
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <div class="input-group">
+              <button type="button" class="btn btn-secondary" (click)="agregarRepuesto()">
+                <span class="material-icons">add</span>
+                Agregar repuesto
+              </button>
+              <button type="button" class="btn btn-success ms-2" (click)="openAgregarRepuestoModal()" title="Crear repuesto">
+                <span class="material-icons">build</span>
+                Crear repuesto
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="totalEdit"><span class="material-icons">savings</span> Total <span class="requerido">*</span></label>
+            <input type="number" id="totalEdit" formControlName="total" class="form-control" readonly />
+          </div>
+        </div>
+        <div *ngIf="errorModificarCompra" class="error-message">
+          <span class="material-icons">error</span>
+          Error al modificar la compra.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Close click')">
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-icons">save</span>
+          Guardar cambios
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+<!-- Modal Crear Repuesto (estilo uniforme) -->
+<ng-template #agregarRepuestoModal let-modal>
+  <div class="modal-content">
+    <form (ngSubmit)="crearRepuestoDesdePopup(modal)">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Agregar repuesto</h2>
+          <p class="modal-subtitle">Complete la información del nuevo repuesto</p>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nrDescripcion">
+              <span class="material-icons">inventory</span>
+              Descripción del repuesto <span class="requerido">*</span>
+            </label>
+            <input id="nrDescripcion" type="text" class="form-control" [(ngModel)]="nuevoRepuesto.descripcion" name="nrDescripcion" placeholder="Ej: Pantalla LCD iPhone 12" required />
+          </div>
+          <div class="form-group">
+            <label for="nrParte">
+              <span class="material-icons">qr_code</span>
+              Número de parte <span class="requerido">*</span>
+            </label>
+            <input id="nrParte" type="text" class="form-control" [(ngModel)]="nuevoRepuesto.numeroDeParte" name="nrParte" placeholder="Ej: LCD-IP12-BLK-01" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nrCosto">
+              <span class="material-icons">attach_money</span>
+              Precio de costo <span class="requerido">*</span>
+            </label>
+            <input id="nrCosto" type="number" class="form-control" [(ngModel)]="nuevoRepuesto.precioCosto" name="nrCosto" placeholder="0.00" min="0" step="0.01" required />
+          </div>
+          <div class="form-group">
+            <label for="nrVenta">
+              <span class="material-icons">sell</span>
+              Precio de venta <span class="requerido">*</span>
+            </label>
+            <input id="nrVenta" type="number" class="form-control" [(ngModel)]="nuevoRepuesto.precioVenta" name="nrVenta" placeholder="0.00" min="0" step="0.01" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nrStock">
+              <span class="material-icons">storage</span>
+              Stock inicial <span class="requerido">*</span>
+            </label>
+            <input id="nrStock" type="number" class="form-control" [(ngModel)]="nuevoRepuesto.stock" name="nrStock" placeholder="0" min="0" required />
+          </div>
+          <div class="form-group">
+            <div class="calculated-info">
+              <label>Rentabilidad calculada:</label>
+              <div class="calc-result">
+                <span class="percentage">{{ calcularRentabilidadNuevoRepuesto() }}%</span>
+                <span class="amount">+{{ formatearMoneda((nuevoRepuesto.precioVenta || 0) - (nuevoRepuesto.precioCosto || 0)) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="errorAgregarRepuesto" class="error-message">
+          <span class="material-icons">error</span>
+          Error al crear repuesto.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Close click')">
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-icons">save</span>
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- Modal Agregar Proveedor (reutilizado con estilo uniforme) -->
+<ng-template #agregarProveedorModal let-modal>
+  <div class="modal-content">
+    <form (ngSubmit)="agregarProveedor()">
+      <div class="modal-header">
+        <div class="modal-title-container">
+          <h2 class="modal-title">Agregar proveedor</h2>
+          <p class="modal-subtitle">Complete la información del nuevo proveedor</p>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="provNombre">Nombre <span class="requerido">*</span></label>
+            <input id="provNombre" type="text" class="form-control" [(ngModel)]="nuevoProveedor.nombre" name="provNombre" required />
+          </div>
+          <div class="form-group">
+            <label for="provTelefono">Teléfono</label>
+            <input id="provTelefono" type="text" class="form-control" [(ngModel)]="nuevoProveedor.telefono" name="provTelefono" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="provDireccion">Dirección</label>
+            <input id="provDireccion" type="text" class="form-control" [(ngModel)]="nuevoProveedor.direccion" name="provDireccion" />
+          </div>
+          <div class="form-group">
+            <label for="provEmail">Correo</label>
+            <input id="provEmail" type="email" class="form-control" [(ngModel)]="nuevoProveedor.email" name="provEmail" />
+          </div>
+        </div>
+        <div *ngIf="errorAgregarProveedor" class="error-message">
+          <span class="material-icons">error</span>
+          Error al agregar proveedor.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Close click')">
+          <span class="material-icons">close</span>
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <span class="material-icons">save</span>
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
 
 <!-- Modal Ver Detalles Compra -->
 <div
