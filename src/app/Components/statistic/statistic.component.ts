@@ -67,14 +67,18 @@ export class StatisticComponent implements OnInit, OnDestroy {
   }
 
   cargarReparaciones() {
-    // Usar endpoint optimizado por año cuando esté disponible; fallback a /all
-    this.repairsService.getReparaciones(0, 500).subscribe(
-      (page) => {
-        const list = (page && page.content) ? page.content : (Array.isArray(page) ? page : []);
-        this.reparaciones = list.filter((r: any) => new Date(r.fechaIngreso).getFullYear() === this.selectedYear);
+    // Cargar todas las reparaciones para no truncar estadísticas por paginación
+    this.repairsService.getAllReparaciones().subscribe(
+      (data: any[]) => {
+        const list = Array.isArray(data) ? data : [];
+        this.allReparaciones = list;
+        this.reparaciones = list.filter((r: any) => {
+          const anio = r && r.fechaIngreso ? new Date(r.fechaIngreso).getFullYear() : undefined;
+          return anio === this.selectedYear;
+        });
         this.renderAllCharts();
       },
-      (error) => { console.error('Error al cargar reparaciones:', error); }
+      (error) => { console.error('Error al cargar reparaciones (all):', error); }
     );
   }
 

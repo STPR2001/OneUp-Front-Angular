@@ -6,7 +6,7 @@ import { ClientsService } from 'src/app/services/clients.service';
 import { EquipoService } from 'src/app/services/equipo.service';
 import { RepuestosService } from 'src/app/services/repuestos.service';
 import { tap, catchError, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { of, Subject, Subscription } from 'rxjs';
+import { of, Subject, Subscription, forkJoin } from 'rxjs';
 import * as bootstrap from 'bootstrap';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -38,6 +38,10 @@ export class RepairsComponent implements OnInit, OnDestroy {
   currentPage: number = 0;
   pageSize: number = 10;
   totalPages: number = 0;
+  // Contadores globales por estado (independientes del filtro/paginación)
+  totalEnTallerCount: number = 0;
+  totalFinalizadasCount: number = 0;
+  totalEntregadasCount: number = 0;
   
   nombreCliente?: string;
   usarPuntos: boolean = false;
@@ -134,6 +138,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
     this.initializeDarkMode();
     this.setupSearchSubscription();
     this.loadAllReparaciones();
+    this.loadCounts();
     this.obtenerTecnicos();
     this.obtenerClientes();
     this.obtenerEquipos();
@@ -196,6 +201,25 @@ export class RepairsComponent implements OnInit, OnDestroy {
     );
   }
 
+  // Cargar contadores globales por estado usando totalElements del backend
+  private loadCounts(): void {
+    const estados = ['En taller', 'Finalizada', 'Entregada'];
+    const requests = estados.map(estado => this.repairsService.getReparacionesActivas(0, 1, undefined, estado));
+    forkJoin(requests).subscribe({
+      next: ([enTallerPage, finalizadasPage, entregadasPage]) => {
+        this.totalEnTallerCount = (enTallerPage && typeof enTallerPage.totalElements === 'number') ? enTallerPage.totalElements : 0;
+        this.totalFinalizadasCount = (finalizadasPage && typeof finalizadasPage.totalElements === 'number') ? finalizadasPage.totalElements : 0;
+        this.totalEntregadasCount = (entregadasPage && typeof entregadasPage.totalElements === 'number') ? entregadasPage.totalElements : 0;
+      },
+      error: (err) => {
+        console.error('Error al cargar contadores de reparaciones:', err);
+        this.totalEnTallerCount = 0;
+        this.totalFinalizadasCount = 0;
+        this.totalEntregadasCount = 0;
+      }
+    });
+  }
+
   private filterReparaciones(): void { this.loadAllReparaciones(); }
 
   onSearchInput(event: any): void {
@@ -233,6 +257,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
       if (res && res.refresh) {
         this.currentPage = 0;
         this.loadAllReparaciones();
+        this.loadCounts();
         this.isRepairSuccess = true;
         this.repairMessage = 'Reparación agregada exitosamente';
         this.clearRepairMessage();
@@ -249,6 +274,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
     });
     dialogRef.afterClosed().subscribe(() => {
       this.loadAllReparaciones();
+      this.loadCounts();
     });
   }
 
@@ -263,6 +289,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
             tap(() => {
               console.log('Reparacion desactivada exitosamente');
               this.loadAllReparaciones();
+              this.loadCounts();
               this.isRepairSuccess = true;
               this.repairMessage = 'Reparación desactivada exitosamente';
               this.clearRepairMessage();
@@ -286,6 +313,7 @@ export class RepairsComponent implements OnInit, OnDestroy {
           () => {
             this.currentPage = 0;
             this.loadAllReparaciones();
+            this.loadCounts();
             this.isRepairSuccess = true;
             this.repairMessage = 'Reparación eliminada exitosamente';
             this.clearRepairMessage();
